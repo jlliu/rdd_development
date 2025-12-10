@@ -41,7 +41,8 @@ var mainScene = function (p) {
 
   //relevantNotes stores an array of note objects
   let relevantNotes = [];
-  let hitMargin = 100;
+  // let hitMargin = 100;
+
   let measureData;
   let songBpm;
   let currentBpmStartBeat = 0;
@@ -64,6 +65,8 @@ var mainScene = function (p) {
   let currentBeat = 0;
   let pixelsElapsed = 0;
   let pixelsPerBeat = 120;
+
+  let hitMargin = 0.4 * pixelsPerBeat;
 
   // let clock = new Tone.Clock((time) => {}, 1);
 
@@ -402,7 +405,7 @@ var mainScene = function (p) {
     scoreData.totalNotes = thisSongData.totalNotes;
     scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
-    // hitMargin = songBpm * 0.8;
+    // hitMargin =  pixelsPerBeat * songBpm(/200);
 
     //For negative songDelays, start song before notes
     if (songDelay < 0) {
@@ -460,6 +463,7 @@ var mainScene = function (p) {
             secondsPerBeat = 1 / (songBpm / 60);
             currentBpmStartBeat = change.beat;
             currentBpmChangeTime = change.changeTime;
+            // hitMargin = songBpm;
           }, change.changeTime);
         });
       }
@@ -846,6 +850,9 @@ var mainScene = function (p) {
     healthBar.reset();
     songVideo = null;
     videoLoadedFirstTime = false;
+    hasBpmChanges = false;
+    bpmChanges = [];
+    hasStops = false;
   }
 
   function padOrKeypress(direction) {

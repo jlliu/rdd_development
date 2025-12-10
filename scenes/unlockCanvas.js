@@ -163,6 +163,7 @@ var unlock = function (p) {
         numCompleted = getNumCompleted();
 
         if (unlockFromRevelation) {
+          console.log("number of songs completed: " + numCompleted);
           // glowScale = 0;
           glows[numCompleted - 1].scale = 0.0;
           setTimeout(function () {
@@ -265,6 +266,7 @@ var unlock = function (p) {
   }
 
   function resetCodeAttempt() {
+    preventEnter = false;
     attemptedCode = [];
     bottomText = bottomTextOptions.default;
     codeIndex = 0;
@@ -294,35 +296,22 @@ var unlock = function (p) {
   function handleInput(keyCode) {
     //Handle case for menu navigation
     if (isCurrentScene) {
-      if (keyCode == "ArrowDown" || keyCode == "KeyS") {
-        // if (selectedMenuItemIndex < menuItems.length - 1) {
-        //   selectedMenuItemIndex++;
-        // }
-        // attemptedCode.push("down");
-        animateCodeKeypress("down");
-      }
-      if (keyCode == "ArrowUp" || keyCode == "KeyW") {
-        // if (selectedMenuItemIndex > 0) {
-        //   selectedMenuItemIndex--;
-        // }
+      if (!unlockFromRevelation) {
+        if (keyCode == "ArrowDown" || keyCode == "KeyS") {
+          animateCodeKeypress("down");
+        }
+        if (keyCode == "ArrowUp" || keyCode == "KeyW") {
+          animateCodeKeypress("up");
+        }
+        if (keyCode == "ArrowLeft" || keyCode == "KeyA") {
+          animateCodeKeypress("left");
+        }
 
-        animateCodeKeypress("up");
-      }
-      if (keyCode == "ArrowLeft" || keyCode == "KeyA") {
-        // if (selectedMenuItemIndex < menuItems.length - 1) {
-        //   selectedMenuItemIndex++;
-        // }
-
-        animateCodeKeypress("left");
+        if (keyCode == "ArrowRight" || keyCode == "KeyD") {
+          animateCodeKeypress("right");
+        }
       }
 
-      if (keyCode == "ArrowRight" || keyCode == "KeyD") {
-        // if (selectedMenuItemIndex < menuItems.length - 1) {
-        //   selectedMenuItemIndex++;
-        // }
-
-        animateCodeKeypress("right");
-      }
       //Select menu item
       if (keyCode == "Enter") {
         if (!unlockFromRevelation && !preventEnter) {
