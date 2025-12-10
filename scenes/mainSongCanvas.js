@@ -545,7 +545,7 @@ var mainScene = function (p) {
               lastBpmChangeTime = beatToTime(change.endBeat);
             }
           }
-        });.
+        });
         pixelsElapsed +=
           ((t - lastBpmChangeTime) / secondsPerBeat) * pixelsPerBeat;
       } else {
