@@ -230,8 +230,8 @@ let songList = [
     songPlayer: new Tone.Player(
       `/songAssets/Music/breadcrumbs.mp3`
     ).toDestination(),
-    sampleStart: 78.21,
-    sampleLength: 11.0,
+    sampleStart: 45.0,
+    sampleLength: 15.0,
     videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],
@@ -239,6 +239,7 @@ let songList = [
     bpmChanges: [
       { beat: 0.0, bpm: 70.0 },
       { beat: 16.0, bpm: 140.0 },
+      { beat: 136.0, bpm: 70.0 },
     ],
     //Beat is beat stop starts on, then length of stop in seconds
     stops: [

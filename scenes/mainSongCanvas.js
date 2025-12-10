@@ -402,6 +402,7 @@ var mainScene = function (p) {
     scoreData.totalNotes = thisSongData.totalNotes;
     scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
+    // hitMargin = songBpm * 0.8;
 
     //For negative songDelays, start song before notes
     if (songDelay < 0) {
@@ -409,7 +410,7 @@ var mainScene = function (p) {
         updateArrowsInterval = setInterval(function () {
           updateNotes();
           updateArrowRainbow();
-        }, 25);
+        }, 10);
         startDrawingArrows = true;
         //Start a tone.js clock to keep time
         // clock.start();
@@ -420,7 +421,7 @@ var mainScene = function (p) {
       updateArrowsInterval = setInterval(function () {
         updateNotes();
         updateArrowRainbow();
-      }, 25);
+      }, 10);
       startDrawingArrows = true;
       //Start a tone.js clock to keep time
       // clock.start();
@@ -532,24 +533,21 @@ var mainScene = function (p) {
         pixelsElapsed = 0;
         // basically, ask how many beats have elapsed in the previous bpm intervals?
         // Then we add the current time (minus the time of the last interval change)....
-        // let lastBpmChangeEndingBeat = 0;
+        let lastBpmChangeTime = 0;
         bpmChanges.forEach(function (change, index) {
           //For all intervals that aren't the last interval... AND we're past that time...calculate the beat interval. Then calculate pixels elapsed
           if (index < bpmChanges.length - 1) {
-            if (currentBeat > bpmChanges[index + 1].beat) {
+            if (currentBeat > change.endBeat) {
               let pixelsElapsedInInterval =
                 change.beatsInInterval * pixelsPerBeat;
               pixelsElapsed += pixelsElapsedInInterval;
+              //Calculate this instead of using currentBpmChangeTime, since there's a slight delay
+              lastBpmChangeTime = beatToTime(change.endBeat);
             }
           }
-        });
-        // t needs to be the seconds that have elapsed since the last interval...
-
-        // console.log(currentBeat);
-        // console.log(lastBpmChangeEndingBeat);
+        });.
         pixelsElapsed +=
-          ((t - currentBpmChangeTime) / secondsPerBeat) * pixelsPerBeat;
-        // pixelsElapsed = (t-)
+          ((t - lastBpmChangeTime) / secondsPerBeat) * pixelsPerBeat;
       } else {
         pixelsElapsed = (t / secondsPerBeat) * pixelsPerBeat;
       }
@@ -561,36 +559,41 @@ var mainScene = function (p) {
       note.currentY = yPos;
 
       // Should this arrow be considered as a hit candidate?
-      if (
-        yPos > hitArrowObjs["left"].yPos - hitMargin &&
-        yPos < hitArrowObjs["left"].yPos + hitMargin
-      ) {
-        //Note within our hit window!
-        note.isHitCandidate = true;
-      } else if (yPos < hitArrowObjs["left"].yPos - hitMargin) {
-        passedOver = true;
+      if (Tone.Transport.state == "started") {
+        if (
+          yPos >= hitArrowObjs["left"].yPos - hitMargin &&
+          yPos <= hitArrowObjs["left"].yPos + hitMargin
+        ) {
+          console.log("note is hit candidate");
+          //Note within our hit window!
+          note.isHitCandidate = true;
 
-        //The note is passed over for the first time! THIS IS A MISS....
-        if (note.hasPassedOver == null) {
-          note.hasPassedOver = true;
-          //If it's first time passing over a NOT hit note, reset combo
-          if (!note.isHit && note.noteType != "mine") {
-            updateMiss("miss", note);
+          //idea: don't let it be passed over if clock is paused
+        } else if (yPos < hitArrowObjs["left"].yPos - hitMargin) {
+          passedOver = true;
+
+          //The note is passed over for the first time! THIS IS A MISS....
+          if (note.hasPassedOver == null) {
+            note.hasPassedOver = true;
+            //If it's first time passing over a NOT hit note, reset combo
+            if (!note.isHit && note.noteType != "mine") {
+              updateMiss("miss", note);
+            }
           }
+          note.isHitCandidate = false;
         }
-        note.isHitCandidate = false;
-      }
-      //Should this arrow, if a hold, be considered completed if we're still holding?
-      let end_yPos =
-        hitArrowObjs["left"].yPos +
-        pixelsPerBeat * note.endBeat -
-        pixelsElapsed;
-      if (
-        end_yPos < hitArrowObjs["left"].yPos &&
-        note.isHolding &&
-        !note.completedHold
-      ) {
-        updateHit("ok", note);
+        //Should this arrow, if a hold, be considered completed if we're still holding?
+        let end_yPos =
+          hitArrowObjs["left"].yPos +
+          pixelsPerBeat * note.endBeat -
+          pixelsElapsed;
+        if (
+          end_yPos < hitArrowObjs["left"].yPos &&
+          note.isHolding &&
+          !note.completedHold
+        ) {
+          updateHit("ok", note);
+        }
       }
       note.display(yPos, passedOver);
     });
@@ -688,6 +691,8 @@ var mainScene = function (p) {
   function updateHit(score, note) {
     //Is this the first time hitting this note?
     if (!note.isHit && note.noteType != "mine") {
+      console.log("UPDATE HIT");
+      console.log(note.noteType);
       comboObj.incrementCombo();
       note.isHit = true;
       let scoreScale = 1;
@@ -728,6 +733,7 @@ var mainScene = function (p) {
         note.direction == direction &&
         !note.isHit
       ) {
+        console.log("assessing hit");
         let yPos = note.currentY;
 
         //Determine quality of hit
@@ -844,7 +850,10 @@ var mainScene = function (p) {
 
   function padOrKeypress(direction) {
     if (isCurrentScene) {
-      let hitSuccessful = assessHit(direction, "press");
+      let hitSuccessful = false;
+      if (Tone.Transport.state == "started") {
+        let hitSuccessful = assessHit(direction, "press");
+      }
       hitArrowObjs[direction].press(hitSuccessful);
     }
   }
