@@ -47,6 +47,7 @@ var title = function (p) {
   // Setup all fonts in this file
   let fontsToLoad = [
     "mainYellow",
+    "smallYellow",
     "pink",
     "greenHelper",
     "whitePixel",

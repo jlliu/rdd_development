@@ -107,15 +107,12 @@ var difficulty = function (p) {
 
   function selectDifficulty(option) {
     if (option == "Easy") {
-      console.log("selecting Easy");
       storyModeDifficulty = "Easy";
     }
     if (option == "Normal") {
-      console.log("selecting Normal");
       storyModeDifficulty = "Normal";
     }
     if (option == "Hard") {
-      console.log("selecting Hard");
       storyModeDifficulty = "Hard";
     }
     // //Progress to song selector
@@ -163,11 +160,13 @@ var difficulty = function (p) {
       if (keyCode == "ArrowDown" || keyCode == "KeyS") {
         if (selectedMenuItemIndex < menuItems.length - 1) {
           selectedMenuItemIndex++;
+          sound_fx.menuChange.start();
         }
       }
       if (keyCode == "ArrowUp" || keyCode == "KeyW") {
         if (selectedMenuItemIndex > 0) {
           selectedMenuItemIndex--;
+          sound_fx.menuChange.start();
         }
       }
       //Select menu item

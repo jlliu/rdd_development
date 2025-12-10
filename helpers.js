@@ -29,6 +29,19 @@ let fonts = {
     charsToImgs: {},
   },
 
+  smallYellow: {
+    sets: [
+      {
+        src: "/assets/smallYellowSpritesheet.png",
+        charSet: characterString.split(""),
+        size: { width: 24, height: 35 },
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
   greenHelper: {
     sets: [
       {
@@ -179,7 +192,7 @@ const endRevelationSceneEvent = new CustomEvent("endRevelationScene");
 const sceneTransitionTime = 1000;
 
 // Background, title, tutorial, difficulty, songSelector, mainSong, revelation, unlockCanvas, scoreCanvas, experimental, gates, service mode
-let totalCanvases = 12;
+let totalCanvases = 11; // remove tutorial
 
 let storyModeDifficulty = "Normal";
 
@@ -190,6 +203,7 @@ globalClock.start();
 let sound_fx = {
   eggCrack: new Tone.Player(`/assets/fx/egg-crack.mp3`).toDestination(),
   doorShut: new Tone.Player(`/assets/fx/door-shut.mp3`).toDestination(),
+  menuChange: new Tone.Player(`/assets/fx/house_stab.wav`).toDestination(),
 };
 
 let songList = [
@@ -212,11 +226,13 @@ let songList = [
     bannerImg: `songAssets/song2-banner.png`,
     title: `Kung Fu Fawning`,
     cdImg: `song2-cd.png`,
-    songData: kungfu,
-    songFile: `/songAssets/Music/kungfu.ogg`,
-    songPlayer: new Tone.Player(`/songAssets/Music/kungfu.ogg`).toDestination(),
-    sampleStart: 42.713,
-    sampleLength: 15,
+    songData: fawning,
+    songFile: `/songAssets/Music/fawning.mp3`,
+    songPlayer: new Tone.Player(
+      `/songAssets/Music/fawning.mp3`
+    ).toDestination(),
+    sampleStart: 19,
+    sampleLength: 17,
     videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],
@@ -267,18 +283,28 @@ let songList = [
   },
   {
     bannerImg: `songAssets/song5-banner.png`,
-    title: `ENTER THE VOiD`,
+    title: `FILL THE VOiD`,
     cdImg: `song5-cd.png`,
-    songData: sandstorm,
-    songFile: `/songAssets/Music/sandstorm.ogg`,
-    songPlayer: new Tone.Player(
-      `/songAssets/Music/Sandstorm.ogg`
-    ).toDestination(),
-    sampleStart: 36.54,
+    songData: fillTheVoid,
+    songFile: `/songAssets/Music/void.mp3`,
+    songPlayer: new Tone.Player(`/songAssets/Music/void.mp3`).toDestination(),
+    sampleStart: 25,
     sampleLength: 12.0,
     videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],
+    //Beat is beat bpm change starts on, then length of stop in seconds
+    bpmChanges: [
+      { beat: 0.0, bpm: 156.0 },
+      { beat: 96.0, bpm: 78.0 },
+      { beat: 128.0, bpm: 156.0 },
+    ],
+    //Beat is beat stop starts on, then length of stop in seconds
+    stops: [
+      { beat: 96.0, length: 0.769231 },
+      { beat: 128.0, length: 0.384616 },
+      { beat: 160.0, length: 1.538464 },
+    ],
   },
   {
     bannerImg: `songAssets/song6-banner.png`,

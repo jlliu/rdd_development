@@ -22,6 +22,8 @@ var songSelector = function (p) {
 
   let songBannersSpritesheet;
 
+  let songSelectionInstructionsImg;
+
   let songCdsSpritesheet;
   let songCdsImgs = [];
   let banner = { w: 400, h: 125 };
@@ -46,6 +48,9 @@ var songSelector = function (p) {
   p.preload = function () {
     songBannersSpritesheet = p.loadImage("/songAssets/songBanners.png");
     songCdsSpritesheet = p.loadImage("/songAssets/songCds.png");
+    songSelectionInstructionsImg = p.loadImage(
+      "/assets/song_selection_instructions.png"
+    );
   };
 
   p.setup = function () {
@@ -94,15 +99,17 @@ var songSelector = function (p) {
     p.clear();
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      drawText(`${storyModeDifficulty} mode`, "mainYellow", 1, null, 10);
+      drawImageToScale(songSelectionInstructionsImg, 0, 0);
+      drawText(`${storyModeDifficulty} Mode`, "smallYellow", 1, null, 60);
 
       drawMenu();
 
       let currentSongBanner = songBannersImgs[currentCdQueue[2]];
       drawImageToScale(
         currentSongBanner,
-        320 - currentSongBanner.width / 2,
-        75
+        320 - (currentSongBanner.width * 0.9) / 2,
+        100,
+        0.9
       );
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText("PRESS ENTER TO SELECT", "greenHelper", 1, null, 430);
@@ -203,8 +210,26 @@ var songSelector = function (p) {
     }
   }
 
-  function changeDifficulty() {
+  function changeDifficulty(direction) {
     console.log("changing difficulty");
+    console.log("difficulty is originally: " + storyModeDifficulty);
+    if (direction == "up") {
+      if (storyModeDifficulty == "Normal") {
+        storyModeDifficulty = "Easy";
+        sound_fx.menuChange.start();
+      } else if (storyModeDifficulty == "Hard") {
+        storyModeDifficulty = "Normal";
+        sound_fx.menuChange.start();
+      }
+    } else if (direction == "down") {
+      if (storyModeDifficulty == "Easy") {
+        storyModeDifficulty = "Normal";
+        sound_fx.menuChange.start();
+      } else if (storyModeDifficulty == "Normal") {
+        storyModeDifficulty = "Hard";
+        sound_fx.menuChange.start();
+      }
+    }
   }
 
   function selectCurrentSong() {
@@ -253,14 +278,14 @@ var songSelector = function (p) {
       if (keyCode == "ArrowUp" || keyCode == "KeyW") {
         let doubleTap = assessDoubleTap("up");
         if (doubleTap) {
-          changeDifficulty();
+          changeDifficulty("up");
         }
       }
 
       if (keyCode == "ArrowDown" || keyCode == "KeyS") {
         let doubleTap = assessDoubleTap("down");
         if (doubleTap) {
-          changeDifficulty();
+          changeDifficulty("down");
         }
       }
     }
