@@ -1,0 +1,209 @@
+@font-face {
+  font-family: "Arista Pro";
+  src:
+    url("assets/font/aristapro-light.otf") format("opentype");
+}
+body {
+  padding: 0;
+  margin: 0;
+  background-color: black;
+  /* cursor:none !important; */
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  color:white;
+  /* pointer-events:none; */
+}
+
+body#experimental{
+  background-color:white;
+  color:black;
+}
+
+canvas, video {
+  margin: auto;
+  visibility: visible;
+  position:absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: none !important;
+  transition: opacity 1s;
+}
+
+video, #tutorial, #difficultyCanvas, #songSelectorCanvas, #mainSongCanvas, #revelationCanvas, #unlockCanvas, #scoreCanvas, #gateCanvas, #serviceModeCanvas{
+  opacity:0;
+  visibility:hidden;
+}
+
+#gateCanvas{
+  transition:none;
+}
+
+#feedback{
+  position:absolute;
+    left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index:1;
+}
+audio{
+  display:none;
+}
+
+#song-video-container{
+  width: 100vw;
+    height: 100vh;
+    position:relative;
+}
+.songVideo{
+  max-width: 100vw;
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    position:absolute;
+    image-rendering:pixelated;
+}
+
+#arrowCanvas{
+  display:none;
+  opacity:0;
+  transition: 3s opacity;
+}
+
+/* #titleCanvas{
+  opacity:1;
+  transition: 3s opacity;
+} */
+
+/* #backgroundCanvas{
+  opacity:1;
+  transition: 3s opacity;
+} */
+
+.overlay{
+  background: rgba(0,0,0,0.8);
+  position:absolute;
+  width:100vw;
+  height:100vh;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  font:Arial;
+  top:0px;
+}
+
+#credits{
+  display:none;
+}
+
+#enableAudio-overlay{
+  display:none;
+}
+
+#connectDevice-overlay{
+  /* display:none; */
+}
+
+.overlay h1 {
+  font-size:6vw;
+  font-family:Arial;
+}
+.overlay h2 {
+  font-size:4vw;
+  font-weight:normal;
+  font-family:Arial;
+}
+.overlay button{
+  font-size:30px;
+  width:400px;
+  margin: 30px auto;
+  padding:24px;
+}
+
+#deviceSelect{
+  display:none;
+}
+/* .gameCanvas{
+  z-index:-1;
+  visibility: hidden;
+} */
+
+/* .endCanvas {
+  visibility:hidden;
+  z-index:2;
+}
+
+.game4-artCanvas{
+  z-index:-2;
+}
+
+main {
+  cursor: none !important;
+  pointer-events:all;
+} */
+
+/* #canvas-story {
+
+} */
+
+/* .titleImg{
+  position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 80%;
+    z-index:-10;
+} */
+
+/* video {
+  display: none;
+  position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width:100%;
+ cursor: none !important;
+ max-height:100%;
+}
+
+#goToEnding {
+  z-index:20;
+  pointer-events:all;
+} */
+
+/* #clickToStart{
+  position:absolute;
+  left: 50%;
+  top: calc(50% + 200px);
+  transform: translate(-50%, -50%);
+  max-width: 80%;
+  z-index:-10;
+  color:white;
+  font-size:24px;
+  font-family: "Arista Pro";
+  font-weight:400;
+  visibility:hidden;
+} */
+
+
+.narrativeScene{
+  display:none;
+  color:black;
+  text-align:center;
+    position:absolute;
+    left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index:1;
+  width:calc(100% - 120px);
+
+}
+.narrativeScene span{
+  display:none;
+}
+
+.narrativeScene h1{
+  font-size:80px;
+}

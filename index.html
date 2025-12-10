@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDR GAME</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <script src="lib/p5.min.js"></script>
+  <script src="lib/tone.js"></script>
+
+  <!-- <script src="scenesInfo.js"></script>
+  <script src="audio.js" defer></script>
+  <script src="story.js" defer></script> -->
+
+  <!-- Uncomment for installation mode -->
+  <!-- <script src="refreshIdle.js" defer></script> -->
+   <!-- <script src="songParser.js" defer></script> -->
+
+
+
+
+
+</head>
+
+<body>
+  <!-- <button id="goToEnding">Go to ending</button> -->
+  <main>
+    <!-- <button id="startSong">
+      Click to start
+    </button> -->
+
+    <!-- <button onclick="connectDevice()">Connect</button>
+<select id="deviceSelect" oninput="deviceSelectionChanged()"></select> -->
+
+
+<!-- <textarea id="inputReport" cols="100" rows="5" disabled></textarea><br /> -->
+
+    <!-- <p >Score: <span id="score">0</span></p> -->
+    <!-- <h1 id="feedback"></h1> -->
+    <!-- <div id="arrow-canvas"></div> -->
+    <!-- <audio controls src="assets/song.mp3"></audio> -->
+    <!-- <audio controls src="assets/audio/Heaven.OGG"></audio> -->
+
+    <div id="song-video-container">
+    <video class="songVideo" id="songVideo" preload="none" muted>
+      <source src="songAssets/Backgrounds/cowgirlvideo.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    </div>
+    <div id="background-canvas-container"></div>
+    <div id="title-canvas-container"></div>
+    <div id="tutorial-canvas-container"></div>
+    <div id="difficulty-canvas-container"></div>
+    <div id="unlock-canvas-container"></div>
+    <div id="song-selector-canvas-container"></div>
+    <div id="main-song-canvas-container"></div>
+    <div id="revelation-canvas-container"></div>
+    <div id="score-canvas-container"></div>
+    <div id="gate-canvas-container"></div>
+     <div id="service-mode-canvas-container"></div>
+    <div id="experimental-canvas-container"></div>
+
+
+
+    <div id="enableAudio-overlay" class="overlay">
+      <h1>Tap spacebar to start</h1>
+      <br />
+    </div>
+
+    <div id="connectDevice-overlay" class="overlay">
+      <h1>Connect to the game pad!</h1>
+      <h2>Select "L-Tek Dance Pad PRO"</h2>
+      <button onclick="connectDevice()">Connect</button>
+      <select id="deviceSelect" oninput="deviceSelectionChanged()"></select>
+      <br />
+    </div>
+
+    <div id="credits" class="overlay">
+      <h1>Game art, design, writing by Jackie Liu</h2>
+      <h2>Soundtrack by Patrick Egbuchulam</h2>
+      <h2>Restarting in <span id="endingCountdown">20</span></h2>
+      <br />
+    </div>
+
+
+  </main>
+
+
+
+  <script src="songAssets/songData/curryup.js" defer></script>
+  <script src="songAssets/songData/kungfu.js" defer></script>
+  <script src="songAssets/songData/eggshells.js" defer></script>
+    <script src="songAssets/songData/breadcrumbs.js" defer></script>
+  <script src="songAssets/songData/experimentalSong.js" defer></script>
+  <script src="songAssets/songData/heaven.js" defer></script>
+  <script src="songAssets/songData/loneRanger.js" defer></script>
+  <script src="songAssets/songData/sandstorm.js" defer></script>
+
+
+  <script src="helpers.js" defer></script>
+  <script src="hid-reader.js" defer></script>
+  <script src="dialogue.js" defer></script>
+
+
+  <script src="scenes/backgroundCanvas.js" defer></script>
+  <script src="scenes/titleScreenCanvas.js" defer></script>
+  <script src="scenes/tutorialCanvas.js" defer></script>
+  <script src="scenes/difficultyCanvas.js" defer></script>
+  <script src="scenes/unlockCanvas.js" defer></script>
+  <script src="scenes/songSelectorCanvas.js" defer></script>
+  <script src="scenes/mainSongCanvas.js" defer></script>
+  <script src="scenes/revelation.js" defer></script>
+  <script src="scenes/scoreCanvas.js" defer></script>
+  <script src="scenes/gateCanvas.js" defer></script>
+  <script src="scenes/serviceModeCanvas.js" defer></script>
+  <script src="scenes/experimentalCanvas.js" defer></script>
+
+</body>
+
+</html>
