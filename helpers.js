@@ -208,6 +208,13 @@ let sound_fx = {
   select: new Tone.Player(`/assets/fx/select.wav`).toDestination(),
 };
 
+const menu_track_player = new Tone.Player(
+  `/assets/fx/menu_ui.mp3`
+).toDestination();
+menu_track_player.loop = true;
+menu_track_player.fadeIn = 2;
+menu_track_player.fadeOut = 0.5;
+
 let songList = [
   {
     bannerImg: `/songAssets/song1-banner.png`,
@@ -318,7 +325,7 @@ let songList = [
       `/songAssets/Music/ambientLoop.mp3`
     ).toDestination(),
     sampleStart: 3.0,
-    sampleLength: 0.2,
+    sampleLength: 8.0,
     videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],

@@ -176,6 +176,7 @@ var score = function (p) {
         thisCanvas.style.opacity = 1;
         // animateMenuIn();
         isCurrentScene = true;
+        menu_track_player.start();
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {

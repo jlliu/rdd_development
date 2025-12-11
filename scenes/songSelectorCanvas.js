@@ -127,7 +127,7 @@ var songSelector = function (p) {
         thisCanvas.style.visibility = "visible";
         thisCanvas.style.opacity = 1;
         isCurrentScene = true;
-
+        menu_track_player.stop();
         changePreviewSong();
       }, sceneTransitionTime);
     });
@@ -170,6 +170,7 @@ var songSelector = function (p) {
           .querySelector("#unlockCanvas")
           .dispatchEvent(showUnlockFromSongSelector);
         songSelectorCanvas.dispatchEvent(hideSceneEvent);
+        enterPressed = false;
       } else {
         //Selecting medium song
 
@@ -429,6 +430,8 @@ var songSelector = function (p) {
       songPreviewPlayer.loop = true;
       songPreviewPlayer.loopStart = song.sampleStart;
       songPreviewPlayer.loopEnd = song.sampleStart + song.sampleLength;
+      songPreviewPlayer.fadeIn = 0.5;
+      songPreviewPlayer.fadeOut = 0;
       songPreviewPlayer.start();
     }
   }

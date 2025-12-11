@@ -256,6 +256,7 @@ var title = function (p) {
     //Skip to difficulty if this is the demo mode
     if (isDemo) {
       sound_fx.select.start();
+      menu_track_player.start();
       startStoryMode();
     } else {
       //Display menu for the first time
