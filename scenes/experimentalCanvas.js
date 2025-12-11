@@ -1,9 +1,3 @@
-let arrowCanvas;
-
-let canvasSizeOriginal = { width: 640, height: 480 };
-let canvasWidth = 640;
-let canvasHeight = 480;
-
 let track = document.querySelector("audio");
 let startSongButton = document.querySelector("#startSong");
 
@@ -27,9 +21,14 @@ const part2_bg_player = new Tone.Player(
 part2_bg_player.loop = false;
 part2_bg_player.fadeOut = 2;
 
-var arrowScene = function (p) {
+var experimentalScene = function (p) {
   let thisCanvas;
+
+  let canvasWidth = 640;
+  let canvasHeight = 480;
   let canvasRatio = canvasWidth / canvasHeight;
+  let canvasSizeOriginal = { width: 640, height: 480 };
+
   let mouse_x;
   let mouse_y;
 
@@ -144,11 +143,11 @@ var arrowScene = function (p) {
     // put setup code here
     p.pixelDensity(3);
     calculateCanvasDimensions(p);
-    arrowCanvas = p.createCanvas(canvasWidth, canvasHeight).elt;
-    arrowCanvas.classList.add("gameCanvas");
-    arrowCanvas.classList.add("arrowCanvas");
-    arrowCanvas.id = "arrowCanvas";
-    thisCanvas = arrowCanvas;
+    experimentalCanvas = p.createCanvas(canvasWidth, canvasHeight).elt;
+    experimentalCanvas.classList.add("gameCanvas");
+    experimentalCanvas.classList.add("experimentalCanvas");
+    experimentalCanvas.id = "experimentalCanvas";
+    thisCanvas = experimentalCanvas;
     p.noSmooth();
 
     // let songData = JSON.parse(heavenSongData);
@@ -186,6 +185,8 @@ var arrowScene = function (p) {
     // Setup fonts
     setupFont("mainYellow");
     setupFont("pink");
+
+    setupNavigation(thisCanvas);
 
     const canvasLoadedEvent = new Event("canvasLoaded");
 
@@ -504,9 +505,8 @@ var arrowScene = function (p) {
       endingStarted = true;
 
       console.log("TRANSITION TO END!!!");
-      let experimentalCanvas = document.querySelector("#arrowCanvas");
       let backgroundCanvas = document.querySelector("#backgroundCanvas");
-      experimentalCanvas.style.opacity = 0;
+      thisCanvas.style.opacity = 0;
       backgroundCanvas.style.opacity = 0;
 
       part2_bg_player.stop();
@@ -862,17 +862,17 @@ var arrowScene = function (p) {
     return hitSuccessful;
   }
 
-  window.addEventListener("startGame", (e) => {
-    let experimentalCanvas = document.querySelector("#arrowCanvas");
-    experimentalCanvas.style.display = "block";
-    setTimeout(function () {
-      experimentalCanvas.style.opacity = 1;
-    }, 4000);
+  // window.addEventListener("startGame", (e) => {
+  //   let experimentalCanvas = document.querySelector("#arrowCanvas");
+  //   experimentalCanvas.style.display = "block";
+  //   setTimeout(function () {
+  //     experimentalCanvas.style.opacity = 1;
+  //   }, 4000);
 
-    setTimeout(function () {
-      startSong();
-    }, 8000);
-  });
+  //   setTimeout(function () {
+  //     startSong();
+  //   }, 8000);
+  // });
 
   function padOrKeypress(direction) {
     let hitSuccessful = assessHit(direction, "press");
@@ -1252,6 +1252,8 @@ var arrowScene = function (p) {
         document
           .querySelector("#backgroundCanvas")
           .dispatchEvent(backgroundTransitionEvent);
+        console.log("dispatching background transition");
+        // document.querySelector("#backgroundCanvas").dispatchEvent()
         whiteBackground = false;
         let yPos = p.map(percentageElapsed, 0, 1, hitPos.y, hitPosFinal.y);
         this.yPos = yPos;
@@ -1483,6 +1485,27 @@ var arrowScene = function (p) {
   //////////////////////////
   // General Helpers      //
   //////////////////////////
+
+  function setupNavigation(thisCanvas) {
+    p.noLoop();
+    thisCanvas.addEventListener("showScene", (e) => {
+      p.loop();
+      setTimeout(function () {
+        thisCanvas.style.visibility = "visible";
+        thisCanvas.style.opacity = 1;
+        isCurrentScene = true;
+        startSong();
+      }, sceneTransitionTime);
+    });
+    thisCanvas.addEventListener("hideScene", (e) => {
+      p.noLoop();
+      isCurrentScene = false;
+      thisCanvas.style.opacity = 0;
+      setTimeout(function () {
+        thisCanvas.style.visibility = "hidden";
+      }, sceneTransitionTime);
+    });
+  }
 
   function hideCanvas() {
     //Add things we want to do when we leave this scene
@@ -2961,7 +2984,7 @@ var arrowScene = function (p) {
     if (cueCount == 202) {
       let text1 = new NarrativeText(cueCount, "Win", null, 175, "hold", "pink");
       text1.animate();
-      let text2 = new NarrativeText(cueCount, "me", null, 265);
+      let text2 = new NarrativeText(cueCount, "me", null, 265, "hold");
       text2.animate();
       sendBackgroundCueEvent(cueCount);
     }
@@ -3088,7 +3111,7 @@ var arrowScene = function (p) {
 
     // Release me
     if (cueCount == 219) {
-      let text1 = new NarrativeText(cueCount, "Re", 110, 171751, null, "pink");
+      let text1 = new NarrativeText(cueCount, "Re", 110, 175, null, "pink");
       text1.animate();
       sendBackgroundCueEvent(cueCount);
     }
@@ -3121,4 +3144,4 @@ var arrowScene = function (p) {
   }
 };
 
-new p5(arrowScene, "experimental-canvas-container");
+new p5(experimentalScene, "experimental-canvas-container");

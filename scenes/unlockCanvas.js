@@ -42,6 +42,8 @@ var unlock = function (p) {
 
   let bottomText = bottomTextOptions.default;
 
+  let enterPressed = false;
+
   p.preload = function () {
     codeGlowImg = p.loadImage("assets/code-glow.png");
   };
@@ -172,7 +174,8 @@ var unlock = function (p) {
           if (numCompleted == 5) {
             // Unlock service mode
             setTimeout(function () {
-              transitionToServiceMode();
+              // transitionToServiceMode();
+              transitionToExperimentalScene();
             }, 4000);
           } else {
             //Go back to STATS SCENE
@@ -249,9 +252,11 @@ var unlock = function (p) {
 
         //Transition to Terminal mode
 
-        transitionToServiceMode();
+        // transitionToServiceMode();
+        transitionToExperimentalScene();
       } else {
         // ACCESS DENIED: Go back to song selector
+        sound_fx.error.start();
         bottomText = bottomTextOptions.denied;
         codeIndex++;
 
@@ -287,10 +292,32 @@ var unlock = function (p) {
       serviceModeCanvas.dispatchEvent(showSceneEvent);
     }, 11000);
   }
+
+  function transitionToExperimentalScene() {
+    glows.forEach(function (glow) {
+      glow.growAnimation();
+    });
+    setTimeout(function () {
+      document.querySelector("#backgroundCanvas").dispatchEvent(hideSceneEvent);
+    }, 2000);
+    setTimeout(function () {
+      unlockCanvas.dispatchEvent(hideSceneEvent);
+    }, 5000);
+    setTimeout(function () {
+      let experimentalCanvas = document.querySelector("#experimentalCanvas");
+      experimentalCanvas.dispatchEvent(showSceneEvent);
+    }, 11000);
+  }
   function backToSongSelector() {
-    let songSelectorCanvas = document.querySelector("#songSelectorCanvas");
-    songSelectorCanvas.dispatchEvent(showSceneEvent);
-    unlockCanvas.dispatchEvent(hideSceneEvent);
+    if (!enterPressed) {
+      enterPressed = true;
+      let songSelectorCanvas = document.querySelector("#songSelectorCanvas");
+      songSelectorCanvas.dispatchEvent(showSceneEvent);
+      unlockCanvas.dispatchEvent(hideSceneEvent);
+      setTimeout(function () {
+        enterPressed = false;
+      }, sceneTransitionTime);
+    }
   }
 
   function handleInput(keyCode) {
@@ -346,12 +373,14 @@ var unlock = function (p) {
     return keyCode;
   }
   window.addEventListener("padPress", function (e) {
-    let direction = e.detail.direction;
-    handleInput(directionToKeycode(direction));
+    if (isCurrentScene) {
+      let direction = e.detail.direction;
+      handleInput(directionToKeycode(direction));
+    }
   });
   window.addEventListener("padRelease", function (e) {
-    let direction = e.detail.direction;
-    handleInput(directionToKeycode(direction));
+    // let direction = e.detail.direction;
+    // handleInput(directionToKeycode(direction));
   });
 
   window.addEventListener("keydown", function (e) {

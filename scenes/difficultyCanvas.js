@@ -39,7 +39,7 @@ var difficulty = function (p) {
 
     menuItems = [
       new menuItem("Easy", null, 80, selectDifficulty),
-      new menuItem("Normal", null, 160, selectDifficulty),
+      new menuItem("Medium", null, 160, selectDifficulty),
       new menuItem("Hard", null, 240, selectDifficulty),
     ];
 
@@ -109,8 +109,8 @@ var difficulty = function (p) {
     if (option == "Easy") {
       storyModeDifficulty = "Easy";
     }
-    if (option == "Normal") {
-      storyModeDifficulty = "Normal";
+    if (option == "Medium") {
+      storyModeDifficulty = "Medium";
     }
     if (option == "Hard") {
       storyModeDifficulty = "Hard";
@@ -122,6 +122,7 @@ var difficulty = function (p) {
     console.log("select difficulty action");
     //Hide this canvas
     difficultyCanvas.dispatchEvent(hideSceneEvent);
+    sound_fx.select.start();
 
     //Test service mode
 

@@ -158,9 +158,14 @@ var background = function (p) {
     });
 
     thisCanvas.addEventListener("backgroundTransition", (e) => {
-      let canvasToShow = document.querySelector("#backgroundCanvas");
-      canvasToShow.style.display = "block";
-      canvasToShow.style.opacity = 1;
+      console.log("receiving backgroundTransition");
+      // thisCanvas = document.querySelector("#backgroundCanvas");
+      thisCanvas.style.transition = "none";
+      thisCanvas.style.visibility = "visible";
+      thisCanvas.style.opacity = 1;
+      shaderType = "mainGlow";
+      p.loop();
+      // thisCanvas.style.opacity = 1;
       percentageElapsed = e.detail;
       transitionStarted = 1;
     });

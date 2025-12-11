@@ -31,7 +31,7 @@ canvas, video {
   transition: opacity 1s;
 }
 
-video, #tutorial, #difficultyCanvas, #songSelectorCanvas, #mainSongCanvas, #revelationCanvas, #unlockCanvas, #scoreCanvas, #gateCanvas, #serviceModeCanvas{
+video, #tutorial, #difficultyCanvas, #songSelectorCanvas, #mainSongCanvas, #revelationCanvas, #unlockCanvas, #scoreCanvas, #gateCanvas, #serviceModeCanvas, #experimentalCanvas{
   opacity:0;
   visibility:hidden;
 }
@@ -65,11 +65,11 @@ audio{
     image-rendering:pixelated;
 }
 
-#arrowCanvas{
+/* #experimentalCanvas{
   display:none;
   opacity:0;
   transition: 3s opacity;
-}
+} */
 
 /* #titleCanvas{
   opacity:1;

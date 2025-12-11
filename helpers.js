@@ -194,7 +194,7 @@ const sceneTransitionTime = 1000;
 // Background, title, tutorial, difficulty, songSelector, mainSong, revelation, unlockCanvas, scoreCanvas, experimental, gates, service mode
 let totalCanvases = 11; // remove tutorial
 
-let storyModeDifficulty = "Normal";
+let storyModeDifficulty = "Medium";
 
 let globalClock = new Tone.Clock((time) => {}, 1);
 
@@ -204,6 +204,8 @@ let sound_fx = {
   eggCrack: new Tone.Player(`/assets/fx/egg-crack.mp3`).toDestination(),
   doorShut: new Tone.Player(`/assets/fx/door-shut.mp3`).toDestination(),
   menuChange: new Tone.Player(`/assets/fx/house_stab.wav`).toDestination(),
+  error: new Tone.Player(`/assets/fx/error.mp3`).toDestination(),
+  select: new Tone.Player(`/assets/fx/select.wav`).toDestination(),
 };
 
 let songList = [

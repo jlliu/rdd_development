@@ -24,6 +24,8 @@ var score = function (p) {
 
   let padSelectTimer = null;
 
+  let enterPressed = false;
+
   p.preload = function () {};
 
   p.setup = function () {
@@ -62,7 +64,7 @@ var score = function (p) {
         );
 
         //Draw Ranking
-        drawText(scoreData.ranking, "pink", 1, 50, 50);
+        drawText(scoreData.ranking, "pink", 1, 30, 50);
 
         // Draw total
         displayNumberWithLeadingZeros(
@@ -218,15 +220,23 @@ var score = function (p) {
   }
 
   function goToNextScene() {
-    //Navigate back to song selector
-    document.querySelector("#songSelectorCanvas").dispatchEvent(showSceneEvent);
-    scoreCanvas.dispatchEvent(hideSceneEvent);
+    if (!enterPressed) {
+      enterPressed = true;
+      //Navigate back to song selector
+      document
+        .querySelector("#songSelectorCanvas")
+        .dispatchEvent(showSceneEvent);
+      scoreCanvas.dispatchEvent(hideSceneEvent);
 
-    //Reset score stuff
-    setTimeout(function () {
-      scoreSetup = false;
-      scoreData = null;
-    }, sceneTransitionTime);
+      sound_fx.select.start();
+
+      //Reset score stuff
+      setTimeout(function () {
+        scoreSetup = false;
+        scoreData = null;
+        enterPressed = false;
+      }, sceneTransitionTime);
+    }
   }
 
   function handleInput(keyCode) {

@@ -44,6 +44,8 @@ var title = function (p) {
 
   let padSelectTimer = null;
 
+  let isDemo = true;
+
   // Setup all fonts in this file
   let fontsToLoad = [
     "mainYellow",
@@ -251,26 +253,32 @@ var title = function (p) {
   }
 
   function enterGame() {
-    //Display menu for the first time
-    menuVisible = true;
-    //Create stagggered animation for menu items
-    let menuItemToAnimate = 0;
-    let menuItemStaggerTimer = setInterval(function () {
-      menuItems[menuItemToAnimate].startAnimation();
-      menuItemToAnimate++;
-      if (menuItems[menuItemToAnimate] == null) {
-        clearInterval(menuItemStaggerTimer);
-      }
-    }, 150);
+    //Skip to difficulty if this is the demo mode
+    if (isDemo) {
+      sound_fx.select.start();
+      startStoryMode();
+    } else {
+      //Display menu for the first time
+      menuVisible = true;
+      //Create stagggered animation for menu items
+      let menuItemToAnimate = 0;
+      let menuItemStaggerTimer = setInterval(function () {
+        menuItems[menuItemToAnimate].startAnimation();
+        menuItemToAnimate++;
+        if (menuItems[menuItemToAnimate] == null) {
+          clearInterval(menuItemStaggerTimer);
+        }
+      }, 150);
 
-    // Create timer for animation menu overlay and text
-    let menuFadeInterval = setInterval(function () {
-      menuAnimationTimer += 0.2;
-      if (menuAnimationTimer >= 1.0) {
-        clearInterval(menuFadeInterval);
-        menuAnimationTimer = 1.0;
-      }
-    }, 30);
+      // Create timer for animation menu overlay and text
+      let menuFadeInterval = setInterval(function () {
+        menuAnimationTimer += 0.2;
+        if (menuAnimationTimer >= 1.0) {
+          clearInterval(menuFadeInterval);
+          menuAnimationTimer = 1.0;
+        }
+      }, 30);
+    }
   }
 
   function selectCurrentOption() {

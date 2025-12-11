@@ -45,6 +45,8 @@ var songSelector = function (p) {
 
   let padSelectTimer = null;
 
+  let enterPressed = false;
+
   p.preload = function () {
     songBannersSpritesheet = p.loadImage("/songAssets/songBanners.png");
     songCdsSpritesheet = p.loadImage("/songAssets/songCds.png");
@@ -100,7 +102,7 @@ var songSelector = function (p) {
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
       drawImageToScale(songSelectionInstructionsImg, 0, 0);
-      drawText(`${storyModeDifficulty} Mode`, "smallYellow", 1, null, 60);
+      drawText(`${storyModeDifficulty}`, "smallYellow", 1, null, 20);
 
       drawMenu();
 
@@ -108,7 +110,7 @@ var songSelector = function (p) {
       drawImageToScale(
         currentSongBanner,
         320 - (currentSongBanner.width * 0.9) / 2,
-        100,
+        90,
         0.9
       );
       if (Math.floor(globalClock.seconds) % 2 == 0) {
@@ -153,44 +155,52 @@ var songSelector = function (p) {
   });
 
   function selectSong(songId) {
-    console.log("selecting song: " + songList[songId].title);
-    if (songId == 5) {
-      // Show unlock mode for ???
-      let showUnlockFromSongSelector = new CustomEvent("showScene", {
-        detail: {
-          prevScene: "songSelector",
-        },
-      });
-      document
-        .querySelector("#unlockCanvas")
-        .dispatchEvent(showUnlockFromSongSelector);
-      songSelectorCanvas.dispatchEvent(hideSceneEvent);
-    } else {
-      // Show normal songs
-      songPreviewPlayer.stop();
-
-      songSelectorCanvas.dispatchEvent(hideSceneEvent);
-
-      document.querySelector("#backgroundCanvas").dispatchEvent(hideSceneEvent);
-
-      // Show gate transition
-      let showGateEvent = new CustomEvent("showScene", {
-        detail: {
-          gateId: songId,
-        },
-      });
-      document.querySelector("#gateCanvas").dispatchEvent(showGateEvent);
-
-      setTimeout(function () {
-        let selectSongEvent = new CustomEvent("showScene", {
+    if (!enterPressed) {
+      sound_fx.select.start();
+      enterPressed = true;
+      console.log("selecting song: " + songList[songId].title);
+      if (songId == 5) {
+        // Show unlock mode for ???
+        let showUnlockFromSongSelector = new CustomEvent("showScene", {
           detail: {
-            songId: songId,
+            prevScene: "songSelector",
           },
         });
         document
-          .querySelector("#mainSongCanvas")
-          .dispatchEvent(selectSongEvent);
-      }, 4000);
+          .querySelector("#unlockCanvas")
+          .dispatchEvent(showUnlockFromSongSelector);
+        songSelectorCanvas.dispatchEvent(hideSceneEvent);
+      } else {
+        //Selecting medium song
+
+        songPreviewPlayer.stop();
+
+        songSelectorCanvas.dispatchEvent(hideSceneEvent);
+
+        document
+          .querySelector("#backgroundCanvas")
+          .dispatchEvent(hideSceneEvent);
+
+        // Show gate transition
+        let showGateEvent = new CustomEvent("showScene", {
+          detail: {
+            gateId: songId,
+          },
+        });
+        document.querySelector("#gateCanvas").dispatchEvent(showGateEvent);
+
+        setTimeout(function () {
+          let selectSongEvent = new CustomEvent("showScene", {
+            detail: {
+              songId: songId,
+            },
+          });
+          document
+            .querySelector("#mainSongCanvas")
+            .dispatchEvent(selectSongEvent);
+          enterPressed = false;
+        }, 4000);
+      }
     }
   }
 
@@ -214,20 +224,24 @@ var songSelector = function (p) {
     console.log("changing difficulty");
     console.log("difficulty is originally: " + storyModeDifficulty);
     if (direction == "up") {
-      if (storyModeDifficulty == "Normal") {
+      if (storyModeDifficulty == "Medium") {
         storyModeDifficulty = "Easy";
         sound_fx.menuChange.start();
       } else if (storyModeDifficulty == "Hard") {
-        storyModeDifficulty = "Normal";
+        storyModeDifficulty = "Medium";
         sound_fx.menuChange.start();
+      } else if (storyModeDifficulty == "Easy") {
+        sound_fx.error.start();
       }
     } else if (direction == "down") {
       if (storyModeDifficulty == "Easy") {
-        storyModeDifficulty = "Normal";
+        storyModeDifficulty = "Medium";
         sound_fx.menuChange.start();
-      } else if (storyModeDifficulty == "Normal") {
+      } else if (storyModeDifficulty == "Medium") {
         storyModeDifficulty = "Hard";
         sound_fx.menuChange.start();
+      } else if (storyModeDifficulty == "Hard") {
+        sound_fx.error.start();
       }
     }
   }

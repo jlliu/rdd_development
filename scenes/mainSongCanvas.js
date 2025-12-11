@@ -388,7 +388,7 @@ var mainScene = function (p) {
     } else if (storyModeDifficulty == "Hard") {
       thisSongData = JSON.parse(songList[songId].songData.hard);
     } else {
-      thisSongData = JSON.parse(songList[songId].songData.normal);
+      thisSongData = JSON.parse(songList[songId].songData.medium);
     }
     measureData = thisSongData.measureData;
     if (songList[songId].bpmChanges != null) {
@@ -853,13 +853,14 @@ var mainScene = function (p) {
     hasBpmChanges = false;
     bpmChanges = [];
     hasStops = false;
+    comboObj = new ComboText();
   }
 
   function padOrKeypress(direction) {
     if (isCurrentScene) {
       let hitSuccessful = false;
       if (Tone.Transport.state == "started") {
-        let hitSuccessful = assessHit(direction, "press");
+        hitSuccessful = assessHit(direction, "press");
       }
       hitArrowObjs[direction].press(hitSuccessful);
     }
@@ -1194,22 +1195,24 @@ var mainScene = function (p) {
       let scoreDigitLength = this.scoreCount.toString().length;
       let numOfZeros = 7 - scoreDigitLength;
       let zerosString = "";
+
+      let letterWidth = 24;
       for (var i = 0; i < numOfZeros; i++) {
         zerosString += "0";
       }
 
       // Draw zeros
       p.tint(255, 100);
-      drawText(zerosString, "mainYellow", 1, 30, 400);
+      drawText(zerosString, "smallYellow", 1, 30, 430);
       p.tint(255, 255);
 
       // Draw actual score
       drawText(
         this.scoreCount.toString(),
-        "mainYellow",
+        "smallYellow",
         1,
-        30 + numOfZeros * 40,
-        400
+        30 + numOfZeros * letterWidth,
+        430
       );
     }
   }
