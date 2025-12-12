@@ -242,7 +242,7 @@ let songList = [
     ).toDestination(),
     sampleStart: 19,
     sampleLength: 17,
-    videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
+    videoUrl: `/songAssets/Backgrounds/fawning_video.mp4`,
     cleared: false,
     scores: [],
   },
@@ -257,7 +257,7 @@ let songList = [
     ).toDestination(),
     sampleStart: 45.0,
     sampleLength: 15.0,
-    videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
+    videoUrl: `/songAssets/Backgrounds/breadcrumbs_video.mp4`,
     cleared: false,
     scores: [],
     //Beat is beat bpm change starts on, then length of stop in seconds
@@ -299,7 +299,7 @@ let songList = [
     songPlayer: new Tone.Player(`/songAssets/Music/void.mp3`).toDestination(),
     sampleStart: 25,
     sampleLength: 12.0,
-    videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
+    videoUrl: `/songAssets/Backgrounds/void_video.mp4`,
     cleared: false,
     scores: [],
     //Beat is beat bpm change starts on, then length of stop in seconds
