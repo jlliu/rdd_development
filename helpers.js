@@ -214,6 +214,9 @@ const menu_track_player = new Tone.Player(
 menu_track_player.loop = true;
 menu_track_player.fadeIn = 2;
 menu_track_player.fadeOut = 0.5;
+menu_track_player.volume.value = -15;
+
+menu_track_player.autostart = true;
 
 let songList = [
   {

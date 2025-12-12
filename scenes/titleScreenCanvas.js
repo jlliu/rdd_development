@@ -9,6 +9,7 @@ const audioCtx = new AudioContext();
 // title_player.loop = true;
 // title_player.volume.value = -5;
 // title_player.fadeOut = 4;
+console.log(audioCtx.state);
 
 function startSong() {
   title_player.stop();
@@ -256,7 +257,8 @@ var title = function (p) {
     //Skip to difficulty if this is the demo mode
     if (isDemo) {
       sound_fx.select.start();
-      menu_track_player.start();
+      // menu_track_player.start();
+      menu_track_player.volume.value = 0;
       startStoryMode();
     } else {
       //Display menu for the first time
