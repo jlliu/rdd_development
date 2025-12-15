@@ -50,6 +50,9 @@ var mainScene = function (p) {
   let songDelay;
   let secondsPerBeat;
   let stops;
+  let hasBpmChanges = false;
+  let bpmChanges = [];
+  let hasStops = false;
 
   let hitArrowObjs = {};
   let feedbackObj;
@@ -68,9 +71,15 @@ var mainScene = function (p) {
 
   let hitMargin = 0.4 * pixelsPerBeat;
 
+  let hitMarginTime = 0.5;
+
   // let clock = new Tone.Clock((time) => {}, 1);
 
-  let delayClock = new Tone.Clock((time) => {}, 1);
+  // let stopClock = new Tone.Clock((time) => {
+  //   // console.log(time);
+  // }, 1);
+
+  let secondsSinceStop = 0;
 
   // let clock = Tone.Transport((time) => {}, 1);
 
@@ -78,10 +87,6 @@ var mainScene = function (p) {
 
   let songVideo;
   let videoLoadedFirstTime = false;
-
-  let hasBpmChanges = false;
-  let bpmChanges = [];
-  let hasStops = false;
 
   p.preload = function () {
     //Preload a background here
@@ -182,7 +187,7 @@ var mainScene = function (p) {
       songVideo.src = songList[songId].videoUrl;
       songVideo.load();
       songVideo.loop = true;
-      console.log("show scene");
+      // console.log("show scene");
       songVideo.addEventListener("canplaythrough", setupSongIntro, false);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
@@ -405,6 +410,8 @@ var mainScene = function (p) {
     scoreData.totalNotes = thisSongData.totalNotes;
     scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
+    setHitMarginTime();
+    console.log("hitMarginTime is " + hitMarginTime);
     // hitMargin =  pixelsPerBeat * songBpm(/200);
 
     //For negative songDelays, start song before notes
@@ -463,6 +470,7 @@ var mainScene = function (p) {
             secondsPerBeat = 1 / (songBpm / 60);
             currentBpmStartBeat = change.beat;
             currentBpmChangeTime = change.changeTime;
+            setHitMarginTime();
             // hitMargin = songBpm;
           }, change.changeTime);
         });
@@ -478,9 +486,21 @@ var mainScene = function (p) {
           let stopLength = stop.length;
           Tone.Transport.scheduleOnce((time) => {
             Tone.Transport.pause();
-            // delayClock.start()
+            let stopInterval = setInterval(function () {
+              secondsSinceStop += 0.01;
+            }, 10);
+
+            setTimeout(function () {
+              // stopClock.stop();
+
+              passOverNotesOnStop();
+            }, hitMarginTime * 1000);
+
             setTimeout(function () {
               Tone.Transport.start();
+              console.log("clearing stop interval");
+              clearInterval(stopInterval);
+              secondsSinceStop = 0;
             }, stopLength * 1000);
           }, stopTime);
         });
@@ -493,42 +513,103 @@ var mainScene = function (p) {
     }
   }
 
-  // calculate the transport time given current beat, factoring in bpm changes
-  function beatToTime(inputBeat) {
-    let totalTime = 0;
-
-    bpmChanges.forEach(function (change, index) {
-      // First check, is beat within this interval? Then add partial time. Otherwise at the whole time
-
-      // Case 1: Beat is within this interval... either because it's the last one or not....
-
+  function passOverNotesOnStop() {
+    //after delay on stop, go through the ones that are note hit and make them pass over, and update it as a miss
+    relevantNotes.forEach(function (note) {
       if (
-        (inputBeat >= change.beat && inputBeat < change.endBeat) ||
-        (inputBeat >= change.beat && change.endBeat == null)
+        isPassedHitBoundary(note.currentY) &&
+        !note.isHit &&
+        !note.hasPassedOver
       ) {
-        let beatsElapsedInInterval = inputBeat - change.beat;
-        let timeElapsedInInterval =
-          beatsElapsedInInterval * change.secondsPerBeat;
-        totalTime += timeElapsedInInterval;
-      } else if (inputBeat < change.beat) {
-        // Case 2 : Beat is before  this interval, don't do anything
-      } else if (inputBeat > change.beat) {
-        //Case 3: Beat is after this interval
-        let beatsElapsedInInterval = change.endBeat - change.beat;
-        let timeElapsedInInterval =
-          beatsElapsedInInterval * change.secondsPerBeat;
-        totalTime += timeElapsedInInterval;
+        note.hasPassedOver = true;
+        updateMiss("miss", note);
       }
     });
+  }
+  // calculate the transport time given current beat, factoring in bpm changes
+  function beatToTime(inputBeat) {
+    if (inputBeat && hasBpmChanges) {
+      let totalTime = 0;
 
-    return totalTime;
+      bpmChanges.forEach(function (change, index) {
+        // First check, is beat within this interval? Then add partial time. Otherwise at the whole time
+
+        // Case 1: Beat is within this interval... either because it's the last one or not....
+
+        if (
+          (inputBeat >= change.beat && inputBeat < change.endBeat) ||
+          (inputBeat >= change.beat && change.endBeat == null)
+        ) {
+          let beatsElapsedInInterval = inputBeat - change.beat;
+          let timeElapsedInInterval =
+            beatsElapsedInInterval * change.secondsPerBeat;
+          totalTime += timeElapsedInInterval;
+        } else if (inputBeat < change.beat) {
+          // Case 2 : Beat is before  this interval, don't do anything
+        } else if (inputBeat > change.beat) {
+          //Case 3: Beat is after this interval
+          let beatsElapsedInInterval = change.endBeat - change.beat;
+          let timeElapsedInInterval =
+            beatsElapsedInInterval * change.secondsPerBeat;
+          totalTime += timeElapsedInInterval;
+        }
+      });
+      return totalTime;
+    } else if (inputBeat && !hasBpmChanges) {
+      let time = inputBeat * secondsPerBeat;
+      return time;
+    } else {
+      return null;
+    }
   }
   //Create arrows takes the relevant notes array and then creates objects for them
+
+  //Note: how would we evaluate it on time instead of distance?
+  //When reading the notes, pre-process to calculate the time on the transport that it should start (and end, for holds....)
+  // Or we can just edit it for the stops...
+
+  //Note: How do we asssess when notes are hit or not with stops?
+  //We assign a timed delay to when the stop happens. After that timed delay, any notes that are currently at the hit bar while the stop is happening will be set to
+  // "passed over"... and !isHit..
+  // Until we refactor all the arrow timings to use the transport (idk if this would work well...), we will create a timeout when the stop happens.
+  // That timeout will go through and set current arrows to be passed over
+
+  function setHitMarginTime() {
+    hitMarginTime = secondsPerBeat / 2;
+  }
+  function isWithinHitMargin(yPos) {
+    return (
+      yPos >= hitArrowObjs["left"].yPos - hitMargin &&
+      yPos <= hitArrowObjs["left"].yPos + hitMargin
+    );
+  }
+
+  function isPassedHitMarginTime(note) {
+    let currentTime = Tone.Transport.seconds;
+    return currentTime >= note.startTime + hitMarginTime;
+  }
+
+  function isPassedTime(time) {
+    let currentTime = Tone.Transport.seconds;
+    return currentTime >= time;
+  }
+
+  function isWithinHitMarginTime(note) {
+    let currentTime = Tone.Transport.seconds;
+    return (
+      currentTime >= note.startTime - hitMarginTime &&
+      currentTime <= note.startTime + hitMarginTime
+    );
+  }
+
+  function isPassedHitBoundary(yPos) {
+    return yPos <= hitArrowObjs["left"].yPos;
+  }
 
   function drawArrows() {
     relevantNotes.forEach(function (note) {
       let direction = note.direction;
-      let passedOver = false;
+      // let passedOver = false;
 
       // Get current y position: yPos is where the start of the note is currently on the p5 canvas
 
@@ -564,20 +645,15 @@ var mainScene = function (p) {
 
       // Should this arrow be considered as a hit candidate?
       if (Tone.Transport.state == "started") {
-        if (
-          yPos >= hitArrowObjs["left"].yPos - hitMargin &&
-          yPos <= hitArrowObjs["left"].yPos + hitMargin
-        ) {
-          console.log("note is hit candidate");
+        if (isWithinHitMarginTime(note)) {
+          // console.log("note is hit candidate");
           //Note within our hit window!
           note.isHitCandidate = true;
-
-          //idea: don't let it be passed over if clock is paused
-        } else if (yPos < hitArrowObjs["left"].yPos - hitMargin) {
-          passedOver = true;
+        } else if (isPassedHitMarginTime(note)) {
+          // passedOver = true;
 
           //The note is passed over for the first time! THIS IS A MISS....
-          if (note.hasPassedOver == null) {
+          if (!note.hasPassedOver) {
             note.hasPassedOver = true;
             //If it's first time passing over a NOT hit note, reset combo
             if (!note.isHit && note.noteType != "mine") {
@@ -592,14 +668,21 @@ var mainScene = function (p) {
           pixelsPerBeat * note.endBeat -
           pixelsElapsed;
         if (
-          end_yPos < hitArrowObjs["left"].yPos &&
+          isPassedTime(note.endTime) &&
+          //end_yPos < hitArrowObjs["left"].yPos &&
           note.isHolding &&
           !note.completedHold
         ) {
           updateHit("ok", note);
         }
+      } else if (Tone.Transport.state == "paused") {
+        // case: we're at a stop and hitting a note right on the beat
+        if (isWithinHitMarginTime(note)) {
+          note.isHitCandidate = true;
+        }
       }
-      note.display(yPos, passedOver);
+
+      note.display(yPos);
     });
   }
 
@@ -695,8 +778,6 @@ var mainScene = function (p) {
   function updateHit(score, note) {
     //Is this the first time hitting this note?
     if (!note.isHit && note.noteType != "mine") {
-      console.log("UPDATE HIT");
-      console.log(note.noteType);
       comboObj.incrementCombo();
       note.isHit = true;
       let scoreScale = 1;
@@ -721,111 +802,118 @@ var mainScene = function (p) {
     if (note.noteType == "hold" && !note.isHolding) {
       note.isHolding = true;
       note.completedHold = false;
-    } else {
+    } else if (note.noteType == "hold" && note.isHolding) {
       note.isHolding = false;
       note.completedHold = true;
+    }
+  }
+
+  function assessHitForNoteByTime(direction, hitType, note, isStopped) {
+    //Assess notes that are the START of either instant or holds
+    let hitTime;
+    if (isStopped) {
+      hitTime = Tone.Transport.seconds + secondsSinceStop;
+    } else {
+      hitTime = Tone.Transport.seconds;
+    }
+    if (
+      hitType == "press" &&
+      note.isHitCandidate &&
+      note.direction == direction &&
+      !note.isHit
+    ) {
+      //TOO Early - failed
+      if (
+        hitTime > note.startTime - hitMarginTime &&
+        hitTime < note.startTime - (hitMarginTime * 3) / 4
+      ) {
+        updateMiss("early", note);
+      }
+      // A little early - Ok - PASS
+      else if (
+        hitTime >= note.startTime - (hitMarginTime * 3) / 4 &&
+        hitTime < note.startTime - (hitMarginTime * 2) / 4
+      ) {
+        updateHit("ok", note);
+        hitSuccessful = true;
+      }
+      // Almost perfect - early
+      else if (
+        hitTime >= note.startTime - (hitMarginTime * 2) / 4 &&
+        hitTime < note.startTime - hitMarginTime / 4
+      ) {
+        updateHit("great", note);
+        hitSuccessful = true;
+      }
+      // Perfect - PASS
+      else if (
+        hitTime >= note.startTime - hitMarginTime / 4 &&
+        hitTime < note.startTime + hitMarginTime / 4
+      ) {
+        updateHit("perfect", note);
+        hitSuccessful = true;
+      }
+      // Almost perfect - late - PASS
+      else if (
+        hitTime >= note.startTime + hitMarginTime / 4 &&
+        hitTime < note.startTime + (hitMarginTime * 2) / 4
+      ) {
+        updateHit("great", note);
+        hitSuccessful = true;
+      }
+      // A little late - OK - PASS
+      else if (
+        hitTime >= note.startTime + (hitMarginTime * 2) / 4 &&
+        hitTime < note.startTime + (hitMarginTime * 3) / 4
+      ) {
+        updateHit("ok", note);
+        hitSuccessful = true;
+      }
+      // TOO LATE - Failed
+      else if (
+        hitTime >= note.startTime + (hitMarginTime * 3) / 4 &&
+        hitTime < note.startTime + hitMarginTime
+      ) {
+        updateMiss("late", note);
+      }
+    }
+    //Assess notes that are currently being held. Did we lift before it's over or not?
+    // AKA did we lift before the END beat for the held note is here or not....
+    else if (
+      hitType == "lift" &&
+      note.noteType == "hold" &&
+      note.isHolding &&
+      note.direction == direction
+    ) {
+      // get the y pos of the end of the note
+      // let yPos =
+      //   note.currentY + (note.endBeat - note.startBeat) * pixelsPerBeat;
+      note.releasedBeat = currentBeat;
+
+      // Lift is at most Margin amount before the end of the end Time
+      if (hitTime >= note.endTime - hitMarginTime) {
+        updateHit("ok", note);
+      }
+
+      // Lift is TOO EARLY - Failed
+      else if (hitTime < note.endTime - hitMarginTime) {
+        feedbackObj.updateState("early");
+        note.isHolding = false;
+        note.completedHold = false;
+      }
     }
   }
 
   function assessHit(direction, hitType) {
     let hitSuccessful = false;
     relevantNotes.forEach(function (note) {
-      //Assess notes that are the START of either instant or holds
-      if (
-        hitType == "press" &&
-        note.isHitCandidate &&
-        note.direction == direction &&
-        !note.isHit
+      if (Tone.Transport.state == "started") {
+        assessHitForNoteByTime(direction, hitType, note);
+      } else if (
+        Tone.Transport.state == "paused" &&
+        isPassedHitBoundary(note.currentY)
       ) {
-        console.log("assessing hit");
-        let yPos = note.currentY;
-
-        //Determine quality of hit
-        //TOO LATE - failed
-        if (
-          yPos > hitArrowObjs["left"].yPos - hitMargin &&
-          yPos < hitArrowObjs["left"].yPos - (hitMargin * 3) / 4
-        ) {
-          updateMiss("late", note);
-        }
-        // A little late - Ok - PASS
-        else if (
-          yPos >= hitArrowObjs["left"].yPos - (hitMargin * 3) / 4 &&
-          yPos < hitArrowObjs["left"].yPos - (hitMargin * 2) / 4
-        ) {
-          updateHit("ok", note);
-          hitSuccessful = true;
-        }
-        // Almost perfect - late
-        else if (
-          yPos >= hitArrowObjs["left"].yPos - (hitMargin * 2) / 4 &&
-          yPos < hitArrowObjs["left"].yPos - hitMargin / 4
-        ) {
-          updateHit("great", note);
-          hitSuccessful = true;
-        }
-        // Perfect - PASS
-        else if (
-          yPos >= hitArrowObjs["left"].yPos - hitMargin / 4 &&
-          yPos < hitArrowObjs["left"].yPos + hitMargin / 4
-        ) {
-          updateHit("perfect", note);
-          hitSuccessful = true;
-        }
-        // Almost perfect - late - PASS
-        else if (
-          yPos >= hitArrowObjs["left"].yPos + hitMargin / 4 &&
-          yPos < hitArrowObjs["left"].yPos + (hitMargin * 2) / 4
-        ) {
-          updateHit("great", note);
-          hitSuccessful = true;
-        }
-        // A little early - OK - PASS
-        else if (
-          yPos >= hitArrowObjs["left"].yPos + (hitMargin * 2) / 4 &&
-          yPos < hitArrowObjs["left"].yPos + (hitMargin * 3) / 4
-        ) {
-          updateHit("ok", note);
-          hitSuccessful = true;
-        }
-        // TOO EARLY - Failed
-        else if (
-          yPos >= hitArrowObjs["left"].yPos + (hitMargin * 3) / 4 &&
-          yPos < hitArrowObjs["left"].yPos + hitMargin
-        ) {
-          updateMiss("early", note);
-        }
-      }
-      //Assess notes that are currently being held. Did we lift before it's over or not?
-      // AKA did we lift before the END beat for the held note is here or not....
-      else if (
-        hitType == "lift" &&
-        note.noteType == "hold" &&
-        note.isHolding &&
-        note.direction == direction
-      ) {
-        // get the y pos of the end of the note
-        let yPos =
-          note.currentY + (note.endBeat - note.startBeat) * pixelsPerBeat;
-        note.releasedBeat = currentBeat;
-
-        // Lift is in range PASS
-        if (
-          yPos >= hitArrowObjs["left"].yPos - Infinity &&
-          yPos < hitArrowObjs["left"].yPos + 40
-        ) {
-          updateHit("ok", note);
-        }
-
-        // Lift is TOO EARLY - Failed
-        else if (
-          yPos >= hitArrowObjs["left"].yPos + 40 &&
-          yPos < hitArrowObjs["left"].yPos + Infinity
-        ) {
-          feedbackObj.updateState("early");
-          note.isHolding = false;
-          note.completedHold = false;
-        }
+        assessHitForNoteByTime(direction, hitType, note, true);
       }
     });
     return hitSuccessful;
@@ -854,14 +942,15 @@ var mainScene = function (p) {
     bpmChanges = [];
     hasStops = false;
     comboObj = new ComboText();
+    Tone.Transport.cancel();
   }
 
   function padOrKeypress(direction) {
     if (isCurrentScene) {
       let hitSuccessful = false;
-      if (Tone.Transport.state == "started") {
-        hitSuccessful = assessHit(direction, "press");
-      }
+      // if (Tone.Transport.state == "started") {
+      hitSuccessful = assessHit(direction, "press");
+      // }
       hitArrowObjs[direction].press(hitSuccessful);
     }
   }
@@ -949,24 +1038,26 @@ var mainScene = function (p) {
     constructor(noteData) {
       this.id = noteData.id;
       this.direction = noteData.direction;
-      this.startBeat = noteData.startBeat;
-      this.startTime = noteData.startTime;
       this.noteType = noteData.noteType;
       this.measure = noteData.measure;
-      this.endTime = noteData.endTime;
       this.endBeat = noteData.endBeat;
+      this.startBeat = noteData.startBeat;
+      this.startTime = beatToTime(this.startBeat);
+      this.endTime = beatToTime(this.endBeat);
       this.endMeasure = noteData.endMeasure;
       this.eggshellSceneOpacity = 0;
+      this.hasPassedOver = false;
+      this.isHit = false;
     }
     animateEggshellCrack() {
-      console.log("aniimateEggshellCrack");
+      // console.log("aniimateEggshellCrack");
       let i = 0;
       let _this = this;
       let eggshellAnimationInterval = setInterval(function () {
-        console.log("interval step");
+        // console.log("interval step");
         if (i < Object.keys(arrowHitGradientTimings).length) {
           _this.eggshellSceneOpacity = arrowHitGradientTimings[i];
-          console.log(_this.eggshellSceneOpacity);
+          // console.log(_this.eggshellSceneOpacity);
         } else {
           _this.eggshellSceneOpacity = 0;
           clearInterval(eggshellAnimationInterval);
@@ -974,29 +1065,29 @@ var mainScene = function (p) {
         i++;
       }, 30);
     }
-    display(yPos, passedOver) {
+    display(yPos) {
+      // First, determine if we're currently at a stop... if so , unhit notes should not go over the original yPos
+      if (
+        Tone.Transport.state != "started" &&
+        yPos < hitArrowObjs["left"].yPos &&
+        // !this.hasPassedOver &&
+        isWithinHitMargin(yPos) &&
+        !this.isHit
+      ) {
+        yPos = hitArrowObjs["left"].yPos;
+      }
+
       // Draw instant notes
       if (this.noteType == "instant" && !this.isHit) {
-        if (passedOver) {
-          //Draw passed over notes greyed out
-          p.tint(255, 127);
-          drawImageToScale(
-            arrowImgs[this.direction],
-            arrow_xPos[this.direction],
-            yPos
-          );
-          p.tint(255, 255);
-        } else {
-          //Draw upcoming notes iwth rainbow
-          // p.tint(255, 0, 0);
-          // arrowImgs[note.direction].filter(p.INVERT);
-          drawImageToScale(
-            arrowImgs[this.direction],
-            arrow_xPos[this.direction],
-            yPos
-          );
-          // p.tint(255, 255, 255);
-        }
+        let opacity = this.hasPassedOver ? 127 : 255;
+        //Draw passed over notes greyed out
+        p.tint(255, opacity);
+        drawImageToScale(
+          arrowImgs[this.direction],
+          arrow_xPos[this.direction],
+          yPos
+        );
+        p.tint(255, 255);
       } else if (this.noteType == "hold") {
         // Draw holds
         let rectangleHeight;
@@ -1025,12 +1116,14 @@ var mainScene = function (p) {
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
           //   What happens? need to grey out and keep on going
+
           p.tint(255, 127);
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.releasedBeat);
           let yPosReleased =
             hitArrowObjs["left"].yPos +
             pixelsPerBeat * this.releasedBeat -
             pixelsElapsed;
+
           // Draw rectangle
           drawImageToScaleWithHeight(
             holdMiddleImg,
@@ -1056,9 +1149,8 @@ var mainScene = function (p) {
           // case 3: hit first note, held to completion... show nothing!
         } else if (!this.isHit) {
           // last case: the note is not hit, either passed over or upcoming...
-          if (passedOver) {
-            p.tint(255, 127);
-          }
+          let opacity = this.hasPassedOver ? 127 : 255;
+          p.tint(255, opacity);
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
           drawImageToScaleWithHeight(
             holdMiddleImg,
@@ -1076,32 +1168,18 @@ var mainScene = function (p) {
             arrow_xPos[this.direction],
             yPos + rectangleHeight
           );
-          if (passedOver) {
-            p.tint(255, 255);
-          }
+          p.tint(255, 255);
         }
       } else if (this.noteType == "mine" && !this.isHit) {
-        // console.log("displaying a mine");
         // Draw mines
-
-        if (passedOver) {
-          //Draw passed over notes greyed out
-          p.tint(255, 127);
-          drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
-          p.tint(255, 255);
-        } else {
-          //Draw upcoming notes iwth rainbow
-          // p.tint(255, 0, 0);
-          // arrowImgs[note.direction].filter(p.INVERT);
-          drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
-          // p.tint(255, 255, 255);
-        }
+        let opacity = this.hasPassedOver ? 127 : 255;
+        p.tint(255, opacity);
+        drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
+        p.tint(255, 255);
       }
 
       if (this.noteType == "mine" && this.eggshellSceneOpacity > 0) {
-        console.log("drawing the opacity");
         // Draw flash if eggshell opacity is hit
-
         let c = p.color(255, 255, 255);
         c.setAlpha(this.eggshellSceneOpacity * 255);
         p.fill(c);
@@ -1278,7 +1356,6 @@ var mainScene = function (p) {
       // Check for failing state, if bar goes to zero
       if (this.amountFilled <= 0) {
         console.log("FAILED");
-
         handleSongEnd(false);
       }
     }

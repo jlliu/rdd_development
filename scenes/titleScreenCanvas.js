@@ -104,15 +104,6 @@ var title = function (p) {
   p.draw = function () {
     p.clear();
 
-    // If auto is not running, display the click to start
-    if (audioCtx.state == "running") {
-      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-      enableAudioOverlay.style.display = "none";
-    } else {
-      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-      enableAudioOverlay.style.display = "flex";
-    }
-
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
       drawImageToScale(logoImg, 94, 176);
