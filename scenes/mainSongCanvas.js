@@ -21,13 +21,17 @@ var mainScene = function (p) {
   let songId = 0;
 
   let hitArrowImgs;
-  let hitPos = { x: 160, y: 50 };
+  let arrowWidth = 64;
+  let hitPos = { x: 16, y: 56 };
   let arrow_xPos = {
-    left: 160,
-    down: 160 + 80,
-    up: 160 + 80 * 2,
-    right: 160 + 80 * 3,
+    left: hitPos.x,
+    down: hitPos.x + arrowWidth,
+    up: hitPos.x + arrowWidth * 2,
+    right: hitPos.x + arrowWidth * 3,
   };
+
+  let arrowImgs;
+  let arrowImgsOriginal;
 
   let holdMiddleImg;
   let holdEndImgs;
@@ -36,6 +40,7 @@ var mainScene = function (p) {
   let greenGradientImg;
   let rainbowGradientImg;
   let hitGlowImg;
+  let scoreBackgroundImg;
 
   let eggBombImg;
 
@@ -99,12 +104,18 @@ var mainScene = function (p) {
     };
     holdMiddleImg = p.loadImage("/assets/hold-middle.png");
     holdEndImgs = {
-      left: p.loadImage("/assets/left-hold-end.png"),
-      up: p.loadImage("/assets/up-hold-end.png"),
-      right: p.loadImage("/assets/right-hold-end.png"),
-      down: p.loadImage("/assets/down-hold-end.png"),
+      left: p.loadImage("/assets/hold-end-left.png"),
+      up: p.loadImage("/assets/hold-end-up.png"),
+      right: p.loadImage("/assets/hold-end-right.png"),
+      down: p.loadImage("/assets/hold-end-down.png"),
     };
     arrowImgs = {
+      left: p.loadImage("/assets/arrow-left.png"),
+      up: p.loadImage("/assets/arrow-up.png"),
+      right: p.loadImage("/assets/arrow-right.png"),
+      down: p.loadImage("/assets/arrow-down.png"),
+    };
+    arrowImgsOriginal = {
       left: p.loadImage("/assets/arrow-left.png"),
       up: p.loadImage("/assets/arrow-up.png"),
       right: p.loadImage("/assets/arrow-right.png"),
@@ -117,6 +128,7 @@ var mainScene = function (p) {
     rainbowGradientImg = p.loadImage("/assets/rainbowGradient.png");
     hitGlowImg = p.loadImage("/assets/hit-glow.png");
     eggBombImg = p.loadImage("/assets/egg-bomb.png");
+    scoreBackgroundImg = p.loadImage("/assets/scoreBackground.png");
   };
 
   p.setup = function () {
@@ -133,9 +145,9 @@ var mainScene = function (p) {
 
     hitArrowObjs = {
       left: new HitArrow("left", hitPos.x, hitPos.y),
-      down: new HitArrow("down", hitPos.x + 80, hitPos.y),
-      up: new HitArrow("up", hitPos.x + 160, hitPos.y),
-      right: new HitArrow("right", hitPos.x + 240, hitPos.y),
+      down: new HitArrow("down", hitPos.x + arrowWidth, hitPos.y),
+      up: new HitArrow("up", hitPos.x + arrowWidth * 2, hitPos.y),
+      right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
     };
 
     feedbackObj = new FeedbackText();
@@ -145,7 +157,7 @@ var mainScene = function (p) {
     healthBar = new HealthBar();
 
     holdMiddleImg.loadPixels();
-    Object.values(arrowImgs).forEach(function (imgObj) {
+    Object.values(arrowImgsOriginal).forEach(function (imgObj) {
       imgObj.loadPixels();
     });
     Object.values(holdEndImgs).forEach(function (imgObj) {
@@ -254,7 +266,7 @@ var mainScene = function (p) {
       if (currentMeasure == 0) {
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           //If measure has notes, add contents into relevantNotes
@@ -290,7 +302,7 @@ var mainScene = function (p) {
         currentBatchStartMeasure += batchSize;
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           if (measure) {
@@ -688,9 +700,14 @@ var mainScene = function (p) {
 
   function updateArrowRainbow() {
     convertArrowImgToRainbow(holdMiddleImg);
-    Object.values(arrowImgs).forEach(function (arrowImg) {
-      convertArrowImgToRainbow(arrowImg);
-    });
+
+    arrowImgs.left = convertArrowImgToRainbow(arrowImgsOriginal.left);
+    arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up);
+    arrowImgs.down = convertArrowImgToRainbow(arrowImgsOriginal.down);
+    arrowImgs.right = convertArrowImgToRainbow(arrowImgsOriginal.right);
+    // Object.values(arrowImgsOriginal).forEach(function (arrowImg, index) {
+    //   arrowImgs[index] = convertArrowImgToRainbow(arrowImg);
+    // });
     Object.values(holdEndImgs).forEach(function (arrowImg) {
       convertArrowImgToRainbow(arrowImg);
     });
@@ -701,33 +718,100 @@ var mainScene = function (p) {
     // let arrowImg = arrowImgs["left"];
     let currentHue = (t * 50) % 360;
     let rgb = hsl2rgb(currentHue, 0.97, 0.6);
-    for (let y = 0; y < imgObj.height; y++) {
-      for (let x = 0; x < imgObj.width; x++) {
+
+    let newImgObj = p.createImage(64, 64);
+    newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
+    newImgObj.loadPixels();
+
+    for (let y = 0; y < newImgObj.height; y++) {
+      for (let x = 0; x < newImgObj.width; x++) {
         // Gets the index of the red value for this pixel
-        let redIndex = (x + y * imgObj.width) * 4;
+        let redIndex = (x + y * newImgObj.width) * 4;
         let greenIndex = redIndex + 1;
         let blueIndex = redIndex + 2;
         let alphaIndex = redIndex + 3;
+        // Top of arrow
         let isWhite =
-          imgObj.pixels[redIndex] == 255 &&
-          imgObj.pixels[greenIndex] == 255 &&
-          imgObj.pixels[blueIndex] == 255 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        // Middle of arrow
+        let isBlue =
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        // Bottom of arrow
+        let isGreen =
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        let isRed =
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
         let isTransparent =
-          imgObj.pixels[redIndex] == 0 &&
-          imgObj.pixels[greenIndex] == 0 &&
-          imgObj.pixels[blueIndex] == 0 &&
-          imgObj.pixels[alphaIndex] == 0;
-        if (!isWhite && !isTransparent) {
-          imgObj.pixels[redIndex] = rgb[0] * 255; // Red value
-          imgObj.pixels[greenIndex] = rgb[1] * 255; // Green value
-          imgObj.pixels[blueIndex] = rgb[2] * 255; // Blue value
-          imgObj.pixels[alphaIndex] = 255; // Alpha value
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 0;
+
+        // Change Red pixels to rainbow effect
+        if (isRed) {
+          newImgObj.pixels[redIndex] = rgb[0] * 255; // Red value
+          newImgObj.pixels[greenIndex] = rgb[1] * 255; // Green value
+          newImgObj.pixels[blueIndex] = rgb[2] * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+        // Change bottom section
+        if (isGreen) {
+          // Note: fix timing.. it should be that on the beat
+          if ((currentBeat * 100) % 100 > 25) {
+            newImgObj.pixels[redIndex] = 255; // Red value
+            newImgObj.pixels[greenIndex] = 255; // Green value
+            newImgObj.pixels[blueIndex] = 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          } else {
+            newImgObj.pixels[redIndex] = 150; // Red value
+            newImgObj.pixels[greenIndex] = 120; // Green value
+            newImgObj.pixels[blueIndex] = 150; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          }
+        }
+        if (isBlue) {
+          if ((currentBeat * 100) % 100 > 50) {
+            newImgObj.pixels[redIndex] = 255; // Red value
+            newImgObj.pixels[greenIndex] = 255; // Green value
+            newImgObj.pixels[blueIndex] = 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          } else {
+            newImgObj.pixels[redIndex] = 150; // Red value
+            newImgObj.pixels[greenIndex] = 120; // Green value
+            newImgObj.pixels[blueIndex] = 150; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          }
+        }
+        if (isWhite) {
+          if ((currentBeat * 100) % 100 > 75) {
+            newImgObj.pixels[redIndex] = 255; // Red value
+            newImgObj.pixels[greenIndex] = 255; // Green value
+            newImgObj.pixels[blueIndex] = 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          } else {
+            newImgObj.pixels[redIndex] = 150; // Red value
+            newImgObj.pixels[greenIndex] = 120; // Green value
+            newImgObj.pixels[blueIndex] = 150; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          }
         }
       }
     }
     // console.log("updating pixels");
-    imgObj.updatePixels();
+    newImgObj.updatePixels();
+    return newImgObj;
   }
 
   // Draw text centered on the screen or at a certain position if specified
@@ -766,7 +850,7 @@ var mainScene = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -1085,7 +1169,7 @@ var mainScene = function (p) {
         drawImageToScale(
           arrowImgs[this.direction],
           arrow_xPos[this.direction],
-          yPos
+          yPos,
         );
         p.tint(255, 255);
       } else if (this.noteType == "hold") {
@@ -1099,19 +1183,19 @@ var mainScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos + rectangleHeight
+            hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos
+            hitArrowObjs["left"].yPos,
           );
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
@@ -1129,19 +1213,19 @@ var mainScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPosReleased + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased + rectangleHeight
+            yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased
+            yPosReleased,
           );
           p.tint(255, 255);
           // If you're still holding down...
@@ -1156,17 +1240,17 @@ var mainScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos
+            yPos,
           );
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos + rectangleHeight
+            yPos + rectangleHeight,
           );
           p.tint(255, 255);
         }
@@ -1270,27 +1354,35 @@ var mainScene = function (p) {
     }
 
     displayTotalScore() {
+      //Draw UI
+      drawImageToScale(scoreBackgroundImg, 0, 437);
+      drawImageToScale(playerTextImgs.player1, 0, 437 - 20);
+      drawImageToScale(
+        playerTextImgs[storyModeDifficulty],
+        playerTextImgs.player1.width,
+        437 - 20,
+      );
       let scoreDigitLength = this.scoreCount.toString().length;
       let numOfZeros = 7 - scoreDigitLength;
       let zerosString = "";
 
       let letterWidth = 24;
       for (var i = 0; i < numOfZeros; i++) {
-        zerosString += "0";
+        zerosString += "o";
       }
 
       // Draw zeros
       p.tint(255, 100);
-      drawText(zerosString, "smallYellow", 1, 30, 430);
+      drawText(zerosString, "scoreDigits", 1, 8, 441);
       p.tint(255, 255);
 
       // Draw actual score
       drawText(
         this.scoreCount.toString(),
-        "smallYellow",
+        "scoreDigits",
         1,
-        30 + numOfZeros * letterWidth,
-        430
+        8 + numOfZeros * letterWidth,
+        441,
       );
     }
   }
@@ -1298,8 +1390,8 @@ var mainScene = function (p) {
   class HealthBar {
     constructor() {
       this.amountFilled = 0.5;
-      this.xPos = 165;
-      this.yPos = 0;
+      this.xPos = 8;
+      this.yPos = 8;
       this.tick = 0;
       this.animate = true;
       this.gradientColor = "green";
@@ -1312,23 +1404,25 @@ var mainScene = function (p) {
         gradientImg = rainbowGradientImg;
       }
       // first draw underlying bar
-      p.fill("black");
-      drawRectToScale(193, 5, 254, 32);
+      let darkOverlay = p.color("rgba(18, 11, 41, 0.5)");
+      p.fill(darkOverlay);
+      // p.fill("black");
+      let capacity = { width: 261, height: 18 };
 
-      p.fill("lime");
-      // drawRectToScale(193, 5, 254 * this.amountFilled, 32);
+      drawRectToScale(16, 16, capacity.width, capacity.height);
+
       let gradientToDraw = gradientImg.get(
-        this.tick % 254,
+        this.tick % capacity.width,
         0,
-        Math.max(1, 254 * this.amountFilled),
-        32
+        Math.max(1, capacity.width * this.amountFilled),
+        capacity.height + 1,
       );
       let dw = this.animate ? Math.sin(this.tick * 0.05) * 3 : 0;
       drawImageToScaleWithWidth(
         gradientToDraw,
-        193,
-        5,
-        gradientToDraw.width + dw
+        15,
+        15,
+        Math.min(capacity.width, gradientToDraw.width + dw),
       );
 
       //Draw frame over
@@ -1361,8 +1455,8 @@ var mainScene = function (p) {
     }
     reset() {
       this.amountFilled = 0.5;
-      this.xPos = 165;
-      this.yPos = 0;
+      this.xPos = 8;
+      this.yPos = 8;
       this.tick = 0;
       this.animate = true;
       this.gradientColor = "green";
@@ -1425,7 +1519,7 @@ var mainScene = function (p) {
         this.imgToDraw,
         this.xPos + d,
         this.yPos + d,
-        this.scale
+        this.scale,
       );
     }
     displayGlow() {
@@ -1435,7 +1529,7 @@ var mainScene = function (p) {
         drawImageToScale(
           hitGlowImg,
           this.xPos - arrowMargin,
-          this.yPos - arrowMargin
+          this.yPos - arrowMargin,
         );
         p.tint(255, 255);
       }
@@ -1570,7 +1664,7 @@ var mainScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
   function drawImageToScale(img, x, y, scaleFactor) {
@@ -1580,7 +1674,7 @@ var mainScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio * scaleFactor,
-        img.height * scaleRatio * scaleFactor
+        img.height * scaleRatio * scaleFactor,
       );
     } else {
       p.image(
@@ -1588,7 +1682,7 @@ var mainScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio,
-        img.height * scaleRatio
+        img.height * scaleRatio,
       );
     }
   }
@@ -1599,7 +1693,7 @@ var mainScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 
@@ -1609,7 +1703,7 @@ var mainScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
 

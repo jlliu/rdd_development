@@ -9,14 +9,14 @@ let enableStartButton = function () {
 // const songPlayer = new Tone.Player("assets/audio/Heaven.OGG").toDestination();
 const part1_bg_player = new Tone.Player(
   "/assets/audio/RDD_p1_ambience_loop.mp3",
-  enableStartButton
+  enableStartButton,
 ).toDestination();
 part1_bg_player.loop = true;
 part1_bg_player.fadeIn = 2;
 part1_bg_player.fadeIn = 0.5;
 
 const part2_bg_player = new Tone.Player(
-  "/assets/audio/RDD_p2_background_v2.mp3"
+  "/assets/audio/RDD_p2_background_v2.mp3",
 ).toDestination();
 part2_bg_player.loop = false;
 part2_bg_player.fadeOut = 2;
@@ -115,10 +115,10 @@ var experimentalScene = function (p) {
     };
     holdMiddleImg = p.loadImage("/assets/hold-middle.png");
     holdEndImgs = {
-      left: p.loadImage("/assets/left-hold-end.png"),
-      up: p.loadImage("/assets/up-hold-end.png"),
-      right: p.loadImage("/assets/right-hold-end.png"),
-      down: p.loadImage("/assets/down-hold-end.png"),
+      left: p.loadImage("/assets/hold-end-left.png"),
+      up: p.loadImage("/assets/hold-end-up.png"),
+      right: p.loadImage("/assets/hold-end-right.png"),
+      down: p.loadImage("/assets/hold-end-down.png"),
     };
     arrowImgs = {
       left: p.loadImage("/assets/arrow-left.png"),
@@ -303,7 +303,7 @@ var experimentalScene = function (p) {
         console.log("initializing");
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           //If measure has notes, add contents into relevantNotes
@@ -339,7 +339,7 @@ var experimentalScene = function (p) {
         currentBatchStartMeasure += batchSize;
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           if (measure) {
@@ -629,7 +629,7 @@ var experimentalScene = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -991,7 +991,7 @@ var experimentalScene = function (p) {
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            Math.max(hitArrowObjs["left"].yPos, yPos)
+            Math.max(hitArrowObjs["left"].yPos, yPos),
           );
         } else {
           if (passedOver) {
@@ -1000,14 +1000,14 @@ var experimentalScene = function (p) {
             drawImageToScale(
               arrowImgs[this.direction],
               arrow_xPos[this.direction],
-              yPos
+              yPos,
             );
             p.tint(255, 255);
           } else {
             drawImageToScale(
               arrowImgs[this.direction],
               arrow_xPos[this.direction],
-              yPos
+              yPos,
             );
           }
         }
@@ -1022,19 +1022,19 @@ var experimentalScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos + rectangleHeight
+            hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos
+            hitArrowObjs["left"].yPos,
           );
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
@@ -1050,19 +1050,19 @@ var experimentalScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPosReleased + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased + rectangleHeight
+            yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased
+            yPosReleased,
           );
           p.tint(255, 255);
           // If you're still holding down...
@@ -1078,17 +1078,17 @@ var experimentalScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos
+            yPos,
           );
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos + rectangleHeight
+            yPos + rectangleHeight,
           );
           if (passedOver) {
             p.tint(255, 255);
@@ -1157,14 +1157,14 @@ var experimentalScene = function (p) {
         this.tick % 254,
         0,
         Math.max(1, 254 * this.amountFilled),
-        32
+        32,
       );
       let dw = this.animate ? Math.sin(this.tick * 0.05) * 3 : 0;
       drawImageToScaleWithWidth(
         gradientToDraw,
         193,
         5,
-        gradientToDraw.width + dw
+        gradientToDraw.width + dw,
       );
 
       //Draw frame over
@@ -1247,7 +1247,7 @@ var experimentalScene = function (p) {
 
         let backgroundTransitionEvent = new CustomEvent(
           "backgroundTransition",
-          { detail: percentageElapsed }
+          { detail: percentageElapsed },
         );
         document
           .querySelector("#backgroundCanvas")
@@ -1264,7 +1264,7 @@ var experimentalScene = function (p) {
         this.imgToDraw,
         this.xPos + d,
         this.yPos + d,
-        this.scale
+        this.scale,
       );
     }
     displayGlow() {
@@ -1274,7 +1274,7 @@ var experimentalScene = function (p) {
         drawImageToScale(
           hitGlowImg,
           this.xPos - arrowMargin,
-          this.yPos - arrowMargin
+          this.yPos - arrowMargin,
         );
         p.tint(255, 255);
       }
@@ -1523,7 +1523,7 @@ var experimentalScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
   function drawImageToScale(img, x, y, scaleFactor) {
@@ -1533,7 +1533,7 @@ var experimentalScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio * scaleFactor,
-        img.height * scaleRatio * scaleFactor
+        img.height * scaleRatio * scaleFactor,
       );
     } else {
       p.image(
@@ -1541,7 +1541,7 @@ var experimentalScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio,
-        img.height * scaleRatio
+        img.height * scaleRatio,
       );
     }
   }
@@ -1552,7 +1552,7 @@ var experimentalScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 
@@ -1562,7 +1562,7 @@ var experimentalScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
 
@@ -1638,7 +1638,7 @@ var experimentalScene = function (p) {
         290,
         null,
         null,
-        "pink"
+        "pink",
       );
       newText.animate();
     }
@@ -1661,7 +1661,7 @@ var experimentalScene = function (p) {
         146,
         null,
         null,
-        "pink"
+        "pink",
       );
       newText.animate();
     }
@@ -2063,7 +2063,7 @@ var experimentalScene = function (p) {
         "What do I want?",
         null,
         null,
-        "hold"
+        "hold",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2074,7 +2074,7 @@ var experimentalScene = function (p) {
         "In this body",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(cueCount, "of mine?", null, 250, "hold");
       text1.animate();
@@ -2090,7 +2090,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2105,7 +2105,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2120,7 +2120,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2135,7 +2135,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2148,7 +2148,7 @@ var experimentalScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(cueCount, "won", null, 250, "hold", "pink");
       text1.animate();
@@ -2162,7 +2162,7 @@ var experimentalScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -2170,7 +2170,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2183,7 +2183,7 @@ var experimentalScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -2191,7 +2191,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2204,7 +2204,7 @@ var experimentalScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -2212,7 +2212,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2228,7 +2228,7 @@ var experimentalScene = function (p) {
         null,
         281,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2245,7 +2245,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2261,7 +2261,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2277,7 +2277,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2545,7 +2545,7 @@ var experimentalScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
 
       text1.animate();
@@ -2774,7 +2774,7 @@ var experimentalScene = function (p) {
         170,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2802,7 +2802,7 @@ var experimentalScene = function (p) {
         170,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2830,7 +2830,7 @@ var experimentalScene = function (p) {
         170,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2858,7 +2858,7 @@ var experimentalScene = function (p) {
         140,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2887,7 +2887,7 @@ var experimentalScene = function (p) {
         170,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2915,7 +2915,7 @@ var experimentalScene = function (p) {
         158,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2943,7 +2943,7 @@ var experimentalScene = function (p) {
         110,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       sendBackgroundCueEvent(cueCount);
@@ -2967,7 +2967,7 @@ var experimentalScene = function (p) {
         null,
         175,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "me", null, 265, "hold");
@@ -3002,7 +3002,7 @@ var experimentalScene = function (p) {
         null,
         175,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "me", null, 265, "hold");
@@ -3023,7 +3023,7 @@ var experimentalScene = function (p) {
         null,
         175,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "me", null, 265, "hold");
@@ -3135,7 +3135,7 @@ var experimentalScene = function (p) {
         230,
         175,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "e", 320, 265, "hold");

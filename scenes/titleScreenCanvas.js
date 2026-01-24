@@ -55,6 +55,7 @@ var title = function (p) {
     "greenHelper",
     "whitePixel",
     "whiteTerminal",
+    "scoreDigits",
   ];
 
   p.preload = function () {
@@ -70,6 +71,7 @@ var title = function (p) {
         fontSet.imgObj = p.loadImage(fontSet.src);
       });
     });
+    playerTextSpritesheet = p.loadImage("/assets/playerTextSheet.png");
   };
 
   p.setup = function () {
@@ -88,6 +90,21 @@ var title = function (p) {
     fontsToLoad.forEach(function (fontName) {
       setupFont(fontName);
     });
+
+    //Initialize player text assets
+    let playerTextImgsArray = [];
+    for (var i = 0; i < 6; i++) {
+      let croppedImg = playerTextSpritesheet.get(0, 20 * i, 100, 20);
+      playerTextImgsArray.push(croppedImg);
+    }
+    playerTextImgs = {
+      player1: playerTextImgsArray[0],
+      player2: playerTextImgsArray[1],
+      Easy: playerTextImgsArray[2],
+      Medium: playerTextImgsArray[3],
+      Hard: playerTextImgsArray[4],
+      Xtreme: playerTextImgsArray[5],
+    };
 
     menuItems = [
       new menuItem("STORY MODE", null, 80, startStoryMode),
@@ -460,7 +477,7 @@ var title = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -503,7 +520,7 @@ var title = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 

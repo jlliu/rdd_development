@@ -7,6 +7,10 @@ let digitString = "1234567890";
 
 let digitList = digitString.split("");
 
+let scoreDigitString = "o0123456789";
+
+let scoreDigitList = scoreDigitString.split("");
+
 let mainPinkCharacters = `ABCDEFGHIJKLNOPQRSTUVXYZabcdefghijklnopqrstuvxyz1234567890.,?!-"'()[] `;
 
 let terminalString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-"'()[]> `;
@@ -111,6 +115,19 @@ let fonts = {
     // imgObj: null,
   },
 
+  scoreDigits: {
+    sets: [
+      {
+        src: "/assets/scoreDigits.png",
+        charSet: scoreDigitString.split(""),
+        size: { width: 24, height: 35 },
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
   // widePink: {
   //   src: "assets/assets/wide-pink-character-spritesheet.png",
   //   charSet: widePinkCharacters.split(""),
@@ -209,7 +226,7 @@ let sound_fx = {
 };
 
 const menu_track_player = new Tone.Player(
-  `/assets/fx/menu_ui.mp3`
+  `/assets/fx/menu_ui.mp3`,
 ).toDestination();
 menu_track_player.loop = true;
 menu_track_player.fadeIn = 2;
@@ -226,7 +243,7 @@ let songList = [
     songData: eggshells,
     songFile: `/songAssets/Music/eggshells.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/eggshells.mp3`
+      `/songAssets/Music/eggshells.mp3`,
     ).toDestination(),
     sampleStart: 45.5,
     sampleLength: 14,
@@ -241,7 +258,7 @@ let songList = [
     songData: fawning,
     songFile: `/songAssets/Music/fawning.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/fawning.mp3`
+      `/songAssets/Music/fawning.mp3`,
     ).toDestination(),
     sampleStart: 19,
     sampleLength: 17,
@@ -256,7 +273,7 @@ let songList = [
     songData: breadcrumbs,
     songFile: `/songAssets/Music/breadcrumbs.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/breadcrumbs.mp3`
+      `/songAssets/Music/breadcrumbs.mp3`,
     ).toDestination(),
     sampleStart: 45.0,
     sampleLength: 15.0,
@@ -285,7 +302,7 @@ let songList = [
     songData: loneRanger,
     songFile: `/songAssets/Music/lone_ranger.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/lone_ranger.mp3`
+      `/songAssets/Music/lone_ranger.mp3`,
     ).toDestination(),
     sampleStart: 14.5,
     sampleLength: 30.0,
@@ -325,7 +342,7 @@ let songList = [
     songData: eggshells,
     songFile: `/songAssets/Music/sandstorm.ogg`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/ambientLoop.mp3`
+      `/songAssets/Music/ambientLoop.mp3`,
     ).toDestination(),
     sampleStart: 3.0,
     sampleLength: 8.0,
@@ -337,6 +354,10 @@ let songList = [
 
 // Access images from song selector and score canvas
 let songBannersImgs = [];
+
+// Player test images
+let playerTextSpritesheet;
+let playerTextImgs = {};
 
 // Revelation scene
 
