@@ -201,6 +201,22 @@ function hsl2rgb(h, s, l) {
   return [f(0), f(8), f(4)];
 }
 
+// Gives a length 64 list of [r,g,b] color lists, starting from starting hue of h
+function hsl2rgb_gradient(h, s, l) {
+  let rgbList = [];
+  let this_h = h;
+  for (var i = 0; i < 64; i++) {
+    let a = s * Math.min(l, 1 - l);
+    let f = (n, k = (n + this_h / 30) % 12) =>
+      l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    rgbList.push([f(0), f(8), f(4)]);
+    this_h++;
+  }
+  return rgbList;
+
+  // return [f(0), f(8), f(4)];
+}
+
 // Navigation helpers
 const canvasLoadedEvent = new Event("canvasLoaded");
 const showSceneEvent = new CustomEvent("showScene");
