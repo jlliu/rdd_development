@@ -6,7 +6,7 @@ let canvasHeight = 480;
 // ambientBreeze_track.loop = true;
 
 const ambientPlayer = new Tone.Player(
-  "assets/audio/RDD_p1_ambience_loop.mp3"
+  "assets/audio/RDD_p1_ambience_loop.mp3",
 ).toDestination();
 ambientPlayer.loop = true;
 
@@ -14,7 +14,7 @@ ambientPlayer.loop = true;
 // euroBeat_track.loop = true;
 
 const beatPlayer = new Tone.Player(
-  "assets/audio/RDD_p2_drum_loop.mp3"
+  "assets/audio/RDD_p2_drum_loop.mp3",
 ).toDestination();
 beatPlayer.loop = true;
 
@@ -193,7 +193,7 @@ var arrows = function (p) {
         if (currentMeasure == 0) {
           let measuresInBatch = songData.measureData.slice(
             currentBatchStartMeasure,
-            currentBatchStartMeasure + batchSize
+            currentBatchStartMeasure + batchSize,
           );
           measuresInBatch.forEach(function (measure) {
             if (measure) {
@@ -225,7 +225,7 @@ var arrows = function (p) {
           currentBatchStartMeasure += batchSize;
           let measuresInBatch = songData.measureData.slice(
             currentBatchStartMeasure,
-            currentBatchStartMeasure + batchSize
+            currentBatchStartMeasure + batchSize,
           );
           measuresInBatch.forEach(function (measure) {
             if (measure) {
@@ -347,7 +347,7 @@ var arrows = function (p) {
         drawImageToScale(
           arrowImgs[note.direction],
           arrow_xPos[note.direction],
-          Math.max(hitArrowObjs["left"].yPos, yPos)
+          Math.max(hitArrowObjs["left"].yPos, yPos),
         );
       } else {
         if (passedOver) {
@@ -356,7 +356,7 @@ var arrows = function (p) {
         drawImageToScale(
           arrowImgs[note.direction],
           arrow_xPos[note.direction],
-          yPos
+          yPos,
         );
         if (passedOver) {
           p.tint(255, 255);
@@ -373,19 +373,19 @@ var arrows = function (p) {
           holdMiddleImg,
           arrow_xPos[note.direction],
           hitArrowObjs["left"].yPos + 40,
-          rectangleHeight
+          rectangleHeight,
         );
         // Draw arrow at end of rectangle
         drawImageToScale(
           holdEndImgs[note.direction],
           arrow_xPos[note.direction],
-          hitArrowObjs["left"].yPos + rectangleHeight
+          hitArrowObjs["left"].yPos + rectangleHeight,
         );
         // Draw arrow at hit pos
         drawImageToScale(
           arrowImgs[note.direction],
           arrow_xPos[note.direction],
-          hitArrowObjs["left"].yPos
+          hitArrowObjs["left"].yPos,
         );
       } else if (note.isHit && !note.isHolding && !note.completedHold) {
         //   case 2: hit first note, lifted up before end
@@ -401,19 +401,19 @@ var arrows = function (p) {
           holdMiddleImg,
           arrow_xPos[note.direction],
           yPosReleased + 40,
-          rectangleHeight
+          rectangleHeight,
         );
         // Draw arrow at end of rectangle
         drawImageToScale(
           holdEndImgs[note.direction],
           arrow_xPos[note.direction],
-          yPosReleased + rectangleHeight
+          yPosReleased + rectangleHeight,
         );
         // Draw arrow at hit pos
         drawImageToScale(
           arrowImgs[note.direction],
           arrow_xPos[note.direction],
-          yPosReleased
+          yPosReleased,
         );
         p.tint(255, 255);
         // If you're still holding down...
@@ -439,17 +439,17 @@ var arrows = function (p) {
           holdMiddleImg,
           arrow_xPos[note.direction],
           yPos + 40,
-          rectangleHeight
+          rectangleHeight,
         );
         drawImageToScale(
           arrowImgs[note.direction],
           arrow_xPos[note.direction],
-          yPos
+          yPos,
         );
         drawImageToScale(
           holdEndImgs[note.direction],
           arrow_xPos[note.direction],
-          yPos + rectangleHeight
+          yPos + rectangleHeight,
         );
         if (passedOver) {
           p.tint(255, 255);
@@ -680,6 +680,7 @@ var arrows = function (p) {
   }
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -795,7 +796,7 @@ var arrows = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 
@@ -805,7 +806,7 @@ var arrows = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
 

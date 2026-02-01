@@ -8,7 +8,7 @@ let enableStartButton = function () {
 
 // const songPlayer = new Tone.Player("assets/audio/Heaven.OGG").toDestination();
 const part1_bg_player = new Tone.Player(
-  "/assets/audio/RDD_p1_ambience_loop.mp3",
+  "assets/audio/RDD_p1_ambience_loop.mp3",
   enableStartButton,
 ).toDestination();
 part1_bg_player.loop = true;
@@ -16,7 +16,7 @@ part1_bg_player.fadeIn = 2;
 part1_bg_player.fadeIn = 0.5;
 
 const part2_bg_player = new Tone.Player(
-  "/assets/audio/RDD_p2_background_v2.mp3",
+  "assets/audio/RDD_p2_background_v2.mp3",
 ).toDestination();
 part2_bg_player.loop = false;
 part2_bg_player.fadeOut = 2;
@@ -28,27 +28,29 @@ var experimentalScene = function (p) {
   let canvasHeight = 480;
   let canvasRatio = canvasWidth / canvasHeight;
   let canvasSizeOriginal = { width: 640, height: 480 };
+  let scaleRatio = 1;
 
-  let mouse_x;
-  let mouse_y;
+  let numCanvasesLoaded = 0;
+  let allCanvasesLoaded = false;
 
-  let hitArrowImgs;
-  let hitPos = { x: 160, y: 200 };
-  let hitPosFinal = { x: 160, y: 50 };
+  // let hitArrowImgs;
+  let arrowWidth = 64;
+  let hitPos = { x: 192, y: 208 };
+  let hitPosFinal = { x: 192, y: 56 };
   let arrow_xPos = {
-    left: 160,
-    down: 160 + 80,
-    up: 160 + 80 * 2,
-    right: 160 + 80 * 3,
+    left: hitPos.x,
+    down: hitPos.x + arrowWidth,
+    up: hitPos.x + arrowWidth * 2,
+    right: hitPos.x + arrowWidth * 3,
   };
 
-  let holdMiddleImg;
-  let holdEndImgs;
-  let comboTextImg;
-  let healthBarFrameImg;
-  let greenGradientImg;
-  let rainbowGradientImg;
-  let hitGlowImg;
+  // let holdMiddleImg;
+  // let holdEndImgs;
+  // let comboTextImg;
+  // let healthBarFrameImg;
+  // let greenGradientImg;
+  // let rainbowGradientImg;
+  // let hitGlowImg;
 
   //relevantNotes stores an array of note objects
   let relevantNotes = [];
@@ -104,39 +106,40 @@ var experimentalScene = function (p) {
 
   let isCurrentScene = false;
 
+  let assetsSetup = false;
+
   p.preload = function () {
     //Preload a background here
     //Preload whatever needs to be preloaded
-    hitArrowImgs = {
-      left: p.loadImage("/assets/hit-arrow-left.png"),
-      up: p.loadImage("/assets/hit-arrow-up.png"),
-      right: p.loadImage("/assets/hit-arrow-right.png"),
-      down: p.loadImage("/assets/hit-arrow-down.png"),
-    };
-    holdMiddleImg = p.loadImage("/assets/hold-middle.png");
-    holdEndImgs = {
-      left: p.loadImage("/assets/hold-end-left.png"),
-      up: p.loadImage("/assets/hold-end-up.png"),
-      right: p.loadImage("/assets/hold-end-right.png"),
-      down: p.loadImage("/assets/hold-end-down.png"),
-    };
-    arrowImgs = {
-      left: p.loadImage("/assets/arrow-left.png"),
-      up: p.loadImage("/assets/arrow-up.png"),
-      right: p.loadImage("/assets/arrow-right.png"),
-      down: p.loadImage("/assets/arrow-down.png"),
-    };
-
-    fontsToLoad.forEach(function (fontName) {
-      fonts[fontName].sets.forEach(function (fontSet) {
-        fontSet.imgObj = p.loadImage(fontSet.src);
-      });
-    });
-    comboTextImg = p.loadImage("/assets/comboText.png");
-    healthBarFrameImg = p.loadImage("/assets/healthBarFrame.png");
-    greenGradientImg = p.loadImage("/assets/greenGradient.png");
-    rainbowGradientImg = p.loadImage("/assets/rainbowGradient.png");
-    hitGlowImg = p.loadImage("/assets/hit-glow.png");
+    // hitArrowImgs = {
+    //   left: p.loadImage("assets/hit-arrow-left.png"),
+    //   up: p.loadImage("assets/hit-arrow-up.png"),
+    //   right: p.loadImage("assets/hit-arrow-right.png"),
+    //   down: p.loadImage("assets/hit-arrow-down.png"),
+    // };
+    // holdMiddleImg = p.loadImage("assets/hold-middle.png");
+    // holdEndImgs = {
+    //   left: p.loadImage("assets/hold-end-left.png"),
+    //   up: p.loadImage("assets/hold-end-up.png"),
+    //   right: p.loadImage("assets/hold-end-right.png"),
+    //   down: p.loadImage("assets/hold-end-down.png"),
+    // };
+    // arrowImgs = {
+    //   left: p.loadImage("assets/arrow-left.png"),
+    //   up: p.loadImage("assets/arrow-up.png"),
+    //   right: p.loadImage("assets/arrow-right.png"),
+    //   down: p.loadImage("assets/arrow-down.png"),
+    // };
+    // fontsToLoad.forEach(function (fontName) {
+    //   fonts[fontName].sets.forEach(function (fontSet) {
+    //     fontSet.imgObj = p.loadImage(fontSet.src);
+    //   });
+    // });
+    // comboTextImg = p.loadImage("assets/comboText.png");
+    // healthBarFrameImg = p.loadImage("assets/healthBarFrame.png");
+    // greenGradientImg = p.loadImage("assets/greenGradient.png");
+    // rainbowGradientImg = p.loadImage("assets/rainbowGradient.png");
+    // hitGlowImg = p.loadImage("assets/hit-glow.png");
   };
 
   p.setup = function () {
@@ -161,30 +164,17 @@ var experimentalScene = function (p) {
     t_holdRightStart = secondsPerBeat * 4 * 27;
     t_holdsFinished = secondsPerBeat * 4 * 34;
 
-    hitArrowObjs = {
-      left: new HitArrow("left", hitPos.x, hitPos.y),
-      down: new HitArrow("down", hitPos.x + 80, hitPos.y),
-      up: new HitArrow("up", hitPos.x + 160, hitPos.y),
-      right: new HitArrow("right", hitPos.x + 240, hitPos.y),
-    };
-
-    feedbackObj = new FeedbackText();
-    comboObj = new ComboText();
-
-    scoreData = new Score();
-    healthBar = new HealthBar();
-
-    holdMiddleImg.loadPixels();
-    Object.values(arrowImgs).forEach(function (imgObj) {
-      imgObj.loadPixels();
-    });
-    Object.values(holdEndImgs).forEach(function (imgObj) {
-      imgObj.loadPixels();
-    });
+    // holdMiddleImg.loadPixels();
+    // Object.values(arrowImgs).forEach(function (imgObj) {
+    //   imgObj.loadPixels();
+    // });
+    // Object.values(holdEndImgs).forEach(function (imgObj) {
+    //   imgObj.loadPixels();
+    // });
 
     // Setup fonts
-    setupFont("mainYellow");
-    setupFont("pink");
+    // setupFont("mainYellow");
+    // setupFont("pink");
 
     setupNavigation(thisCanvas);
 
@@ -195,34 +185,55 @@ var experimentalScene = function (p) {
 
   let startDrawingArrows = false;
 
+  // Setup things that depend on loading from mainSong
+  function setupAssets() {
+    hitArrowObjs = {
+      left: new HitArrow("left", hitPos.x, hitPos.y),
+      down: new HitArrow("down", hitPos.x + arrowWidth, hitPos.y),
+      up: new HitArrow("up", hitPos.x + arrowWidth * 2, hitPos.y),
+      right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
+    };
+
+    feedbackObj = new FeedbackText();
+    comboObj = new ComboText();
+    scoreData = new Score();
+    healthBar = new HealthBar();
+  }
+
   p.draw = function () {
-    if (whiteBackground) {
-      p.background("white");
-    } else {
-      p.clear();
-    }
-
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.displayGlow();
-    });
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.display();
-    });
-
-    if (startDrawingArrows) {
-      drawArrows();
-    }
-
-    feedbackObj.display();
-    // comboObj.display();
-    // healthBar.display();
-
-    //draw narrative text
-    narrativeTextObjs.forEach(function (textObj) {
-      if (textObj.showing) {
-        textObj.display();
+    if (allCanvasesLoaded) {
+      if (!assetsSetup) {
+        setupAssets();
+        assetsSetup = true;
       }
-    });
+      if (whiteBackground) {
+        p.background("white");
+      } else {
+        p.clear();
+      }
+
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.displayGlow();
+      });
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.display();
+      });
+
+      if (startDrawingArrows) {
+        drawArrows();
+      }
+
+      feedbackObj.display();
+      // comboObj.display();
+      // healthBar.display();
+
+      //draw narrative text
+      narrativeTextObjs.forEach(function (textObj) {
+        if (textObj.showing) {
+          textObj.display();
+        }
+      });
+    }
   };
 
   function pauseTimer() {
@@ -530,47 +541,216 @@ var experimentalScene = function (p) {
   }
 
   function updateArrowRainbow() {
-    convertArrowImgToRainbow(holdMiddleImg);
-    Object.values(arrowImgs).forEach(function (arrowImg) {
-      convertArrowImgToRainbow(arrowImg);
-    });
-    Object.values(holdEndImgs).forEach(function (arrowImg) {
-      convertArrowImgToRainbow(arrowImg);
-    });
+    let rgb_gradient = calculateRgbValues();
+
+    holdMiddleImg.hitTrue = convertArrowImgToRainbow(
+      holdMiddleImgOriginal,
+      rgb_gradient,
+      "holdMiddle",
+      true,
+    );
+
+    holdMiddleImg.hitFalse = convertArrowImgToRainbow(
+      holdMiddleImgOriginal,
+      rgb_gradient,
+      "holdMiddle",
+      false,
+    );
+
+    arrowImgs.left = convertArrowImgToRainbow(
+      arrowImgsOriginal.left,
+      rgb_gradient,
+    );
+    arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up, rgb_gradient);
+    arrowImgs.down = convertArrowImgToRainbow(
+      arrowImgsOriginal.down,
+      rgb_gradient,
+    );
+    arrowImgs.right = convertArrowImgToRainbow(
+      arrowImgsOriginal.right,
+      rgb_gradient,
+    );
+
+    holdEndImgs.left.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.left,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.up.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.up,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.down.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.down,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.right.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.right,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+
+    holdEndImgs.left.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.left,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.up.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.up,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.down.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.down,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.right.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.right,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
   }
 
-  function convertArrowImgToRainbow(imgObj) {
+  function calculateRgbValues() {
+    let currentHue = (t * 50) % 360;
+    return hsl2rgb_gradient(currentHue, 0.97, 0.6);
+  }
+
+  function convertArrowImgToRainbow(imgObj, rgb_gradient, imgType, isHit) {
     // Iterates across each pixel in the canvas
     // let arrowImg = arrowImgs["left"];
-    let currentHue = (t * 50) % 360;
-    let rgb = hsl2rgb(currentHue, 0.97, 0.6);
-    for (let y = 0; y < imgObj.height; y++) {
-      for (let x = 0; x < imgObj.width; x++) {
+    // let currentHue = (t * 50) % 360;
+    // let rgb = hsl2rgb(currentHue, 0.97, 0.6);
+
+    let newImgObj = p.createImage(64, 64);
+    newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
+    newImgObj.loadPixels();
+
+    for (let y = 0; y < newImgObj.height; y++) {
+      for (let x = 0; x < newImgObj.width; x++) {
         // Gets the index of the red value for this pixel
-        let redIndex = (x + y * imgObj.width) * 4;
+        let redIndex = (x + y * newImgObj.width) * 4;
         let greenIndex = redIndex + 1;
         let blueIndex = redIndex + 2;
         let alphaIndex = redIndex + 3;
+        // Top of arrow
         let isWhite =
-          imgObj.pixels[redIndex] == 255 &&
-          imgObj.pixels[greenIndex] == 255 &&
-          imgObj.pixels[blueIndex] == 255 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        // Middle of arrow
+        let isBlue =
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        // Bottom of arrow
+        let isGreen =
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
+        let isRed =
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
         let isTransparent =
-          imgObj.pixels[redIndex] == 0 &&
-          imgObj.pixels[greenIndex] == 0 &&
-          imgObj.pixels[blueIndex] == 0 &&
-          imgObj.pixels[alphaIndex] == 0;
-        if (!isWhite && !isTransparent) {
-          imgObj.pixels[redIndex] = rgb[0] * 255; // Red value
-          imgObj.pixels[greenIndex] = rgb[1] * 255; // Green value
-          imgObj.pixels[blueIndex] = rgb[2] * 255; // Blue value
-          imgObj.pixels[alphaIndex] = 255; // Alpha value
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 0;
+
+        // Change Red pixels to rainbow effect
+        if (isRed) {
+          // Use the last calculated color for the end of holds to make more continuous
+          if (imgType == "holdEnd") {
+            newImgObj.pixels[redIndex] = rgb_gradient[63][0] * 255; // Red value
+            newImgObj.pixels[greenIndex] = rgb_gradient[63][1] * 255; // Green value
+            newImgObj.pixels[blueIndex] = rgb_gradient[63][2] * 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          } else {
+            newImgObj.pixels[redIndex] = rgb_gradient[y][0] * 255; // Red value
+            newImgObj.pixels[greenIndex] = rgb_gradient[y][1] * 255; // Green value
+            newImgObj.pixels[blueIndex] = rgb_gradient[y][2] * 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          }
+        }
+
+        if (imgType == "holdMiddle" || imgType == "holdEnd") {
+          if (isWhite) {
+            if (isHit) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else if (!isHit) {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+        } else {
+          // Change bottom section
+          if (isGreen) {
+            // Note: fix timing.. it should be that on the beat
+            if ((currentBeat * 100) % 100 > 25) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+          if (isBlue) {
+            if ((currentBeat * 100) % 100 > 50) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+          if (isWhite) {
+            if ((currentBeat * 100) % 100 > 75) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
         }
       }
     }
     // console.log("updating pixels");
-    imgObj.updatePixels();
+    newImgObj.updatePixels();
+    return newImgObj;
   }
 
   function setupFont(fontName) {
@@ -882,6 +1062,14 @@ var experimentalScene = function (p) {
     hitArrowObjs[direction].release();
     assessHit(direction, "lift");
   }
+
+  //Listen if all canvases in the game have been loaded
+  window.addEventListener("canvasLoaded", function () {
+    numCanvasesLoaded++;
+    if (numCanvasesLoaded == totalCanvases) {
+      allCanvasesLoaded = true;
+    }
+  });
   window.addEventListener("padPress", function (e) {
     if (isCurrentScene) {
       let direction = e.detail.direction;
@@ -896,6 +1084,7 @@ var experimentalScene = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     if (isCurrentScene) {
       //Ignore repeated keydown
       if (e.repeat) {
@@ -1019,14 +1208,14 @@ var experimentalScene = function (p) {
           rectangleHeight = pixelsPerBeat * (this.endBeat - currentBeat);
           // Draw rectangle
           drawImageToScaleWithHeight(
-            holdMiddleImg,
+            holdMiddleImg.hitTrue,
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos + 40,
+            hitArrowObjs["left"].yPos + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
-            holdEndImgs[this.direction],
+            holdEndImgs[this.direction].hitTrue,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + rectangleHeight,
           );
@@ -1047,14 +1236,14 @@ var experimentalScene = function (p) {
             pixelsElapsed;
           // Draw rectangle
           drawImageToScaleWithHeight(
-            holdMiddleImg,
+            holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
-            yPosReleased + 40,
+            yPosReleased + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
-            holdEndImgs[this.direction],
+            holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPosReleased + rectangleHeight,
           );
@@ -1075,9 +1264,9 @@ var experimentalScene = function (p) {
           }
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
           drawImageToScaleWithHeight(
-            holdMiddleImg,
+            holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
-            yPos + 40,
+            yPos + 32,
             rectangleHeight,
           );
           drawImageToScale(
@@ -1086,7 +1275,7 @@ var experimentalScene = function (p) {
             yPos,
           );
           drawImageToScale(
-            holdEndImgs[this.direction],
+            holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPos + rectangleHeight,
           );
@@ -1269,7 +1458,7 @@ var experimentalScene = function (p) {
     }
     displayGlow() {
       if (this.glowing) {
-        let arrowMargin = 20;
+        let arrowMargin = 28;
         p.tint(255, this.gradientOpacity * 255);
         drawImageToScale(
           hitGlowImg,

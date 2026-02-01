@@ -98,13 +98,13 @@ audio{
   display:none;
 }
 
-#enableAudio-overlay{
+/* #enableAudio-overlay{
   display:none;
-}
+} */
 
-#connectDevice-overlay{
-  /* display:none; */
-}
+/* #connectDevice-overlay{
+
+} */
 
 .overlay h1 {
   font-size:6vw;

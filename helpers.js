@@ -22,7 +22,7 @@ let fonts = {
   mainYellow: {
     sets: [
       {
-        src: "/assets/font-spritesheet.png",
+        src: "assets/font-spritesheet.png",
         charSet: characterString.split(""),
         size: { width: 40, height: 58 },
 
@@ -36,7 +36,7 @@ let fonts = {
   smallYellow: {
     sets: [
       {
-        src: "/assets/smallYellowSpritesheet.png",
+        src: "assets/smallYellowSpritesheet.png",
         charSet: characterString.split(""),
         size: { width: 24, height: 35 },
         imgObj: null,
@@ -49,7 +49,7 @@ let fonts = {
   greenHelper: {
     sets: [
       {
-        src: "/assets/green-helper-text-spritesheet.png",
+        src: "assets/green-helper-text-spritesheet.png",
         charSet: characterString.split(""),
         size: { width: 24, height: 35 },
         imgObj: null,
@@ -61,7 +61,7 @@ let fonts = {
   whitePixel: {
     sets: [
       {
-        src: "/assets/white-pixel-font-spritesheet.png",
+        src: "assets/white-pixel-font-spritesheet.png",
         charSet: characterString.split(""),
         size: { width: 24, height: 35 },
 
@@ -75,7 +75,7 @@ let fonts = {
   whiteTerminal: {
     sets: [
       {
-        src: "/assets/white-terminal.png",
+        src: "assets/white-terminal.png",
         charSet: terminalString.split(""),
         size: { width: 18, height: 29 },
         imgObj: null,
@@ -96,12 +96,12 @@ let fonts = {
   pink: {
     sets: [
       {
-        src: "/assets/main-pink-character-spritesheet.png",
+        src: "assets/main-pink-character-spritesheet.png",
         charSet: mainPinkCharacters.split(""),
         size: { width: 60, height: 84 },
       },
       {
-        src: "/assets/wide-pink-character-spritesheet.png",
+        src: "assets/wide-pink-character-spritesheet.png",
         charSet: widePinkCharacters.split(""),
         size: { width: 84, height: 84 },
         imgObj: null,
@@ -118,7 +118,7 @@ let fonts = {
   scoreDigits: {
     sets: [
       {
-        src: "/assets/scoreDigits.png",
+        src: "assets/scoreDigits.png",
         charSet: scoreDigitString.split(""),
         size: { width: 24, height: 35 },
         imgObj: null,
@@ -234,15 +234,15 @@ let globalClock = new Tone.Clock((time) => {}, 1);
 globalClock.start();
 
 let sound_fx = {
-  eggCrack: new Tone.Player(`/assets/fx/egg-crack.mp3`).toDestination(),
-  doorShut: new Tone.Player(`/assets/fx/door-shut.mp3`).toDestination(),
-  menuChange: new Tone.Player(`/assets/fx/house_stab.wav`).toDestination(),
-  error: new Tone.Player(`/assets/fx/error.mp3`).toDestination(),
-  select: new Tone.Player(`/assets/fx/select.wav`).toDestination(),
+  eggCrack: new Tone.Player(`assets/fx/egg-crack.mp3`).toDestination(),
+  doorShut: new Tone.Player(`assets/fx/door-shut.mp3`).toDestination(),
+  menuChange: new Tone.Player(`assets/fx/house_stab.wav`).toDestination(),
+  error: new Tone.Player(`assets/fx/error.mp3`).toDestination(),
+  select: new Tone.Player(`assets/fx/select.wav`).toDestination(),
 };
 
 const menu_track_player = new Tone.Player(
-  `/assets/fx/menu_ui.mp3`,
+  `assets/fx/menu_ui.mp3`,
 ).toDestination();
 menu_track_player.loop = true;
 menu_track_player.fadeIn = 2;
@@ -253,17 +253,17 @@ menu_track_player.autostart = true;
 
 let songList = [
   {
-    bannerImg: `/songAssets/song1-banner.png`,
+    bannerImg: `songAssets/song1-banner.png`,
     title: `Walkin' on Eggshells`,
     cdImg: `song1-cd.png`,
     songData: eggshells,
-    songFile: `/songAssets/Music/eggshells.mp3`,
+    songFile: `songAssets/Music/eggshells.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/eggshells.mp3`,
+      `songAssets/Music/eggshells.mp3`,
     ).toDestination(),
     sampleStart: 45.5,
     sampleLength: 14,
-    videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],
   },
@@ -272,28 +272,26 @@ let songList = [
     title: `Kung Fu Fawning`,
     cdImg: `song2-cd.png`,
     songData: fawning,
-    songFile: `/songAssets/Music/fawning.mp3`,
-    songPlayer: new Tone.Player(
-      `/songAssets/Music/fawning.mp3`,
-    ).toDestination(),
+    songFile: `songAssets/Music/fawning.mp3`,
+    songPlayer: new Tone.Player(`songAssets/Music/fawning.mp3`).toDestination(),
     sampleStart: 19,
     sampleLength: 17,
-    videoUrl: `/songAssets/Backgrounds/fawning_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/fawning_video.mp4`,
     cleared: false,
     scores: [],
   },
   {
-    bannerImg: `/songAssets/song3-banner.png`,
+    bannerImg: `songAssets/song3-banner.png`,
     title: `Chasing Breadcrumbs`,
     cdImg: `song3-cd.png`,
     songData: breadcrumbs,
-    songFile: `/songAssets/Music/breadcrumbs.mp3`,
+    songFile: `songAssets/Music/breadcrumbs.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/breadcrumbs.mp3`,
+      `songAssets/Music/breadcrumbs.mp3`,
     ).toDestination(),
     sampleStart: 45.0,
     sampleLength: 15.0,
-    videoUrl: `/songAssets/Backgrounds/breadcrumbs_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/breadcrumbs_video.mp4`,
     cleared: false,
     scores: [],
     //Beat is beat bpm change starts on, then length of stop in seconds
@@ -316,13 +314,13 @@ let songList = [
     title: `Lone Ranger`,
     cdImg: `song4-cd.png`,
     songData: loneRanger,
-    songFile: `/songAssets/Music/lone_ranger.mp3`,
+    songFile: `songAssets/Music/lone_ranger.mp3`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/lone_ranger.mp3`,
+      `songAssets/Music/lone_ranger.mp3`,
     ).toDestination(),
     sampleStart: 14.5,
     sampleLength: 30.0,
-    videoUrl: `/songAssets/Backgrounds/loneRanger_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/loneRanger_video.mp4`,
     cleared: false,
     scores: [],
   },
@@ -331,11 +329,11 @@ let songList = [
     title: `FILL THE VOiD`,
     cdImg: `song5-cd.png`,
     songData: fillTheVoid,
-    songFile: `/songAssets/Music/void.mp3`,
-    songPlayer: new Tone.Player(`/songAssets/Music/void.mp3`).toDestination(),
+    songFile: `songAssets/Music/void.mp3`,
+    songPlayer: new Tone.Player(`songAssets/Music/void.mp3`).toDestination(),
     sampleStart: 25,
     sampleLength: 12.0,
-    videoUrl: `/songAssets/Backgrounds/void_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/void_video.mp4`,
     cleared: false,
     scores: [],
     //Beat is beat bpm change starts on, then length of stop in seconds
@@ -356,13 +354,13 @@ let songList = [
     title: `???`,
     cdImg: `song6-cd.png`,
     songData: eggshells,
-    songFile: `/songAssets/Music/sandstorm.ogg`,
+    songFile: `songAssets/Music/sandstorm.ogg`,
     songPlayer: new Tone.Player(
-      `/songAssets/Music/ambientLoop.mp3`,
+      `songAssets/Music/ambientLoop.mp3`,
     ).toDestination(),
     sampleStart: 3.0,
     sampleLength: 8.0,
-    videoUrl: `/songAssets/Backgrounds/eggshells_video.mp4`,
+    videoUrl: `songAssets/Backgrounds/eggshells_video.mp4`,
     cleared: false,
     scores: [],
   },
@@ -372,8 +370,22 @@ let songList = [
 let songBannersImgs = [];
 
 // Player test images
-let playerTextSpritesheet;
+// let playerTextSpritesheet;
 let playerTextImgs = {};
+
+//Shared Arrow UI images
+let hitArrowImgs;
+let arrowImgs;
+let arrowImgsOriginal;
+let holdMiddleImg;
+let holdMiddleImgOriginal;
+let holdEndImgs;
+let holdEndImgsOriginal;
+let comboTextImg;
+let healthBarFrameImg;
+let greenGradientImg;
+let rainbowGradientImg;
+let hitGlowImg;
 
 // Revelation scene
 

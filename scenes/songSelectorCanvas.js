@@ -48,10 +48,10 @@ var songSelector = function (p) {
   let enterPressed = false;
 
   p.preload = function () {
-    songBannersSpritesheet = p.loadImage("/songAssets/songBanners.png");
-    songCdsSpritesheet = p.loadImage("/songAssets/songCds.png");
+    songBannersSpritesheet = p.loadImage("songAssets/songBanners.png");
+    songCdsSpritesheet = p.loadImage("songAssets/songCds.png");
     songSelectionInstructionsImg = p.loadImage(
-      "/assets/song_selection_instructions.png"
+      "assets/song_selection_instructions.png",
     );
   };
 
@@ -70,7 +70,7 @@ var songSelector = function (p) {
         0,
         banner.h * i,
         banner.w,
-        banner.h
+        banner.h,
       );
       songBannersImgs.push(thisBannerImg);
       let thisCdImg = songCdsSpritesheet.get(0, cd.h * i, cd.w, cd.h);
@@ -111,7 +111,7 @@ var songSelector = function (p) {
         currentSongBanner,
         320 - (currentSongBanner.width * 0.9) / 2,
         90,
-        0.9
+        0.9,
       );
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText("PRESS ENTER TO SELECT", "greenHelper", 1, null, 430);
@@ -352,6 +352,7 @@ var songSelector = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     if (isCurrentScene) {
       //Ignore repeated keydown
       if (e.repeat) {
@@ -451,7 +452,7 @@ var songSelector = function (p) {
         menuItems[cdIndex].cdImg,
         xPos_original - (cd.w * currentScale) / 2,
         yPos_original - (cd.h * currentScale) / 2,
-        currentScale
+        currentScale,
       );
       currentPositionIndex++;
     });
@@ -568,7 +569,7 @@ var songSelector = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -615,7 +616,7 @@ var songSelector = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio * extraScalar,
-      img.height * scaleRatio * extraScalar
+      img.height * scaleRatio * extraScalar,
     );
   }
 

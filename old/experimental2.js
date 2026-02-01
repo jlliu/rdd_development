@@ -15,12 +15,12 @@ let enableStartButton = function () {
 // const songPlayer = new Tone.Player("assets/audio/Heaven.OGG").toDestination();
 const part1_bg_player = new Tone.Player(
   "assets/audio/RDD_p1_ambience_loop.mp3",
-  enableStartButton
+  enableStartButton,
 ).toDestination();
 part1_bg_player.loop = true;
 
 const part2_bg_player = new Tone.Player(
-  "assets/audio/RDD_p2_background.mp3"
+  "assets/audio/RDD_p2_background.mp3",
 ).toDestination();
 part2_bg_player.loop = false;
 
@@ -279,7 +279,7 @@ var arrowScene = function (p) {
         console.log("initializing");
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           //If measure has notes, add contents into relevantNotes
@@ -315,7 +315,7 @@ var arrowScene = function (p) {
         currentBatchStartMeasure += batchSize;
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
-          currentBatchStartMeasure + batchSize
+          currentBatchStartMeasure + batchSize,
         );
         measuresInBatch.forEach(function (measure) {
           if (measure) {
@@ -570,7 +570,7 @@ var arrowScene = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -806,6 +806,7 @@ var arrowScene = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -897,7 +898,7 @@ var arrowScene = function (p) {
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            Math.max(hitArrowObjs["left"].yPos, yPos)
+            Math.max(hitArrowObjs["left"].yPos, yPos),
           );
         } else {
           if (passedOver) {
@@ -906,14 +907,14 @@ var arrowScene = function (p) {
             drawImageToScale(
               arrowImgs[this.direction],
               arrow_xPos[this.direction],
-              yPos
+              yPos,
             );
             p.tint(255, 255);
           } else {
             drawImageToScale(
               arrowImgs[this.direction],
               arrow_xPos[this.direction],
-              yPos
+              yPos,
             );
           }
         }
@@ -928,19 +929,19 @@ var arrowScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos + rectangleHeight
+            hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            hitArrowObjs["left"].yPos
+            hitArrowObjs["left"].yPos,
           );
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
@@ -956,19 +957,19 @@ var arrowScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPosReleased + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased + rectangleHeight
+            yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPosReleased
+            yPosReleased,
           );
           p.tint(255, 255);
           // If you're still holding down...
@@ -984,17 +985,17 @@ var arrowScene = function (p) {
             holdMiddleImg,
             arrow_xPos[this.direction],
             yPos + 40,
-            rectangleHeight
+            rectangleHeight,
           );
           drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos
+            yPos,
           );
           drawImageToScale(
             holdEndImgs[this.direction],
             arrow_xPos[this.direction],
-            yPos + rectangleHeight
+            yPos + rectangleHeight,
           );
           if (passedOver) {
             p.tint(255, 255);
@@ -1063,14 +1064,14 @@ var arrowScene = function (p) {
         this.tick % 254,
         0,
         Math.max(1, 254 * this.amountFilled),
-        32
+        32,
       );
       let dw = this.animate ? Math.sin(this.tick * 0.05) * 3 : 0;
       drawImageToScaleWithWidth(
         gradientToDraw,
         193,
         5,
-        gradientToDraw.width + dw
+        gradientToDraw.width + dw,
       );
 
       //Draw frame over
@@ -1158,7 +1159,7 @@ var arrowScene = function (p) {
         this.imgToDraw,
         this.xPos + d,
         this.yPos + d,
-        this.scale
+        this.scale,
       );
     }
     displayGlow() {
@@ -1168,7 +1169,7 @@ var arrowScene = function (p) {
         drawImageToScale(
           hitGlowImg,
           this.xPos - arrowMargin,
-          this.yPos - arrowMargin
+          this.yPos - arrowMargin,
         );
         p.tint(255, 255);
       }
@@ -1396,7 +1397,7 @@ var arrowScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
   function drawImageToScale(img, x, y, scaleFactor) {
@@ -1406,7 +1407,7 @@ var arrowScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio * scaleFactor,
-        img.height * scaleRatio * scaleFactor
+        img.height * scaleRatio * scaleFactor,
       );
     } else {
       p.image(
@@ -1414,7 +1415,7 @@ var arrowScene = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio,
-        img.height * scaleRatio
+        img.height * scaleRatio,
       );
     }
   }
@@ -1425,7 +1426,7 @@ var arrowScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 
@@ -1435,7 +1436,7 @@ var arrowScene = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      height * scaleRatio
+      height * scaleRatio,
     );
   }
 
@@ -1502,7 +1503,7 @@ var arrowScene = function (p) {
         290,
         null,
         null,
-        "pink"
+        "pink",
       );
       newText.animate();
     }
@@ -1525,7 +1526,7 @@ var arrowScene = function (p) {
         146,
         null,
         null,
-        "pink"
+        "pink",
       );
       newText.animate();
     }
@@ -1877,7 +1878,7 @@ var arrowScene = function (p) {
         "What do I want?",
         null,
         null,
-        "hold"
+        "hold",
       );
       text1.animate();
     }
@@ -1887,7 +1888,7 @@ var arrowScene = function (p) {
         "In this body",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(cueCount, "of mine?", null, 250, "hold");
       text1.animate();
@@ -1902,7 +1903,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -1916,7 +1917,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -1930,7 +1931,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -1944,7 +1945,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -1956,7 +1957,7 @@ var arrowScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(cueCount, "won", null, 250, "hold", "pink");
       text1.animate();
@@ -1969,7 +1970,7 @@ var arrowScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -1977,7 +1978,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -1989,7 +1990,7 @@ var arrowScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -1997,7 +1998,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2009,7 +2010,7 @@ var arrowScene = function (p) {
         "I want to be",
         null,
         171,
-        "hold"
+        "hold",
       );
       let text2 = new NarrativeText(
         cueCount,
@@ -2017,7 +2018,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       text2.animate();
@@ -2030,7 +2031,7 @@ var arrowScene = function (p) {
         "become an artist",
         null,
         250,
-        "hold"
+        "hold",
       );
       text1.animate();
       text2.animate();
@@ -2289,7 +2290,7 @@ var arrowScene = function (p) {
         null,
         250,
         "hold",
-        "pink"
+        "pink",
       );
 
       text1.animate();
@@ -2479,7 +2480,7 @@ var arrowScene = function (p) {
         220,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2503,7 +2504,7 @@ var arrowScene = function (p) {
         220,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2527,7 +2528,7 @@ var arrowScene = function (p) {
         220,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2551,7 +2552,7 @@ var arrowScene = function (p) {
         200,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2575,7 +2576,7 @@ var arrowScene = function (p) {
         220,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2599,7 +2600,7 @@ var arrowScene = function (p) {
         220,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2623,7 +2624,7 @@ var arrowScene = function (p) {
         180,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
     }
@@ -2644,7 +2645,7 @@ var arrowScene = function (p) {
         null,
         null,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "me", null, 250, "hold");
@@ -2675,7 +2676,7 @@ var arrowScene = function (p) {
         null,
         171,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "me", null, 250, "hold");
@@ -2782,7 +2783,7 @@ var arrowScene = function (p) {
         260,
         171,
         "hold",
-        "pink"
+        "pink",
       );
       text1.animate();
       let text2 = new NarrativeText(cueCount, "e", 320, 250, "hold");

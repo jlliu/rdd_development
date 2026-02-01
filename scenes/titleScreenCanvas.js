@@ -47,6 +47,8 @@ var title = function (p) {
 
   let isDemo = true;
 
+  let playerTextSpritesheet;
+
   // Setup all fonts in this file
   let fontsToLoad = [
     "mainYellow",
@@ -63,15 +65,15 @@ var title = function (p) {
     //Preload whatever needs to be preloaded
 
     // shader = p.loadShader("shaders/basic.vert", "shaders/basic.frag");
-    logoImg = p.loadImage("/assets/RDD-logo.png");
-    startTextImg = p.loadImage("/assets/startText.png");
+    logoImg = p.loadImage("assets/RDD-logo.png");
+    startTextImg = p.loadImage("assets/startText.png");
 
     fontsToLoad.forEach(function (fontName) {
       fonts[fontName].sets.forEach(function (fontSet) {
         fontSet.imgObj = p.loadImage(fontSet.src);
       });
     });
-    playerTextSpritesheet = p.loadImage("/assets/playerTextSheet.png");
+    playerTextSpritesheet = p.loadImage("assets/playerTextSheet.png");
   };
 
   p.setup = function () {
@@ -340,6 +342,7 @@ var title = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     if (isCurrentScene) {
       //Ignore repeated keydown
       if (e.repeat) {

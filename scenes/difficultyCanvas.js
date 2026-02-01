@@ -221,6 +221,7 @@ var difficulty = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     if (isCurrentScene) {
       //Ignore repeated keydown
       if (e.repeat) {
@@ -321,7 +322,7 @@ var difficulty = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -364,7 +365,7 @@ var difficulty = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 

@@ -27,7 +27,7 @@ var gate = function (p) {
   let winState = null;
 
   p.preload = function () {
-    gateSpritesheet = p.loadImage("/assets/gatesSpritesheet.png");
+    gateSpritesheet = p.loadImage("assets/gatesSpritesheet.png");
     winImg = p.loadImage("assets/result-cleared.png");
     failImg = p.loadImage("assets/result-failed.png");
   };
@@ -174,7 +174,7 @@ var gate = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 

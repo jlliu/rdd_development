@@ -20,7 +20,6 @@ var mainScene = function (p) {
 
   let songId = 0;
 
-  let hitArrowImgs;
   let arrowWidth = 64;
   let hitPos = { x: 16, y: 56 };
   let arrow_xPos = {
@@ -32,18 +31,9 @@ var mainScene = function (p) {
 
   let arrowSpritesheet;
 
-  let arrowImgs;
-  let arrowImgsOriginal;
+  // let arrowImgs;
+  // let arrowImgsOriginal;
 
-  let holdMiddleImg;
-  let holdMiddleImgOriginal;
-  let holdEndImgs;
-  let holdEndImgsOriginal;
-  let comboTextImg;
-  let healthBarFrameImg;
-  let greenGradientImg;
-  let rainbowGradientImg;
-  let hitGlowImg;
   let scoreBackgroundImg;
 
   let eggBombImg;
@@ -100,15 +90,15 @@ var mainScene = function (p) {
   p.preload = function () {
     //Preload a background here
     //Preload whatever needs to be preloaded
-    arrowSpritesheet = p.loadImage("/assets/arrowSpritesheet.png");
+    arrowSpritesheet = p.loadImage("assets/arrowSpritesheet.png");
 
-    comboTextImg = p.loadImage("/assets/comboText.png");
-    healthBarFrameImg = p.loadImage("/assets/healthBarFrame.png");
-    greenGradientImg = p.loadImage("/assets/greenGradient.png");
-    rainbowGradientImg = p.loadImage("/assets/rainbowGradient.png");
-    hitGlowImg = p.loadImage("/assets/hit-glow.png");
-    eggBombImg = p.loadImage("/assets/egg-bomb.png");
-    scoreBackgroundImg = p.loadImage("/assets/scoreBackground.png");
+    comboTextImg = p.loadImage("assets/comboText.png");
+    healthBarFrameImg = p.loadImage("assets/healthBarFrame.png");
+    greenGradientImg = p.loadImage("assets/greenGradient.png");
+    rainbowGradientImg = p.loadImage("assets/rainbowGradient.png");
+    hitGlowImg = p.loadImage("assets/hit-glow.png");
+    eggBombImg = p.loadImage("assets/egg-bomb.png");
+    scoreBackgroundImg = p.loadImage("assets/scoreBackground.png");
   };
 
   p.setup = function () {
@@ -1220,6 +1210,7 @@ var mainScene = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -1681,7 +1672,7 @@ var mainScene = function (p) {
     }
     displayGlow() {
       if (this.glowing) {
-        let arrowMargin = 20;
+        let arrowMargin = 28;
         p.tint(255, this.gradientOpacity * 255);
         drawImageToScale(
           hitGlowImg,

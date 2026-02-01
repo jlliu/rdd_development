@@ -94,7 +94,7 @@ var unlock = function (p) {
           (135 + index * 80) * scaleRatio,
           300 * scaleRatio,
           60 * scaleRatio,
-          10 * scaleRatio
+          10 * scaleRatio,
         );
         let showGlow = songList[index].cleared || attemptedCode.length > index;
         glow.display(showGlow);
@@ -384,6 +384,7 @@ var unlock = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -464,7 +465,7 @@ var unlock = function (p) {
           200 -
             (codeGlowImg.height * this.sizeScale) / 2 +
             codeGlowImg.width / 2,
-          this.sizeScale
+          this.sizeScale,
         );
         p.noTint();
       }
@@ -546,7 +547,7 @@ var unlock = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -572,7 +573,7 @@ var unlock = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio * scaleFactor,
-        img.height * scaleRatio * scaleFactor
+        img.height * scaleRatio * scaleFactor,
       );
     } else {
       p.image(
@@ -580,7 +581,7 @@ var unlock = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio,
-        img.height * scaleRatio
+        img.height * scaleRatio,
       );
     }
   }

@@ -90,7 +90,7 @@ var serviceMode = function (p) {
         dialogueMenuItems,
         360,
         0,
-        sceneData.right.title
+        sceneData.right.title,
       );
 
       let thisDialogueScene = new dialogueScene(leftText, thisMenuGroup);
@@ -287,6 +287,7 @@ var serviceMode = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -332,7 +333,7 @@ var serviceMode = function (p) {
             "whiteTerminal",
             1,
             L_start_xPos,
-            L_current_yPos
+            L_current_yPos,
           );
           //Draw currently typing lines
         } else if (this.lineShown == i) {
@@ -341,7 +342,7 @@ var serviceMode = function (p) {
             "whiteTerminal",
             1,
             L_start_xPos,
-            L_current_yPos
+            L_current_yPos,
           );
         }
 
@@ -591,7 +592,7 @@ var serviceMode = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -610,7 +611,7 @@ var serviceMode = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 

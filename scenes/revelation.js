@@ -25,7 +25,7 @@ var revelation = function (p) {
     // 0. Walking on Eggshells
     ['"Thank you for', "trying to", 'keep me safe"'],
     // 1. Kung Fu Fawning
-    ["Thank you for", "showing your capacity", 'for compassion"'],
+    ['"Thank you for', "showing your capacity", 'for compassion"'],
     // 2. Chasing Breadcrumbs
     ['"Thank you for', "being in search", 'of connection"'],
     // 3. Lone Ranger
@@ -213,6 +213,7 @@ var revelation = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     //Ignore repeated keydown
     if (e.repeat) {
       return;
@@ -261,7 +262,7 @@ var revelation = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -284,7 +285,7 @@ var revelation = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 

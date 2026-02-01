@@ -60,7 +60,7 @@ var score = function (p) {
           currentSongBanner,
           320 - (currentSongBanner.width * 0.75) / 2,
           20,
-          0.75
+          0.75,
         );
 
         //Draw Ranking
@@ -72,7 +72,7 @@ var score = function (p) {
           7,
           80,
           360,
-          "mainYellow"
+          "mainYellow",
         );
 
         // Draw PERFECT
@@ -81,7 +81,7 @@ var score = function (p) {
           3,
           150,
           150,
-          "greenHelper"
+          "greenHelper",
         );
         drawText("Perfect", "greenHelper", 1, null, 150);
 
@@ -91,7 +91,7 @@ var score = function (p) {
           3,
           150,
           200,
-          "greenHelper"
+          "greenHelper",
         );
         drawText("Great", "greenHelper", 1, null, 200);
 
@@ -105,7 +105,7 @@ var score = function (p) {
           3,
           150,
           300,
-          "greenHelper"
+          "greenHelper",
         );
         drawText("Miss", "greenHelper", 1, null, 300);
 
@@ -127,7 +127,7 @@ var score = function (p) {
     totalDigits,
     xPos,
     yPos,
-    fontName
+    fontName,
   ) {
     let numberDigitLength = number.toString().length;
     let numOfZeros = totalDigits - numberDigitLength;
@@ -147,7 +147,7 @@ var score = function (p) {
       fontName,
       1,
       xPos + numOfZeros * fonts[fontName].sets[0].size.width,
-      yPos
+      yPos,
     );
   }
 
@@ -293,6 +293,7 @@ var score = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
+    e.preventDefault();
     if (isCurrentScene) {
       //Ignore repeated keydown
       if (e.repeat) {
@@ -393,7 +394,7 @@ var score = function (p) {
         fonts[fontName].charsToImgs[char],
         xPos,
         start_yPos,
-        scaleFactor
+        scaleFactor,
       );
     });
   }
@@ -417,7 +418,7 @@ var score = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio * scaleFactor,
-        img.height * scaleRatio * scaleFactor
+        img.height * scaleRatio * scaleFactor,
       );
     } else {
       p.image(
@@ -425,7 +426,7 @@ var score = function (p) {
         x * scaleRatio,
         y * scaleRatio,
         img.width * scaleRatio,
-        img.height * scaleRatio
+        img.height * scaleRatio,
       );
     }
   }

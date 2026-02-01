@@ -31,11 +31,8 @@ var background = function (p) {
 
   p.preload = function () {
     //Preload shaders here
-    mainGlow = p.loadShader("/shaders/basic.vert", "/shaders/pinkGlow.frag");
-    radialGlow = p.loadShader(
-      "/shaders/basic.vert",
-      "/shaders/radialGlow.frag"
-    );
+    mainGlow = p.loadShader("shaders/basic.vert", "shaders/pinkGlow.frag");
+    radialGlow = p.loadShader("shaders/basic.vert", "shaders/radialGlow.frag");
   };
 
   p.setup = function () {
@@ -46,7 +43,7 @@ var background = function (p) {
     backgroundCanvas = p.createCanvas(
       canvasSizeOriginal.width,
       canvasSizeOriginal.height,
-      p.WEBGL
+      p.WEBGL,
     ).elt;
 
     backgroundCanvas.classList.add("gameCanvas");
@@ -67,13 +64,15 @@ var background = function (p) {
 
   p.draw = function () {
     // If auto is not running, display the click to start
-    if (audioCtx.state == "running") {
-      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-      enableAudioOverlay.style.display = "none";
-    } else {
-      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-      enableAudioOverlay.style.display = "flex";
-    }
+
+    // if (audioCtx.state == "running") {
+    //   let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
+    //   enableAudioOverlay.style.display = "none";
+    // } else {
+    //   let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
+    //   enableAudioOverlay.style.display = "flex";
+    // }
+
     //Cursor is default unless otherwise specified
     // cursorState = "default";
     // displayGame();
@@ -91,7 +90,7 @@ var background = function (p) {
 
     let glowPosition = Math.min(
       (clock.seconds / revelationGlowTime) * 0.5,
-      0.5
+      0.5,
     );
 
     radialGlow.setUniform("u_time", clock.seconds);
@@ -221,7 +220,7 @@ var background = function (p) {
       x * scaleRatio,
       y * scaleRatio,
       img.width * scaleRatio,
-      img.height * scaleRatio
+      img.height * scaleRatio,
     );
   }
 
