@@ -38,6 +38,11 @@ var mainScene = function (p) {
 
   let eggBombImg;
 
+  let attackSpritesheet;
+  let attackImages = {};
+
+  let fawningAnimation;
+
   //relevantNotes stores an array of note objects
   let relevantNotes = [];
   // let hitMargin = 100;
@@ -99,6 +104,8 @@ var mainScene = function (p) {
     hitGlowImg = p.loadImage("assets/hit-glow.png");
     eggBombImg = p.loadImage("assets/egg-bomb.png");
     scoreBackgroundImg = p.loadImage("assets/scoreBackground.png");
+
+    attackSpritesheet = p.loadImage("assets/attackSpritesheet.png");
   };
 
   p.setup = function () {
@@ -194,11 +201,31 @@ var mainScene = function (p) {
       right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
     };
 
+    attackImages = {
+      left: {
+        day: attackSpritesheet.get(0, 0, 320, 240),
+        night: attackSpritesheet.get(0, 240, 320, 240),
+      },
+      down: {
+        day: attackSpritesheet.get(0, 240 * 2, 320, 240),
+        night: attackSpritesheet.get(0, 240 * 3, 320, 240),
+      },
+      up: {
+        day: attackSpritesheet.get(0, 240 * 4, 320, 240),
+        night: attackSpritesheet.get(0, 240 * 5, 320, 240),
+      },
+      right: {
+        day: attackSpritesheet.get(0, 240 * 6, 320, 240),
+        night: attackSpritesheet.get(0, 240 * 7, 320, 240),
+      },
+    };
+
     feedbackObj = new FeedbackText();
     comboObj = new ComboText();
 
     scoreData = new Score();
     healthBar = new HealthBar();
+    fawningAnimation = new FawningAnimation();
 
     holdMiddleImgOriginal.loadPixels();
     Object.values(arrowImgsOriginal).forEach(function (imgObj) {
@@ -215,6 +242,8 @@ var mainScene = function (p) {
   p.draw = function () {
     // p.background("pink");
     p.clear();
+
+    fawningAnimation.display();
 
     Object.values(hitArrowObjs).forEach(function (arrowObj) {
       arrowObj.displayGlow();
@@ -1014,6 +1043,11 @@ var mainScene = function (p) {
         feedbackObj.updateState("perfect", true);
       }
       scoreData.update(score);
+
+      // Trigger fawning animation
+      if (note.isFawningHit) {
+        fawningAnimation.startAnimation(note.direction, note.isFawningNight);
+      }
     } else if (!note.isHit && note.noteType == "mine") {
       //Successfully hitting mines should set off the bomb;
       note.isHit = true;
@@ -1280,7 +1314,17 @@ var mainScene = function (p) {
       this.eggshellSceneOpacity = 0;
       this.hasPassedOver = false;
       this.isHit = false;
+
+      // Check if this is a fawning hit...
+      this.isFawningHit =
+        songId == 1 &&
+        [18, 19, 20, 21, 30, 31, 32, 33].indexOf(this.measure) > -1;
+
+      // Check if in second group of measures for night
+      this.isFawningNight =
+        this.isFawningHit && [30, 31, 32, 33].indexOf(this.measure) > -1;
     }
+
     animateEggshellCrack() {
       // console.log("aniimateEggshellCrack");
       let i = 0;
@@ -1410,12 +1454,63 @@ var mainScene = function (p) {
         p.tint(255, 255);
       }
 
+      // Display effect for eggshell hit
       if (this.noteType == "mine" && this.eggshellSceneOpacity > 0) {
         // Draw flash if eggshell opacity is hit
         let c = p.color(255, 255, 255);
         c.setAlpha(this.eggshellSceneOpacity * 255);
         p.fill(c);
         p.rect(0, 0, p.width, p.height);
+      }
+    }
+  }
+
+  // Create simple animation for fawning that times it out after 1 beat
+  class FawningAnimation {
+    constructor() {
+      this.currentDirection = "left";
+      this.animationPlaying = false;
+      this.cancelAnimationTimeout = null;
+      this.attackImageScale = 1;
+      this.isNight = false;
+    }
+    startAnimation(direction, isNight) {
+      this.currentDirection = direction;
+      this.isNight = isNight;
+      let _this = this;
+      _this.animationPlaying = true;
+      sound_fx.attack[this.currentDirection].start();
+      clearTimeout(_this.cancelAnimationTimeout);
+      clearInterval(_this.attackAnimationInterval);
+
+      let i = 1;
+      _this.attackAnimationInterval = setInterval(function () {
+        if (i < Object.keys(hitAnimationTimings).length) {
+          _this.attackImageScale = hitAnimationTimings[i];
+          console.log(_this.attackImageScale);
+        } else {
+          _this.attackImageScale = 1;
+          clearInterval(_this.attackAnimationInterval);
+        }
+        i++;
+      }, 30);
+
+      _this.cancelAnimationTimeout = setTimeout(
+        function () {
+          _this.animationPlaying = false;
+        },
+        1 * secondsPerBeat * 1000,
+      );
+    }
+    display() {
+      if (this.animationPlaying) {
+        let dx = (640 * this.attackImageScale - 640) / 2;
+        let dy = (480 * this.attackImageScale - 480) / 2;
+        let imageToDraw = this.isNight
+          ? attackImages[this.currentDirection].night
+          : attackImages[this.currentDirection].day;
+
+        drawImageToScale(imageToDraw, -dx, -dy, 2 * this.attackImageScale);
       }
     }
   }

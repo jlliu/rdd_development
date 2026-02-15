@@ -239,6 +239,12 @@ let sound_fx = {
   menuChange: new Tone.Player(`assets/fx/house_stab.wav`).toDestination(),
   error: new Tone.Player(`assets/fx/error.mp3`).toDestination(),
   select: new Tone.Player(`assets/fx/select.wav`).toDestination(),
+  attack: {
+    left: new Tone.Player(`assets/fx/attack1.mp3`).toDestination(),
+    down: new Tone.Player(`assets/fx/attack2.mp3`).toDestination(),
+    up: new Tone.Player(`assets/fx/attack3.mp3`).toDestination(),
+    right: new Tone.Player(`assets/fx/attack4.mp3`).toDestination(),
+  },
 };
 
 const menu_track_player = new Tone.Player(
