@@ -271,7 +271,7 @@ var mainScene = function (p) {
       songVideo = document.querySelector("#songVideo");
       songVideo.src = songList[songId].videoUrl;
       songVideo.load();
-      songVideo.loop = true;
+      songVideo.loop = false;
       // console.log("show scene");
       songVideo.addEventListener("canplaythrough", setupSongIntro, false);
     });
@@ -392,7 +392,9 @@ var mainScene = function (p) {
     //Handle case for song end
     if (thisMeasure > measureData.length) {
       let win = scoreData.ranking != "E";
-      handleSongEnd(win);
+      // Comment for install
+      // handleSongEnd(win);
+      handleSongEnd(true);
     }
   }
 
@@ -496,7 +498,7 @@ var mainScene = function (p) {
     scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
     setHitMarginTime();
-    console.log("hitMarginTime is " + hitMarginTime);
+    // console.log("hitMarginTime is " + hitMarginTime);
     // hitMargin =  pixelsPerBeat * songBpm(/200);
 
     //For negative songDelays, start song before notes
@@ -659,8 +661,13 @@ var mainScene = function (p) {
   // Until we refactor all the arrow timings to use the transport (idk if this would work well...), we will create a timeout when the stop happens.
   // That timeout will go through and set current arrows to be passed over
 
+  //Q: Let's say there are two consecutive arrows of the same time within the hit margin.
+  // How do we evaluate only the first note????
   function setHitMarginTime() {
-    hitMarginTime = secondsPerBeat / 2;
+    // Set hit margin time to half a beat...
+    // hitMarginTime = secondsPerBeat / 2;
+    // for testing... note that holds will be weird!
+    hitMarginTime = secondsPerBeat * 0.75;
   }
   function isWithinHitMargin(yPos) {
     return (
@@ -1165,19 +1172,30 @@ var mainScene = function (p) {
     return hitSuccessful;
   }
 
+  // Iterates through the list of relative notes....
+
+  // If you have previously hit a note with the SAME direction, don't assess hit for notes of that direction later
   function assessHit(direction, hitType) {
     let anyNoteHit = false;
+
+    let thisDirectionHit = false;
+
     relevantNotes.forEach(function (note) {
       if (Tone.Transport.state == "started") {
-        if (assessHitForNoteByTime(direction, hitType, note)) {
-          anyNoteHit = true;
+        if (!thisDirectionHit) {
+          if (assessHitForNoteByTime(direction, hitType, note)) {
+            thisDirectionHit = true;
+            anyNoteHit = true;
+          }
         }
       } else if (
         Tone.Transport.state == "paused" &&
         isPassedHitBoundary(note.currentY)
       ) {
-        if (assessHitForNoteByTime(direction, hitType, note, true)) {
-          anyNoteHit = true;
+        if (!thisDirectionHit) {
+          if (assessHitForNoteByTime(direction, hitType, note, true)) {
+            anyNoteHit = true;
+          }
         }
       }
     });
@@ -1487,7 +1505,6 @@ var mainScene = function (p) {
       _this.attackAnimationInterval = setInterval(function () {
         if (i < Object.keys(hitAnimationTimings).length) {
           _this.attackImageScale = hitAnimationTimings[i];
-          console.log(_this.attackImageScale);
         } else {
           _this.attackImageScale = 1;
           clearInterval(_this.attackAnimationInterval);
@@ -1693,7 +1710,8 @@ var mainScene = function (p) {
       // Check for failing state, if bar goes to zero
       if (this.amountFilled <= 0) {
         console.log("FAILED");
-        handleSongEnd(false);
+        // Comment for install
+        // handleSongEnd(false);
       }
     }
     reset() {

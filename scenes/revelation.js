@@ -79,6 +79,13 @@ var revelation = function (p) {
   };
 
   function animateScene() {
+    // Loop first part of energy blast
+    sound_fx.energyBlast.loop = true;
+    sound_fx.energyBlast.loopStart = 0;
+    sound_fx.energyBlast.loopEnd = 6.6;
+    sound_fx.energyBlast.start();
+    console.log("starting sound loop");
+
     setTimeout(function () {
       let lines = revelations[thisSongIndex];
       let typingAnimationTimer = setInterval(function () {
@@ -89,6 +96,14 @@ var revelation = function (p) {
           charsInLineShown = 0;
           if (lineShown == lines.length) {
             // END OF TYPING ANIMATION
+
+            // Trigger sound fx blast
+
+            console.log("starting end sound");
+            sound_fx.energyBlast.stop();
+            sound_fx.energyBlast.loop = false;
+            sound_fx.energyBlast.start(0, 6.6);
+
             clearInterval(typingAnimationTimer);
             document
               .querySelector("#backgroundCanvas")

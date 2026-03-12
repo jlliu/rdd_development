@@ -508,6 +508,9 @@ var unlock = function (p) {
         }
         _this.scale += 0.1;
       }, 20);
+
+      // Start sound effect
+      sound_fx.shimmer.start();
     }
   }
 

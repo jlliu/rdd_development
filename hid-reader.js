@@ -72,7 +72,7 @@ const selectDevice = async (device) => {
       } catch (e) {
         if (e instanceof DOMException) {
           console.log(
-            `Error opening ${selectedDevice.productName}: ${e.message}`
+            `Error opening ${selectedDevice.productName}: ${e.message}`,
           );
         } else {
           throw e;

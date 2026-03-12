@@ -245,7 +245,11 @@ let sound_fx = {
     up: new Tone.Player(`assets/fx/attack3.mp3`).toDestination(),
     right: new Tone.Player(`assets/fx/attack4.mp3`).toDestination(),
   },
+  energyBlast: new Tone.Player(`assets/fx/energy_blast.mp3`).toDestination(),
+  shimmer: new Tone.Player(`assets/fx/shimmer.mp3`).toDestination(),
 };
+
+sound_fx.energyBlast.volume = -6;
 
 const menu_track_player = new Tone.Player(
   `assets/fx/menu_ui.mp3`,

@@ -65,13 +65,14 @@ var background = function (p) {
   p.draw = function () {
     // If auto is not running, display the click to start
 
-    // if (audioCtx.state == "running") {
-    //   let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-    //   enableAudioOverlay.style.display = "none";
-    // } else {
-    //   let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
-    //   enableAudioOverlay.style.display = "flex";
-    // }
+    // Toggle for installation
+    if (audioCtx.state == "running") {
+      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
+      enableAudioOverlay.style.display = "none";
+    } else {
+      let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
+      enableAudioOverlay.style.display = "flex";
+    }
 
     //Cursor is default unless otherwise specified
     // cursorState = "default";
