@@ -17,39 +17,23 @@ var serviceMode = function (p) {
 
   let menuAnimationTimer = 0.0;
 
-  // let mainMenuItems = [];
+  let mainMenuItems = [];
 
-  // let mainMenu;
+  let mainMenu;
 
-  // let currentMenu;
+  let currentMenu;
 
-  // let showSettings = false;
+  let showSettings = false;
 
-  // let visibleScene = null;
+  let visibleScene = null;
 
-  // let settingsDialogueScenes = [];
+  let settingsDialogueScenes = [];
 
-  // let exitDialogueScenes = [];
+  let exitDialogueScenes = [];
 
-  // let currentDialogueSceneIndex = 0;
+  let currentDialogueSceneIndex = 0;
 
-  // let dialogueSceneType;
-
-  let currentTestSceneNum = 2;
-
-  let testScenes = [];
-
-  // Idea:
-  // We order scenes by number, e.g. scene 0 = Loading/Hello, Scene 1 = Color test, Scene 2 = Sound test...
-  // Scenes can have multiple states to them triggered by user input or animation
-
-  // What is the best way to do this?
-  // I have a typing animation object... that you can set to animate...
-  // We have a Scene class. Which contains a list of typing animation objects in order.... and also includes instructions tied to each part
-  // Scene contains parts which contain typing animations and instructions. If the instructions don't make sene then I can figure it out.
-  // The instructions take in certain inputs... or we have an event for when the action is successful
-  // Then we drive the scene forward and animate anything new... but also we are DRAWING one scene at a time... plus anything unique
-  // Each scene gets a custom function as well...
+  let dialogueSceneType;
 
   p.preload = function () {};
 
@@ -66,44 +50,54 @@ var serviceMode = function (p) {
 
     p.noStroke();
 
-    // mainMenuItems = [
-    //   new menuItem("INPUT CHECK", showInputCheck),
-    //   new menuItem("SOUND CHECK", showSoundCheck),
-    //   new menuItem("SCREEN CHECK", showScreenCheck),
-    //   new menuItem("COLOR CHECK", showColorCheck),
-    //   new menuItem("GAME SETTINGS", showGameSettings),
-    //   new menuItem("EXIT", showColorCheck),
-    // ];
+    mainMenuItems = [
+      new menuItem("INPUT CHECK", showInputCheck),
+      new menuItem("SOUND CHECK", showSoundCheck),
+      new menuItem("SCREEN CHECK", showScreenCheck),
+      new menuItem("COLOR CHECK", showColorCheck),
+      new menuItem("GAME SETTINGS", showGameSettings),
+      new menuItem("EXIT", showColorCheck),
+    ];
 
-    // mainMenu = new menuGroup(mainMenuItems, 200, 140, "SERVICE MENU");
+    mainMenu = new menuGroup(mainMenuItems, 200, 140, "SERVICE MENU");
 
-    // settingsDialogueScenes = setupDialogueScenes(settingsDialogue, "settings");
-    // exitDialogueScenes = setupDialogueScenes(exitDialogue, "exit");
+    settingsDialogueScenes = setupDialogueScenes(settingsDialogue, "settings");
+    exitDialogueScenes = setupDialogueScenes(exitDialogue, "exit");
 
-    // currentMenu = mainMenu;
+    currentMenu = mainMenu;
 
-    // visibleScene = mainMenu;
-
-    setupScenes();
+    visibleScene = mainMenu;
 
     window.dispatchEvent(canvasLoadedEvent);
 
     setupNavigation(serviceModeCanvas);
-
-    // testScenes[currentScene].animatePart();
   };
 
-  function setupScenes() {
-    // Set up test Scenes for each object
-    testScenesData.forEach(function (sceneData) {
-      testScenes.push(new testScene(sceneData));
+  function setupDialogueScenes(dialogueData, sceneType) {
+    let dialogueScenes = [];
+
+    dialogueData.forEach(function (sceneData) {
+      let leftText = sceneData.left;
+      let menuOptions = sceneData.right.options;
+      let dialogueMenuItems = [];
+
+      menuOptions.forEach(function (option) {
+        let thisItem = new menuItem(option, progressDialogue);
+        dialogueMenuItems.push(thisItem);
+      });
+
+      let thisMenuGroup = new menuGroup(
+        dialogueMenuItems,
+        360,
+        0,
+        sceneData.right.title,
+      );
+
+      let thisDialogueScene = new dialogueScene(leftText, thisMenuGroup);
+      dialogueScenes.push(thisDialogueScene);
     });
 
-    testScenes[1].addCustomDraw(colorTest);
-    testScenes[2].addCustomDraw(soundTest);
-    testScenes[3].addCustomDraw(screenTest);
-
-    // Create custom functions for scenes
+    return dialogueScenes;
   }
 
   p.draw = function () {
@@ -113,123 +107,34 @@ var serviceMode = function (p) {
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      testScenes[currentTestSceneNum].display();
+      // drawMenu();
+
+      // if (mainMenu == currentMenu) {
+
+      //Center main menu
+      if (visibleScene == mainMenu) {
+        mainMenu.display(true);
+      } else {
+        visibleScene.display();
+      }
+
+      // }
+      // Note to self:
+      // We need a system that displays whatever the current scene is...
+      // Maybe just store a visible scenes variable
     }
   };
 
-  // Custom code for test scenes, depends on time... (ms)
-
-  function colorTest(t) {
-    //Draw red rects
-    let count = Math.floor(t / 50);
-    //Iterate through total Rects for each...
-    let totalRects = 40;
-    let rectWidth = 40;
-    let rectHeight = 75;
-    for (var i = 0; i < totalRects; i++) {
-      let row = Math.floor(i / 10);
-      let xPos = Math.floor(i % 10);
-      let c;
-      if (row == 0) {
-        c = p.color(255, 0, 0);
-      } else if (row == 1) {
-        c = p.color(0, 255, 0);
-      } else if (row == 2) {
-        c = p.color(0, 0, 255);
-      } else if (row == 3) {
-        c = p.color(255, 255, 255);
-      }
-      c.setAlpha((xPos / 10) * 255);
-      p.fill(c);
-      p.noStroke();
-      if (count >= i) {
-        p.rect(
-          (100 + xPos * rectWidth) * scaleRatio,
-          (80 + row * rectHeight + 8 * row) * scaleRatio,
-          rectWidth * scaleRatio,
-          rectHeight * scaleRatio,
-        );
-      }
-    }
-  }
-
-  let fx_list = [
-    { name: "egg-crack.mp3", soundObj: sound_fx.eggCrack },
-    { name: "door-shut.mp3", soundObj: sound_fx.doorShut },
-    { name: "house_stab.wav", soundObj: sound_fx.menuChange },
-    { name: "error.mp3", soundObj: sound_fx.error },
-    { name: "select.wav", soundObj: sound_fx.select },
-    { name: "attack1.mp3", soundObj: sound_fx.attack.left },
-    { name: "attack2.mp3", soundObj: sound_fx.attack.down },
-    { name: "attack3.mp3", soundObj: sound_fx.attack.up },
-    { name: "attack4.mp3", soundObj: sound_fx.attack.right },
-    // {
-    //   name: "energy_blast.mp3",
-    //   soundObj: sound_fx.energyBlast,
-    //   isPlaying: false,
-    // },
-    { name: "shimmer.mp3", soundObj: sound_fx.shimmer, isPlaying: false },
-  ];
-
-  let soundTestNum = 0;
-  let currentSoundTestCount = -1;
-
-  function soundTest(t) {
-    //Needs to draw the sound text stuff
-    // Needs to detect when to play the sound..
-    let count = Math.floor(t / 1500) % fx_list.length;
-    let thisSound = fx_list[count];
-    drawText(thisSound.name, "whiteTerminal", 1, null, 230);
-
-    if (
-      thisSound.soundObj.state == "stopped" &&
-      count != currentSoundTestCount
-    ) {
-      thisSound.soundObj.loop = false;
-      thisSound.isPlaying = true;
-      thisSound.soundObj.start();
-      thisSound.soundObj.onstop = function () {};
-    } else if (thisSound.soundObj.state == "started") {
-      currentSoundTestCount = count;
-      thisSound.isPlaying = false;
-    }
-  }
-
-  function screenTest(t) {
-    let lineWidth = 5;
-    let numOfLines = (canvasWidth + canvasHeight) / lineWidth;
-
-    //Draw underlying gradient
-    for (var i = 0; i < numOfLines; i++) {
-      p.strokeWeight(lineWidth);
-      let gradient_value = Math.sin((t / 8 + i) / 60) * 180;
-      let color = p.color(0, 255 - gradient_value, 255 - gradient_value);
-      p.stroke(color);
-      //Draw a diagonal line
-      let displacement = i * lineWidth;
-      p.line(0, displacement, 0 + displacement, 0);
-    }
-    //Draw square of grids
-    let squareSize = 32;
-    let marginSize = 2;
-    for (var i = 0; i < 640 / squareSize; i++) {
-      for (var j = 0; j < 480 / squareSize; j++) {
-        // let transparentColor = p.color(0, 0, 0);
-        // transparentColor.setAlpha(0);
-
-        // p.stroke(transparentColor);
-        p.fill("black");
-        p.noStroke();
-        // console.log(i * squareSize * scaleRatio + marginSize);
-        p.rect(
-          i * squareSize * scaleRatio + marginSize,
-          j * squareSize * scaleRatio + marginSize,
-          squareSize * scaleRatio - marginSize,
-          squareSize * scaleRatio - marginSize,
-        );
-      }
-    }
-  }
+  // function animateMenuIn() {
+  //   let menuItemToAnimate = 0;
+  //   let menuItemStaggerTimer = setInterval(function () {
+  //     menuItems[menuItemToAnimate].startAnimation();
+  //     menuItemToAnimate++;
+  //     if (menuItems[menuItemToAnimate] == null) {
+  //       clearInterval(menuItemStaggerTimer);
+  //     }
+  //   }, 150);
+  // }
 
   function setupNavigation(thisCanvas) {
     p.noLoop();
@@ -241,9 +146,7 @@ var serviceMode = function (p) {
         thisCanvas.style.opacity = 1;
         isCurrentScene = true;
         // Animate in main menu
-        // mainMenu.animateMenu();
-
-        testScenes[currentTestSceneNum].animatePart();
+        mainMenu.animateMenu();
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
@@ -268,38 +171,85 @@ var serviceMode = function (p) {
     }
   });
 
-  // function showInputCheck() {
-  //   //Add scene here
-  // }
-  // function showSoundCheck() {
-  //   //Add scene here
-  // }
-  // function showScreenCheck() {
-  //   //Add scene here
-  // }
-  // function showColorCheck() {
-  //   //Add scene here
-  // }
+  function showInputCheck() {
+    //Add scene here
+  }
+  function showSoundCheck() {
+    //Add scene here
+  }
+  function showScreenCheck() {
+    //Add scene here
+  }
+  function showColorCheck() {
+    //Add scene here
+  }
 
-  function showScene(sceneNum) {
-    // Intro scene
-    if (sceneNum == 0) {
-    }
-    // Color test
-    else if (sceneNum == 1) {
+  function showGameSettings() {
+    let startingDialogueScene = settingsDialogueScenes[0];
+    visibleScene = startingDialogueScene;
+    currentMenu = startingDialogueScene.menuGroup;
+    dialogueSceneType = "settings";
+    currentDialogueSceneIndex = 0;
+    startingDialogueScene.animateScene();
+  }
+
+  function progressDialogue() {
+    console.log("progress dialogue event");
+    currentDialogueSceneIndex++;
+    //We've reached end of dialogue scenes
+    if (
+      dialogueSceneType == "settings" &&
+      currentDialogueSceneIndex >= settingsDialogueScenes.length
+    ) {
+      visibleScene = mainMenu;
+      currentMenu = mainMenu;
+    } else if (
+      dialogueSceneType == "exit" &&
+      currentDialogueSceneIndex >= exitDialogueScenes.length
+    ) {
+    } else {
+      let nextDialogueScene = settingsDialogueScenes[currentDialogueSceneIndex];
+      visibleScene = nextDialogueScene;
+      nextDialogueScene.animateScene();
+      currentMenu = settingsDialogueScenes[currentDialogueSceneIndex].menuGroup;
     }
   }
 
   function handleInput(keyCode) {
     //Handle case for menu navigation
     if (isCurrentScene) {
-      let currentTestScene = testScenes[currentTestSceneNum];
-      // for now assume enter progresses the current instructions
+      if (currentMenu) {
+        let menuIndex = currentMenu.activeMenuItemIndex;
+        let menuItems = currentMenu.itemList;
+        if (keyCode == "ArrowDown" || keyCode == "KeyS") {
+          if (menuIndex < menuItems.length - 1) {
+            if (currentMenu.doneAnimating && !currentMenu.currentlyFlashing) {
+              currentMenu.activeMenuItemIndex++;
+              menuItems.forEach(function (menuItem) {
+                menuItem.active = false;
+              });
+              menuItems[currentMenu.activeMenuItemIndex].active = true;
+            }
+          }
+        }
+        if (keyCode == "ArrowUp" || keyCode == "KeyW") {
+          if (menuIndex > 0) {
+            if (currentMenu.doneAnimating && !currentMenu.currentlyFlashing) {
+              currentMenu.activeMenuItemIndex--;
 
-      if (keyCode == "Enter") {
-        // need to get current part
-        console.log(currentTestScene);
-        currentTestScene.triggerSelect();
+              menuItems.forEach(function (menuItem) {
+                menuItem.active = false;
+              });
+              menuItems[currentMenu.activeMenuItemIndex].active = true;
+            }
+          }
+        }
+        //Select menu item
+        if (keyCode == "Enter") {
+          if (currentMenu.doneAnimating && !currentMenu.currentlyFlashing) {
+            menuItems[currentMenu.activeMenuItemIndex].select();
+          }
+        }
       }
     }
   }
@@ -350,113 +300,31 @@ var serviceMode = function (p) {
     handleInput(e.code);
   });
 
-  class testScene {
-    constructor(partsList) {
-      this.parts = [];
-      let _this = this;
-      partsList.forEach(function (part) {
-        let partData = {};
-        partData.dialogue = new typedText(part.dialogue);
-        partData.instructions = new instructions(part.instructions);
-        _this.parts.push(partData);
-      });
-
-      this.currentPartNum = 0;
-
-      this.customDraw = null;
-      this.sceneTime = 0;
-      this.sceneInterval = null;
-    }
-    display() {
-      let currentPart = this.parts[this.currentPartNum];
-
-      // Display any custom script stuff here.....
-      if (this.customDraw) {
-        // console.log(this.sceneTime);
-        this.customDraw(this.sceneTime);
-      }
-      currentPart.dialogue.display();
-
-      if (currentPart.instructions.showing) {
-        currentPart.instructions.display();
-      }
-    }
-    animatePart() {
-      //Start sceneTime if the beginning
-      let _this = this;
-      if (this.currentPartNum == 0) {
-        this.sceneInterval = setInterval(function () {
-          _this.sceneTime += 10;
-        }, 10);
-      }
-      let currentPart = this.parts[this.currentPartNum];
-      currentPart.dialogue.animate();
-      //Show instructions after a bit
-      setTimeout(function () {
-        currentPart.instructions.showing = true;
-      }, 1000);
-    }
-    addCustomDraw(drawScript) {
-      console.log("adding a custom draw");
-      this.customDraw = drawScript;
-    }
-    triggerSelect() {
-      let currentPart = this.parts[this.currentPartNum];
-      if (
-        !currentPart.instructions.currentlyFlashing &&
-        currentPart.instructions.showing
-      ) {
-        let _this = this;
-        let progressScene = function () {
-          if (_this.currentPartNum < _this.parts.length - 1) {
-            _this.currentPartNum += 1;
-            _this.animatePart();
-          } else {
-            // this.currentPartNum = 0;
-            currentTestSceneNum += 1;
-            testScenes[currentTestSceneNum].animatePart();
-            clearInterval(_this.sceneInterval);
-          }
-        };
-        currentPart.instructions.select(progressScene);
-      }
-
-      // Move onto next part. if not, move onto next scene
-    }
-  }
-
-  class typedText {
-    constructor(textLines) {
-      this.textLines = textLines;
+  class dialogueScene {
+    constructor(leftText, menuGroup) {
+      this.leftText = leftText;
+      this.menuGroup = menuGroup;
 
       //Account for height of multiple lines
-      if (typeof this.textLines == "string") {
+      if (typeof this.leftText == "string") {
         this.numOfLines_L = 1;
         this.height_L = 29;
       } else {
-        this.numOfLines_L = this.textLines.length;
+        this.numOfLines_L = this.leftText.length;
         this.height_L = 29 * this.numOfLines_L;
       }
       this.charsInLineShown = 0;
       this.lineShown = 0;
     }
-    getLeftPosition(text) {
-      let charWidth = 18;
-      return (640 - text.length * charWidth) / 2;
-    }
     display() {
       //Draw left side of text
-      // let L_start_xPos = 70;
-      let L_start_xPos = 640 / 2;
+      let L_start_xPos = 30;
       //Center it vertically
-      let yOffset = 200;
-      let L_current_yPos = (480 - this.height_L) / 2 - yOffset;
+      let L_current_yPos = (480 - this.height_L) / 2;
       //Draw left text, line by line
       for (var i = 0; i < this.numOfLines_L; i++) {
         let textToDraw =
-          typeof this.textLines == "string"
-            ? this.textLines
-            : this.textLines[i];
+          typeof this.leftText == "string" ? this.leftText : this.leftText[i];
 
         //Draw previous lines
         if (this.lineShown > i) {
@@ -464,7 +332,7 @@ var serviceMode = function (p) {
             textToDraw,
             "whiteTerminal",
             1,
-            this.getLeftPosition(textToDraw),
+            L_start_xPos,
             L_current_yPos,
           );
           //Draw currently typing lines
@@ -473,7 +341,7 @@ var serviceMode = function (p) {
             textToDraw.slice(0, this.charsInLineShown),
             "whiteTerminal",
             1,
-            this.getLeftPosition(textToDraw),
+            L_start_xPos,
             L_current_yPos,
           );
         }
@@ -481,17 +349,17 @@ var serviceMode = function (p) {
         L_current_yPos += 29;
       }
 
-      // this.menuGroup.display(true);
+      this.menuGroup.display(true);
     }
 
     // Animates the left with a typing, then fades in the menu part
-    animate() {
+    animateScene() {
       //Set up Lines list
       let lines;
-      if (typeof this.textLines == "string") {
-        lines = [this.textLines];
+      if (typeof this.leftText == "string") {
+        lines = [this.leftText];
       } else {
-        lines = this.textLines;
+        lines = this.leftText;
       }
       let _this = this;
       let typingAnimationTimer = setInterval(function () {
@@ -506,50 +374,10 @@ var serviceMode = function (p) {
             clearInterval(typingAnimationTimer);
 
             // TODO: Animate in menu
-            // _this.menuGroup.animateMenu();
+            _this.menuGroup.animateMenu();
           }
         }
-      }, 40);
-    }
-  }
-
-  class instructions {
-    constructor(text) {
-      this.text = text;
-      this.currentlyFlashing = false;
-      this.showing = false;
-      this.opacity = 1;
-    }
-    display() {
-      p.tint(255, this.opacity * 255);
-      drawText(this.text, "whiteTerminal", 1, null, 430);
-      p.tint(255, 255);
-    }
-    // //Flash
-    // animate(){
-    // }
-    select(action) {
-      console.log("animating select");
-      let _this = this;
-      let count = 0;
-      this.currentlyFlashing = true;
-      let flashInterval = setInterval(function () {
-        _this.opacity = 0;
-        setTimeout(function () {
-          _this.opacity = 1;
-        }, 80);
-        _this.opacity = 0;
-        if (count == 10) {
-          action();
-          this.currentlyFlashing = false;
-          clearInterval(flashInterval);
-
-          // Do specified action
-
-          // _this.action(_this.menuText);
-        }
-        count++;
-      }, 160);
+      }, 60);
     }
   }
 

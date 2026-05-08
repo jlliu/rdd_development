@@ -195,7 +195,12 @@ var title = function (p) {
     //     songIndex: 2,
     //   },
     // });
-    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+
+    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+
+    // FOR TESTING SERVIC
+    document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);
+    menu_track_player.stop();
 
     titleCanvas.dispatchEvent(hideSceneEvent);
 

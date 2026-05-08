@@ -13,7 +13,7 @@ let scoreDigitList = scoreDigitString.split("");
 
 let mainPinkCharacters = `ABCDEFGHIJKLNOPQRSTUVXYZabcdefghijklnopqrstuvxyz1234567890.,?!-"'()[] `;
 
-let terminalString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-"'()[]> `;
+let terminalString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[]>= `;
 let terminalList = terminalString.split("");
 
 let widePinkCharacters = `MWmw`;

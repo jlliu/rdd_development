@@ -174,8 +174,8 @@ var unlock = function (p) {
           if (numCompleted == 5) {
             // Unlock service mode
             setTimeout(function () {
-              // transitionToServiceMode();
-              transitionToExperimentalScene();
+              transitionToServiceMode();
+              // transitionToExperimentalScene();
             }, 4000);
           } else {
             //Go back to STATS SCENE
@@ -252,8 +252,8 @@ var unlock = function (p) {
 
         //Transition to Terminal mode
 
-        // transitionToServiceMode();
-        transitionToExperimentalScene();
+        transitionToServiceMode();
+        // transitionToExperimentalScene();
       } else {
         // ACCESS DENIED: Go back to song selector
         sound_fx.error.start();
