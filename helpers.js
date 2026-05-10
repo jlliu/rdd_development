@@ -1,6 +1,6 @@
 // Global js helpers
 
-let characterString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-"'()[] `;
+let characterString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[] `;
 let characterList = characterString.split("");
 
 let digitString = "1234567890";
@@ -85,6 +85,19 @@ let fonts = {
     charsToImgs: {},
   },
 
+  greenTerminal: {
+    sets: [
+      {
+        src: "assets/green-terminal.png",
+        charSet: terminalString.split(""),
+        size: { width: 18, height: 29 },
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
   // pinkDigits: {
   //   src: "assets/combo-number-spritesheet.png",
   //   charSet: digitString.split(""),
@@ -121,6 +134,19 @@ let fonts = {
         src: "assets/scoreDigits.png",
         charSet: scoreDigitString.split(""),
         size: { width: 24, height: 35 },
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
+  testFont: {
+    sets: [
+      {
+        src: "assets/test-spritesheet.png",
+        charSet: characterString.split(""),
+        size: { width: 48, height: 70 },
         imgObj: null,
       },
     ],
@@ -376,9 +402,6 @@ let songList = [
   },
 ];
 
-// Access images from song selector and score canvas
-let songBannersImgs = [];
-
 // Player test images
 // let playerTextSpritesheet;
 let playerTextImgs = {};
@@ -396,6 +419,19 @@ let healthBarFrameImg;
 let greenGradientImg;
 let rainbowGradientImg;
 let hitGlowImg;
+
+let winImg;
+let failImg;
+
+let gateSpritesheet;
+let gateImgs = [];
+let gateImgsForTest = [];
+
+// Access images from song selector and score canvas
+let songBannersImgs = [];
+let songBannersSpritesheet;
+let songCdsSpritesheet;
+let songCdsImgs = [];
 
 // Revelation scene
 

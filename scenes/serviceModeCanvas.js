@@ -35,9 +35,11 @@ var serviceMode = function (p) {
 
   // let dialogueSceneType;
 
-  let currentTestSceneNum = 2;
+  let currentTestSceneNum = 6;
 
   let testScenes = [];
+  let imageTestDialogues = [];
+  let fontSpritesheetTest;
 
   // Idea:
   // We order scenes by number, e.g. scene 0 = Loading/Hello, Scene 1 = Color test, Scene 2 = Sound test...
@@ -102,8 +104,18 @@ var serviceMode = function (p) {
     testScenes[1].addCustomDraw(colorTest);
     testScenes[2].addCustomDraw(soundTest);
     testScenes[3].addCustomDraw(screenTest);
+    testScenes[4].addCustomDraw(inputTest);
+    testScenes[5].addCustomDraw(imageTest);
+    testScenes[6].addCustomDraw(fontAnimation);
 
     // Create custom functions for scenes
+
+    // setup image test dialogue..
+    imageTestDialogue.forEach(function (dialogueText) {
+      imageTestDialogues.push(new typedText(dialogueText));
+    });
+
+    fontSpritesheetTest = new fontSpritesheetAnimation();
   }
 
   p.draw = function () {
@@ -119,7 +131,7 @@ var serviceMode = function (p) {
 
   // Custom code for test scenes, depends on time... (ms)
 
-  function colorTest(t) {
+  function colorTest(t, partNum) {
     //Draw red rects
     let count = Math.floor(t / 50);
     //Iterate through total Rects for each...
@@ -174,12 +186,12 @@ var serviceMode = function (p) {
   let soundTestNum = 0;
   let currentSoundTestCount = -1;
 
-  function soundTest(t) {
+  function soundTest(t, partNum) {
     //Needs to draw the sound text stuff
     // Needs to detect when to play the sound..
     let count = Math.floor(t / 1500) % fx_list.length;
     let thisSound = fx_list[count];
-    drawText(thisSound.name, "whiteTerminal", 1, null, 230);
+    drawText(thisSound.name, "greenHelper", 1, null, 230);
 
     if (
       thisSound.soundObj.state == "stopped" &&
@@ -195,7 +207,12 @@ var serviceMode = function (p) {
     }
   }
 
-  function screenTest(t) {
+  let screenTestDisplacement = {
+    x: 0,
+    y: 0,
+  };
+
+  function screenTest(t, partNum) {
     let lineWidth = 5;
     let numOfLines = (canvasWidth + canvasHeight) / lineWidth;
 
@@ -211,24 +228,254 @@ var serviceMode = function (p) {
     }
     //Draw square of grids
     let squareSize = 32;
-    let marginSize = 2;
-    for (var i = 0; i < 640 / squareSize; i++) {
-      for (var j = 0; j < 480 / squareSize; j++) {
+    let marginSize = 1;
+
+    // Draw inner squares
+
+    //Draw outer squares
+    for (var i = 0; i < 20; i++) {
+      for (var j = 0; j < 15; j++) {
         // let transparentColor = p.color(0, 0, 0);
         // transparentColor.setAlpha(0);
 
+        // if (!(i >= 6 && i <= 13 && j >= 4 && j <= 9)) {
         // p.stroke(transparentColor);
         p.fill("black");
         p.noStroke();
         // console.log(i * squareSize * scaleRatio + marginSize);
         p.rect(
-          i * squareSize * scaleRatio + marginSize,
-          j * squareSize * scaleRatio + marginSize,
-          squareSize * scaleRatio - marginSize,
-          squareSize * scaleRatio - marginSize,
+          i * squareSize * scaleRatio + marginSize + screenTestDisplacement.x,
+          j * squareSize * scaleRatio + marginSize + screenTestDisplacement.y,
+          squareSize * scaleRatio - marginSize * 2,
+          squareSize * scaleRatio - marginSize * 2,
         );
+        // }
       }
     }
+
+    // Draw cross lines
+    p.stroke("red");
+    p.strokeWeight(2);
+    //Horizontal
+    p.line(
+      0,
+      7 * squareSize * scaleRatio,
+      640 * scaleRatio,
+      7 * squareSize * scaleRatio,
+    );
+    //Vertical
+    p.line(
+      10 * squareSize * scaleRatio,
+      0,
+      10 * squareSize * scaleRatio,
+      480 * scaleRatio,
+    );
+    //Box
+    p.noFill();
+    p.rect(
+      6 * squareSize * scaleRatio + screenTestDisplacement.x,
+      4 * squareSize * scaleRatio + screenTestDisplacement.y,
+      8 * squareSize * scaleRatio,
+      6 * squareSize * scaleRatio,
+    );
+
+    p.fill("black");
+    p.noStroke();
+
+    // Draw backgrounds for text
+    p.rect(
+      5 * squareSize * scaleRatio + screenTestDisplacement.x,
+      20 * scaleRatio,
+      10 * squareSize * scaleRatio + screenTestDisplacement.x,
+      40 * scaleRatio,
+    );
+
+    p.rect(
+      5 * squareSize * scaleRatio + screenTestDisplacement.x,
+      420 * scaleRatio,
+      10 * squareSize * scaleRatio + screenTestDisplacement.x,
+      40 * scaleRatio,
+    );
+    // drawImageToScale(hitGlowImg, 30, 40);
+  }
+
+  //Initialize input data
+  let inputData = [];
+  for (var i = 0; i < 10; i++) {
+    inputData.push({ left: false, down: false, up: false, right: false });
+  }
+  let currentArrowStates = {
+    left: false,
+    down: false,
+    up: false,
+    right: false,
+  };
+
+  let completedInputTests = {
+    left: false,
+    down: false,
+    up: false,
+    right: false,
+  };
+
+  function inputTest(t, partNum) {
+    //Draw hit arrows
+    let arrowWidth = 64;
+    let margin = 10;
+    let hitPos = { x: 177, y: 220 };
+    let arrow_xPos = {
+      left: hitPos.x,
+      down: hitPos.x + arrowWidth + margin,
+      up: hitPos.x + arrowWidth * 2 + margin * 2,
+      right: hitPos.x + arrowWidth * 3 + margin * 3,
+    };
+
+    // drawImageToScale(hitArrowImgs.left, arrow_xPos.left, hitPos.y);
+    // drawImageToScale(hitArrowImgs.down, arrow_xPos.down, hitPos.y);
+    // drawImageToScale(hitArrowImgs.up, arrow_xPos.up, hitPos.y);
+    // drawImageToScale(hitArrowImgs.right, arrow_xPos.right, hitPos.y);
+
+    // Draw scrolling inputs in the back
+    // console.log(currentArrowStates.left);
+
+    currentArrowStates = {
+      left: p.keyIsDown(37),
+      down: p.keyIsDown(40),
+      up: p.keyIsDown(38),
+      right: p.keyIsDown(39),
+    };
+    inputData.shift();
+    inputData.push(currentArrowStates);
+
+    // Render as zeros and ones on screen
+
+    for (var i = 0; i < inputData.length; i++) {
+      // Draw left arrow
+      p.tint(255, 75);
+      let leftText = inputData[i].left ? "1" : "0";
+      drawText(leftText, "mainYellow", 1, arrow_xPos.left + 12, 0 + i * 48);
+      let downText = inputData[i].down ? "1" : "0";
+      drawText(downText, "mainYellow", 1, arrow_xPos.down + 12, 0 + i * 48);
+      let upText = inputData[i].up ? "1" : "0";
+      drawText(upText, "mainYellow", 1, arrow_xPos.up + 12, 0 + i * 48);
+      let rightText = inputData[i].right ? "1" : "0";
+      drawText(rightText, "mainYellow", 1, arrow_xPos.right + 12, 0 + i * 48);
+      p.tint(255, 255);
+    }
+
+    if (completedInputTests.left) {
+      drawText("OK", "greenHelper", 1, arrow_xPos.left + 12, hitPos.y);
+    }
+    if (completedInputTests.down) {
+      drawText("OK", "greenHelper", 1, arrow_xPos.down + 12, hitPos.y);
+    }
+    if (completedInputTests.up) {
+      drawText("OK", "greenHelper", 1, arrow_xPos.up + 12, hitPos.y);
+    }
+    if (completedInputTests.right) {
+      drawText("OK", "greenHelper", 1, arrow_xPos.right + 12, hitPos.y);
+    }
+
+    // Also trigger the action...
+  }
+
+  // Refactor image test so..
+  // we track a counter of Left/Right hits
+  // Each
+
+  // let imageTestCounter = 0;
+  let lastArrowHit = null;
+  function imageTest(t, partNum) {
+    // Draw flashing song banners
+    let currentTestScene = testScenes[currentTestSceneNum];
+    if (partNum < 16) {
+      // currentTestScene.instructionsDelay = 400;
+      // currentTestScene.instructionsFlashCount = 3;
+      currentTestScene.instructionsDelay = 0;
+      currentTestScene.instructionsFlashCount = 0;
+
+      let bannerId = partNum % (songBannersImgs.length - 1);
+      // let bannerId = Math.floor(t / 700) % (songBannersImgs.length - 1);
+      drawImageToScale(songBannersImgs[bannerId], 120, 160);
+
+      let dialogueId = Math.floor(partNum / 4);
+      let dialogueToDisplay = imageTestDialogues[dialogueId];
+      dialogueToDisplay.display();
+      if (!dialogueToDisplay.startedAnimation) {
+        dialogueToDisplay.animate();
+      }
+    } else if (partNum < 32) {
+      // currentTestScene.instructionsDelay = 300;
+      // currentTestScene.instructionsFlashCount = 2;
+      currentTestScene.instructionsDelay = 0;
+      currentTestScene.instructionsFlashCount = 0;
+
+      let gateId = (partNum - 16) % gateImgsForTest.length;
+      drawImageToScale(gateImgsForTest[gateId], 160, 0);
+
+      let dialogueId = Math.floor(partNum / 4);
+      let dialogueToDisplay = imageTestDialogues[dialogueId];
+      dialogueToDisplay.display();
+      if (!dialogueToDisplay.startedAnimation) {
+        dialogueToDisplay.animate();
+      }
+    } else if (partNum < 48) {
+      // currentTestScene.instructionsDelay = 100;
+      // currentTestScene.instructionsFlashCount = 1;
+      currentTestScene.instructionsDelay = 0;
+      currentTestScene.instructionsFlashCount = 0;
+
+      // let gateId = (partNum - 16) % gateImgsForTest.length;
+      let resultImages = [winImg, failImg];
+      let resultId = partNum % resultImages.length;
+      drawImageToScale(resultImages[resultId], 120, 160);
+
+      let dialogueId = Math.floor(partNum / 8) + 4;
+      let dialogueToDisplay = imageTestDialogues[dialogueId];
+      dialogueToDisplay.display();
+      if (!dialogueToDisplay.startedAnimation) {
+        dialogueToDisplay.animate();
+      }
+    } else if (partNum < 64) {
+      currentTestScene.instructionsDelay = 0;
+      currentTestScene.instructionsFlashCount = 0;
+
+      // let gateId = (partNum - 16) % gateImgsForTest.length;
+      let cdId = partNum % (songCdsImgs.length - 1);
+      //   drawImageToScale(songCdsImgs[cdId], 200, 160);
+      drawImageToScale(songCdsImgs[cdId], 180, 160);
+
+      let dialogueId = Math.floor(partNum / 2) - 14;
+      let dialogueToDisplay = imageTestDialogues[dialogueId];
+      dialogueToDisplay.display();
+      if (!dialogueToDisplay.startedAnimation) {
+        dialogueToDisplay.animate();
+      }
+    }
+    // else if (partNum < 8) {
+    //   currentTestScene.instructionsDelay = 500;
+    //   currentTestScene.instructionsFlashCount = 4;
+    //   let gateId = Math.floor(t / 500) % gateImgsForTest.length;
+    //   drawImageToScale(gateImgsForTest[gateId], 160, 0);
+    // } else if (partNum < 10) {
+    //   currentTestScene.instructionsDelay = 200;
+    //   currentTestScene.instructionsFlashCount = 3;
+    //   let resultImages = [winImg, failImg];
+    //   let resultId = Math.floor(t / 300) % resultImages.length;
+    //   drawImageToScale(resultImages[resultId], 120, 160);
+    // } else {
+    //   currentTestScene.instructionsDelay = 10;
+    //   currentTestScene.instructionsFlashCount = 2;
+    //   let cdId = Math.floor(t / 200) % (songCdsImgs.length - 1);
+    //   drawImageToScale(songCdsImgs[cdId], 200, 160);
+    // }
+  }
+
+  function fontAnimation(t, partNum) {
+    let currentTestScene = testScenes[currentTestSceneNum];
+    currentTestScene.instructionsDelay = 0;
+    currentTestScene.instructionsFlashCount = 0;
+    fontSpritesheetTest.display();
   }
 
   function setupNavigation(thisCanvas) {
@@ -301,6 +548,96 @@ var serviceMode = function (p) {
         console.log(currentTestScene);
         currentTestScene.triggerSelect();
       }
+
+      if (currentTestSceneNum == 4) {
+        let instructionsShowing =
+          currentTestScene.parts[currentTestScene.currentPartNum].instructions
+            .showing;
+        if (
+          keyCode == "ArrowLeft" &&
+          currentTestScene.currentPartNum == 0 &&
+          instructionsShowing
+        ) {
+          completedInputTests.left = true;
+          currentTestScene.triggerSelect();
+        }
+        if (
+          keyCode == "ArrowDown" &&
+          currentTestScene.currentPartNum == 1 &&
+          instructionsShowing
+        ) {
+          completedInputTests.down = true;
+          currentTestScene.triggerSelect();
+        }
+        if (
+          keyCode == "ArrowUp" &&
+          currentTestScene.currentPartNum == 2 &&
+          instructionsShowing
+        ) {
+          completedInputTests.up = true;
+          currentTestScene.triggerSelect();
+        }
+        if (
+          keyCode == "ArrowRight" &&
+          currentTestScene.currentPartNum == 3 &&
+          instructionsShowing
+        ) {
+          completedInputTests.right = true;
+          currentTestScene.triggerSelect();
+        }
+      }
+      // Create a counter for LEFT / RIGHT hits.
+      if (currentTestSceneNum == 5 || currentTestSceneNum == 6) {
+        let instructionsObj =
+          currentTestScene.parts[currentTestScene.currentPartNum].instructions;
+        let instructionsShowing = instructionsObj.showing;
+        if (keyCode == "ArrowLeft") {
+          if (
+            lastArrowHit == "ArrowRight" ||
+            (lastArrowHit == null && instructionsObj.text == "TAP LEFT")
+          ) {
+            if (currentTestScene.triggerSelect()) {
+              lastArrowHit = "ArrowLeft";
+              // Add code for font animation
+              if (currentTestSceneNum == 6) {
+                fontSpritesheetTest.animateCue(currentTestScene.currentPartNum);
+              }
+            }
+          }
+        }
+        if (keyCode == "ArrowRight") {
+          if (
+            lastArrowHit == "ArrowLeft" &&
+            instructionsObj.text == "TAP RIGHT"
+          ) {
+            if (currentTestScene.triggerSelect()) {
+              lastArrowHit = "ArrowRight";
+              // Add code for font animation
+              if (currentTestSceneNum == 6) {
+                fontSpritesheetTest.animateCue(currentTestScene.currentPartNum);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //   function handleInputForInputTest(keyCode) {
+  //   if (keyCode == "ArrowLeft") {
+  //     screenTestDisplacement.x -= 1;
+  //   }
+  //   if (keyCode == "ArrowRight") {
+  //     screenTestDisplacement.x += 1;
+  //   }
+  // }
+
+  function handleInputForScreenTest(keyCode) {
+    if (keyCode == "ArrowLeft") {
+      screenTestDisplacement.x -= 1;
+    }
+    if (keyCode == "ArrowRight") {
+      screenTestDisplacement.x += 1;
     }
   }
 
@@ -366,6 +703,8 @@ var serviceMode = function (p) {
       this.customDraw = null;
       this.sceneTime = 0;
       this.sceneInterval = null;
+      this.instructionsDelay = 1000;
+      this.instructionsFlashCount = 5;
     }
     display() {
       let currentPart = this.parts[this.currentPartNum];
@@ -373,7 +712,7 @@ var serviceMode = function (p) {
       // Display any custom script stuff here.....
       if (this.customDraw) {
         // console.log(this.sceneTime);
-        this.customDraw(this.sceneTime);
+        this.customDraw(this.sceneTime, this.currentPartNum);
       }
       currentPart.dialogue.display();
 
@@ -393,8 +732,9 @@ var serviceMode = function (p) {
       currentPart.dialogue.animate();
       //Show instructions after a bit
       setTimeout(function () {
-        currentPart.instructions.showing = true;
-      }, 1000);
+        currentPart.instructions.fadeIn();
+        // currentPart.instructions.showing = true;
+      }, this.instructionsDelay);
     }
     addCustomDraw(drawScript) {
       console.log("adding a custom draw");
@@ -418,8 +758,13 @@ var serviceMode = function (p) {
             clearInterval(_this.sceneInterval);
           }
         };
-        currentPart.instructions.select(progressScene);
+        currentPart.instructions.select(
+          progressScene,
+          this.instructionsFlashCount,
+        );
+        return true;
       }
+      return false;
 
       // Move onto next part. if not, move onto next scene
     }
@@ -439,6 +784,7 @@ var serviceMode = function (p) {
       }
       this.charsInLineShown = 0;
       this.lineShown = 0;
+      this.startedAnimation = false;
     }
     getLeftPosition(text) {
       let charWidth = 18;
@@ -486,6 +832,7 @@ var serviceMode = function (p) {
 
     // Animates the left with a typing, then fades in the menu part
     animate() {
+      this.startedAnimation = true;
       //Set up Lines list
       let lines;
       if (typeof this.textLines == "string") {
@@ -518,17 +865,25 @@ var serviceMode = function (p) {
       this.text = text;
       this.currentlyFlashing = false;
       this.showing = false;
-      this.opacity = 1;
+      this.opacity = 0;
     }
     display() {
       p.tint(255, this.opacity * 255);
       drawText(this.text, "whiteTerminal", 1, null, 430);
       p.tint(255, 255);
     }
-    // //Flash
-    // animate(){
-    // }
-    select(action) {
+    fadeIn() {
+      this.showing = true;
+      let _this = this;
+      let opacityInterval = setInterval(function () {
+        if (_this.opacity >= 1) {
+          clearInterval(opacityInterval);
+        } else {
+          _this.opacity += 0.03;
+        }
+      }, 10);
+    }
+    select(action, flashCount) {
       console.log("animating select");
       let _this = this;
       let count = 0;
@@ -539,7 +894,7 @@ var serviceMode = function (p) {
           _this.opacity = 1;
         }, 80);
         _this.opacity = 0;
-        if (count == 10) {
+        if (count == flashCount) {
           action();
           this.currentlyFlashing = false;
           clearInterval(flashInterval);
@@ -550,6 +905,118 @@ var serviceMode = function (p) {
         }
         count++;
       }, 160);
+    }
+  }
+
+  class fontSpritesheetAnimation {
+    constructor() {
+      this.originalText = [
+        `ABCDEFGHIJKL`,
+        `MNOPQRSTUVWX`,
+        `YZabcdefghij`,
+        `klmnopqrstuv`,
+        `wxyz12345678`,
+        `90.,?!-_"'()`,
+      ];
+      this.lines = [];
+      let _this = this;
+      this.originalText.forEach(function (line) {
+        let thisLine = line.split("");
+        _this.lines.push(thisLine);
+      });
+    }
+
+    display() {
+      let fontHeight = 70;
+      let fontWidth = 48;
+      this.lines.forEach(function (line, lineIndex) {
+        line.forEach(function (char, charIndex) {
+          drawText(
+            char,
+            "testFont",
+            1,
+            30 + charIndex * fontWidth,
+            15 + lineIndex * fontHeight,
+          );
+        });
+      });
+    }
+
+    replaceAt(oldString, index, replacement) {
+      return (
+        oldString.substring(0, index) +
+        replacement +
+        oldString.substring(index + replacement.length)
+      );
+    }
+
+    // Given a line number and a result string... it will animate each letter one by one until the letters end up how they should... by flipping through sequentially...
+    animateLineToResult(lineIndex, destinationString) {
+      // But first, switch it to basic without animation...
+      let prevLine = this.lines[lineIndex];
+
+      //Iterate through every character. set a timeout that increments the letter until it found the match.
+      // First, iterate through every column in the string. tell that column to do the swap at a fixed time using a timeout.
+      // When it's time, that character will have a char swap interval that increments the character until it is matching the destination character
+
+      for (let i = 0; i < prevLine.length; i++) {
+        setTimeout(function () {
+          let prevChar = prevLine[i];
+          let destinationChar = destinationString[i];
+          let characterString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[] `;
+          let currentIndex = characterString.indexOf(prevChar);
+          let charSwapInterval = setInterval(function () {
+            currentIndex = (currentIndex + 1) % characterString.length;
+            prevLine[i] = characterString[currentIndex];
+            if (characterString[currentIndex] == destinationChar) {
+              clearInterval(charSwapInterval);
+            }
+          }, 10);
+        }, 10 * i);
+      }
+
+      // this.lines[lineIndex] = destinationString;
+    }
+
+    animateAllWithInterval(destinationString) {
+      let count = 0;
+      let wordTiming;
+      let _this = this;
+      let wordTimingInterval = setInterval(function () {
+        _this.animateLineToResult(count, destinationString);
+        count++;
+        if (count == 6) {
+          clearInterval(wordTimingInterval);
+        }
+      }, 200);
+    }
+    //Given a cue (partNum), animates the line to do what it wants
+    animateCue(cueNum) {
+      if (cueNum == 0) {
+        this.animateLineToResult(0, `.....I......`);
+      } else if (cueNum == 2) {
+        this.animateLineToResult(1, `..THOUGHT...`);
+      } else if (cueNum == 4) {
+        this.animateLineToResult(2, `......I.....`);
+      } else if (cueNum == 6) {
+        this.animateLineToResult(3, `...NEEDED...`);
+      } else if (cueNum == 8) {
+        this.animateLineToResult(4, `...TO.......`);
+      } else if (cueNum == 10) {
+        this.animateLineToResult(4, `...TO..BE...`);
+      } else if (cueNum == 12) {
+        this.animateLineToResult(5, `...FIXED....`);
+      } else if (cueNum == 16) {
+        this.animateAllWithInterval(`.....I......`);
+      } else if (cueNum == 18) {
+        this.animateAllWithInterval(`....JUST....`);
+      } else if (cueNum == 20) {
+        this.animateAllWithInterval(`...NEEDED...`);
+      } else if (cueNum == 22) {
+        this.animateAllWithInterval(`......A.....`);
+      } else if (cueNum == 24) {
+        this.animateAllWithInterval(`..WITNESS...`);
+      }
     }
   }
 

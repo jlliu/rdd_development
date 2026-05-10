@@ -1,4 +1,4 @@
-let testScenesData = [
+const testScenesData = [
   // Parts list for scene 0
   [
     { dialogue: ["Hello?"], instructions: "ENTER = CONTINUE" },
@@ -21,10 +21,10 @@ let testScenesData = [
 
   // Parts list for scene 3: Body Scan
   [
-    { dialogue: ["Can you feel it?"], instructions: "ARROW KEYS = MOVE" },
+    { dialogue: ["Can you feel it?"], instructions: "ENTER = CONTINUE" },
 
-    { dialogue: ["The bracing,"], instructions: "ARROW KEYS = MOVE" },
-    { dialogue: ["the sinking,"], instructions: "ARROW KEYS = MOVE" },
+    { dialogue: ["The bracing,"], instructions: "ENTER = CONTINUE" },
+    { dialogue: ["the sinking,"], instructions: "ENTER = CONTINUE" },
     { dialogue: ["the ache?"], instructions: "ENTER = CONTINUE" },
   ],
 
@@ -39,19 +39,575 @@ let testScenesData = [
       instructions: "DOWN ARROW = TEST INPUT",
     },
     {
-      dialogue: ["If I deserved it,", "it could make sense."],
+      dialogue: ["If I was perfect, I", "wouldn't be abandoned."],
       instructions: "UP ARROW = TEST INPUT",
     },
     {
-      dialogue: ["If I was perfect, I", "wouldn't be abandoned."],
+      dialogue: ["If I did everything right,", "I could be safe."],
       instructions: "RIGHT ARROW = TEST INPUT",
     },
-
+  ],
+  //Parts list for scene 4: image test
+  [
+    // I want to let go...
     {
-      dialogue: ["If I did things right,", "I could be safe."],
-      instructions: "ENTER = CONTINUE",
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // I want to be free
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // But there is a comfort in holding on,
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // In repetition
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    ////////////////////////////////////
+    // To finally release
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // Is to grieve
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // THe loss of a world
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // The loss of control
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //////////////////////////
+    // Sometimes....
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // it is just a losing game
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // BUT
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // WE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // DONT
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HAVE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // TO
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // PLAY
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // IT
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // AGAIN
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
     },
   ],
+
+  // Font sprite sheet animation
+  [
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //thought
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //needed
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //to
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //be
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //fixed
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // Just
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // Needed
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // A
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // Witness
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+  ],
+
+  //  [
+  //   // Part 1: Song banner data
+  //   {
+  //     dialogue: ["I want to let go."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["I want to be free."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["But there is a comfort", "in holding on,"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["in repetition."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   // Part 2: Arrow sprites
+
+  //   {
+  //     dialogue: ["To finally release"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   {
+  //     dialogue: ["is to also grieve"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   {
+  //     dialogue: ["the loss of a world,"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["the loss of control."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   // WIN/FAILED
+  //   {
+  //     dialogue: ["Sometimes,"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   {
+  //     dialogue: ["it is just a losing game."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   // CD  images
+  //   {
+  //     dialogue: ["But"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["we"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["no"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["longer"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["have"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["to"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["play"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["the"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["game"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["like"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["it"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["once"],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+  //   {
+  //     dialogue: ["was."],
+  //     instructions: "ENTER = CONTINUE",
+  //   },
+
+  //   // Part 3: Arrow sprites
+  // ],
+];
+
+const imageTestDialogue = [
+  ["I want to let go,"],
+  ["I want to be free."],
+  ["But there is a comfort", "in holding on,"],
+  ["in repetition."],
+
+  ["To finally release"],
+  ["is to grieve"],
+  ["the loss of a world,"],
+  ["the loss of control."],
+
+  ["Sometimes, it is just"],
+  ["a losing game."],
+
+  ["But"],
+  ["we"],
+  ["don't"],
+  ["have"],
+  ["to"],
+  ["play"],
+  ["it"],
+  ["again"],
 ];
 
 // const settingsDialogue = [

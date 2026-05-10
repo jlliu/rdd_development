@@ -20,12 +20,8 @@ var songSelector = function (p) {
   let menuItems = [];
   let selectedMenuItemIndex = 0;
 
-  let songBannersSpritesheet;
-
   let songSelectionInstructionsImg;
 
-  let songCdsSpritesheet;
-  let songCdsImgs = [];
   let banner = { w: 400, h: 125 };
   let cd = { w: 281, h: 176 };
   let currentCdQueue = [];

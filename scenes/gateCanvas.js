@@ -9,12 +9,6 @@ var gate = function (p) {
   let gateCanvas;
   let isCurrentScene = false;
 
-  let gateSpritesheet;
-  let gateImgs = [];
-
-  let winImg;
-  let failImg;
-
   let numCanvasesLoaded = 0;
   let allCanvasesLoaded = false;
 
@@ -46,6 +40,8 @@ var gate = function (p) {
       let thisGateL = gateSpritesheet.get(0, 480 * i, 320, 480);
       let thisGateR = gateSpritesheet.get(320, 480 * i, 320, 480);
       gateImgs.push({ left: thisGateL, right: thisGateR });
+      gateImgsForTest.push(thisGateL);
+      gateImgsForTest.push(thisGateR);
     }
 
     p.noSmooth();

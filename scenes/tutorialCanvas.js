@@ -32,7 +32,7 @@ var tutorialScene = function (p) {
   let healthBarFrameImg;
   let greenGradientImg;
   let rainbowGradientImg;
-  let hitGlowImg;
+  // let hitGlowImg;
 
   //relevantNotes stores an array of note objects
   let relevantNotes = [];

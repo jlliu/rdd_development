@@ -58,6 +58,8 @@ var title = function (p) {
     "whitePixel",
     "whiteTerminal",
     "scoreDigits",
+    "greenTerminal",
+    "testFont",
   ];
 
   p.preload = function () {
