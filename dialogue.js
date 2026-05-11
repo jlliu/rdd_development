@@ -318,7 +318,61 @@ const testScenesData = [
       dialogue: [""],
       instructions: "TAP RIGHT",
     },
-    // AGAIN
+    // LIKE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // IT
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ONCE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // WAS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
@@ -413,7 +467,23 @@ const testScenesData = [
       dialogue: [""],
       instructions: "TAP RIGHT",
     },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
     // Just
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
@@ -431,7 +501,23 @@ const testScenesData = [
       dialogue: [""],
       instructions: "TAP RIGHT",
     },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
     // A
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
@@ -449,7 +535,6 @@ const testScenesData = [
       dialogue: [""],
       instructions: "TAP RIGHT",
     },
-    // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
@@ -467,11 +552,498 @@ const testScenesData = [
       dialogue: [""],
       instructions: "TAP RIGHT",
     },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
     },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // ...
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+  ],
+
+  // MEMORY TEST
+  [
+    // WANTING
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // CLEAR
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // HURTING
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // MISTAKES
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //ARE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // NEEDING
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // ANGER
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // FEAR
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // REGRET
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    // SHAME
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //IS
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //OK
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // [CLEAR]
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    //I
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+    // AM
+    {
+      dialogue: [""],
+      instructions: "TAP RIGHT",
+    },
+    // HERE
+    {
+      dialogue: [""],
+      instructions: "TAP LEFT",
+    },
+
+    //SWITCH TO BLACK
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
@@ -607,7 +1179,21 @@ const imageTestDialogue = [
   ["to"],
   ["play"],
   ["it"],
-  ["again"],
+  ["like"],
+  ["it"],
+  ["once"],
+  ["was."],
+];
+
+const memoryTestWords = [
+  "WANTING",
+  "HURTING",
+  "FEELING",
+  "NEEDING",
+  "ANGER",
+  "FEAR",
+  "REGRET",
+  "SHAME",
 ];
 
 // const settingsDialogue = [

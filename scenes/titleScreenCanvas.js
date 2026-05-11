@@ -60,6 +60,8 @@ var title = function (p) {
     "scoreDigits",
     "greenTerminal",
     "testFont",
+    "mainIceBlue",
+    "mainGreen",
   ];
 
   p.preload = function () {

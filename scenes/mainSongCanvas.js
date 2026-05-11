@@ -38,9 +38,6 @@ var mainScene = function (p) {
 
   let eggBombImg;
 
-  let attackSpritesheet;
-  let attackImages = {};
-
   let fawningAnimation;
 
   //relevantNotes stores an array of note objects

@@ -33,6 +33,34 @@ let fonts = {
     charsToImgs: {},
   },
 
+  mainIceBlue: {
+    sets: [
+      {
+        src: "assets/font-spritesheet-iceBlue.png",
+        charSet: characterString.split(""),
+        size: { width: 40, height: 58 },
+
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
+  mainGreen: {
+    sets: [
+      {
+        src: "assets/font-spritesheet-green.png",
+        charSet: characterString.split(""),
+        size: { width: 40, height: 58 },
+
+        imgObj: null,
+      },
+    ],
+
+    charsToImgs: {},
+  },
+
   smallYellow: {
     sets: [
       {
@@ -432,6 +460,9 @@ let songBannersImgs = [];
 let songBannersSpritesheet;
 let songCdsSpritesheet;
 let songCdsImgs = [];
+
+let attackSpritesheet;
+let attackImages = {};
 
 // Revelation scene
 
