@@ -20,6 +20,8 @@ var difficulty = function (p) {
   let menuItems = [];
   let selectedMenuItemIndex = 1;
 
+  let rebootMenuItems = [];
+
   let padSelectTimer = null;
 
   p.preload = function () {};
@@ -49,13 +51,22 @@ var difficulty = function (p) {
   };
 
   p.draw = function () {
+    if (gameIsReboot) {
+      menuItems[0].menuText = "NEW";
+      menuItems[1].menuText = "MODES ARE";
+      menuItems[2].menuText = "POSSIBLE";
+    }
+
     p.clear();
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
+      let instructionsToDraw = gameIsReboot
+        ? "I CAN BELIEVE"
+        : "PRESS ENTER TO SELECT";
       drawMenu();
       if (Math.floor(globalClock.seconds) % 2 == 0) {
-        drawText("PRESS ENTER TO SELECT", "greenHelper", 1, null, 430);
+        drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
     }
   };

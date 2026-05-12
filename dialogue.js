@@ -1,31 +1,59 @@
 const testScenesData = [
   // Parts list for scene 0
   [
-    { dialogue: ["Hello?"], instructions: "ENTER = CONTINUE" },
+    {
+      dialogue: ["Hello?"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
     {
       dialogue: ["Is anyone there?"],
       instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
     },
   ],
 
   // Parts list for scene 1: Color check
-  [{ dialogue: ["Can you see me?"], instructions: "ENTER = CONTINUE" }],
+  [
+    {
+      dialogue: ["Can you see me?"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
+  ],
 
   // Parts list for scene 2: Sound check
   [
     {
       dialogue: ["Can you hear me?"],
       instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
     },
   ],
 
   // Parts list for scene 3: Body Scan
   [
-    { dialogue: ["Can you feel it?"], instructions: "ENTER = CONTINUE" },
+    {
+      dialogue: ["Can you feel it?"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
 
-    { dialogue: ["The bracing,"], instructions: "ENTER = CONTINUE" },
-    { dialogue: ["the sinking,"], instructions: "ENTER = CONTINUE" },
-    { dialogue: ["the ache?"], instructions: "ENTER = CONTINUE" },
+    {
+      dialogue: ["The bracing,"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
+    {
+      dialogue: ["the sinking,"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
+    {
+      dialogue: ["the ache?"],
+      instructions: "ENTER = CONTINUE",
+      trigger: "ENTER",
+    },
   ],
 
   // Parts list for scene 3: Input test
@@ -33,18 +61,22 @@ const testScenesData = [
     {
       dialogue: ["I thought I could", "be in control."],
       instructions: "LEFT ARROW = TEST INPUT",
+      trigger: "LEFT",
     },
     {
       dialogue: ["If I took the blame,", "I could fix it."],
       instructions: "DOWN ARROW = TEST INPUT",
+      trigger: "DOWN",
     },
     {
       dialogue: ["If I was perfect, I", "wouldn't be abandoned."],
       instructions: "UP ARROW = TEST INPUT",
+      trigger: "UP",
     },
     {
       dialogue: ["If I did everything right,", "I could be safe."],
       instructions: "RIGHT ARROW = TEST INPUT",
+      trigger: "RIGHT",
     },
   ],
   //Parts list for scene 4: image test
@@ -53,69 +85,85 @@ const testScenesData = [
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // I want to be free
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // But there is a comfort in holding on,
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // In repetition
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     ////////////////////////////////////
@@ -123,263 +171,323 @@ const testScenesData = [
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // Is to grieve
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // THe loss of a world
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // The loss of control
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //////////////////////////
     // Sometimes....
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // it is just a losing game
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // BUT
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // WE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // DONT
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HAVE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // TO
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // PLAY
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // IT
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // LIKE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // IT
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ONCE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // WAS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
   ],
 
@@ -389,210 +497,258 @@ const testScenesData = [
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //thought
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //needed
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //to
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //be
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //fixed
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // Just
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // Needed
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // A
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // Witness
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // ...
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
   ],
 
@@ -602,451 +758,547 @@ const testScenesData = [
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // CLEAR
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // HURTING
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // MISTAKES
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //ARE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // NEEDING
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // ANGER
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // FEAR
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // REGRET
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     // SHAME
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //IS
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //OK
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // [CLEAR]
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
 
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     //I
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
     // AM
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
     // HERE
     {
       dialogue: [""],
       instructions: "TAP LEFT",
+      trigger: "LEFT",
     },
 
     //SWITCH TO BLACK
     {
       dialogue: [""],
       instructions: "TAP RIGHT",
+      trigger: "RIGHT",
     },
   ],
 

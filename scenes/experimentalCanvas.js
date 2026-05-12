@@ -1,19 +1,19 @@
 let track = document.querySelector("audio");
 let startSongButton = document.querySelector("#startSong");
 
-let enableStartButton = function () {
-  startSongButton.innerHTML = "Click to start";
-  startSongButton.disabled = false;
-};
+// let enableStartButton = function () {
+//   startSongButton.innerHTML = "Click to start";
+//   startSongButton.disabled = false;
+// };
 
 // const songPlayer = new Tone.Player("assets/audio/Heaven.OGG").toDestination();
-const part1_bg_player = new Tone.Player(
-  "assets/audio/RDD_p1_ambience_loop.mp3",
-  enableStartButton,
-).toDestination();
-part1_bg_player.loop = true;
-part1_bg_player.fadeIn = 2;
-part1_bg_player.fadeIn = 0.5;
+// const part1_bg_player = new Tone.Player(
+//   "assets/audio/RDD_p1_ambience_loop.mp3",
+//   enableStartButton,
+// ).toDestination();
+// part1_bg_player.loop = true;
+// part1_bg_player.fadeIn = 2;
+// part1_bg_player.fadeIn = 0.5;
 
 const part2_bg_player = new Tone.Player(
   "assets/audio/RDD_p2_background_v2.mp3",
@@ -374,7 +374,7 @@ var experimentalScene = function (p) {
   let startSong = function () {
     //For negative songDelays, start song before notes
     if (songDelay < 0) {
-      part1_bg_player.start();
+      // part1_bg_player.start();
       setTimeout(function () {
         setInterval(function () {
           updateNotes();
@@ -395,7 +395,7 @@ var experimentalScene = function (p) {
       clock.start();
 
       setTimeout(function () {
-        part1_bg_player.start();
+        // part1_bg_player.start();
       }, songDelay * 1000);
     }
   };

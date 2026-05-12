@@ -11,10 +11,10 @@ const audioCtx = new AudioContext();
 // title_player.fadeOut = 4;
 console.log(audioCtx.state);
 
-function startSong() {
-  title_player.stop();
-  title_player.start();
-}
+// function startSong() {
+//   title_player.stop();
+//   title_player.start();
+// }
 var title = function (p) {
   let canvasSizeOriginal = { width: 640, height: 480 };
   let canvasWidth = canvasSizeOriginal.width;
@@ -31,7 +31,8 @@ var title = function (p) {
   let isCurrentScene = true;
 
   let logoImg;
-  let startTextImg;
+
+  let logoImg_reboot;
 
   let numCanvasesLoaded = 0;
   let allCanvasesLoaded = false;
@@ -70,7 +71,7 @@ var title = function (p) {
 
     // shader = p.loadShader("shaders/basic.vert", "shaders/basic.frag");
     logoImg = p.loadImage("assets/RDD-logo.png");
-    startTextImg = p.loadImage("assets/startText.png");
+    logoImg_reboot = p.loadImage("assets/RDD-logo-reboot.png");
 
     fontsToLoad.forEach(function (fontName) {
       fonts[fontName].sets.forEach(function (fontSet) {
@@ -129,17 +130,20 @@ var title = function (p) {
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      drawImageToScale(logoImg, 94, 176);
+      let logoImgToDraw = gameIsReboot ? logoImg_reboot : logoImg;
+
+      let textToDraw = gameIsReboot ? "TO THE BODY" : "PRESS ENTER TO SELECT";
+      drawImageToScale(logoImgToDraw, 94, 176);
       // Draw Title Screen Elements
       if (!menuVisible) {
         if (Math.floor(globalClock.seconds) % 2 == 0) {
-          drawText("PRESS ENTER TO START", "greenHelper", 1, null, 430);
+          drawText(textToDraw, "greenHelper", 1, null, 430);
         }
       } else {
         // Draw Menu Screen Elements
         drawMenu();
         if (Math.floor(globalClock.seconds) % 2 == 0) {
-          drawText("PRESS ENTER TO SELECT", "greenHelper", 1, null, 430);
+          drawText(textToDraw, "greenHelper", 1, null, 430);
         }
       }
     }
@@ -200,11 +204,11 @@ var title = function (p) {
     //   },
     // });
 
-    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
 
-    // FOR TESTING SERVIC
-    document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);
-    menu_track_player.stop();
+    // FOR TESTING SERVICE
+    // document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);
+    // menu_track_player.stop();
 
     titleCanvas.dispatchEvent(hideSceneEvent);
 

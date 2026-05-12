@@ -84,7 +84,7 @@ var serviceMode = function (p) {
 
   function setupScenes() {
     //Initialize song assets
-    for (var i = 0; i < 12; i++) {
+    for (var i = 0; i < 14; i++) {
       let videoFrameImg = videoFrameSpritesheet.get(0, 480 * i, 640, 480);
       videoFrameImgs.push(videoFrameImg);
     }
@@ -471,7 +471,12 @@ var serviceMode = function (p) {
       }
     }
   }
-  function drawGlitchImage(imgNum, destinationImg) {
+  function drawGlitchImage(
+    imgNum,
+    destinationImg,
+    chunkDimensions,
+    amountGlitched,
+  ) {
     // Draw image from frame images
     let imageToDraw = videoFrameImgs[imgNum];
 
@@ -480,16 +485,19 @@ var serviceMode = function (p) {
     destinationImg.loadPixels();
 
     // Iterates across each pixel in the canvas
-    let chunkSize = 24;
+    let chunkSize = chunkDimensions;
     for (let y = 0; y < imageToDraw.height / chunkSize; y++) {
       for (let x = 0; x < imageToDraw.width / chunkSize; x++) {
         // Find a random place on the destination image to map this to
-        let randomX = Math.floor(
-          (Math.random() * imageToDraw.width) / chunkSize,
-        );
-        let randomY = Math.floor(
-          (Math.random() * imageToDraw.height) / chunkSize,
-        );
+
+        let finalX, finalY;
+        if (Math.random() < amountGlitched) {
+          finalX = Math.floor((Math.random() * imageToDraw.width) / chunkSize);
+          finalY = Math.floor((Math.random() * imageToDraw.height) / chunkSize);
+        } else {
+          finalX = x;
+          finalY = y;
+        }
 
         // J is in x direction
         for (let j = 0; j < chunkSize; j++) {
@@ -499,9 +507,9 @@ var serviceMode = function (p) {
               (x * chunkSize + j + (y * chunkSize + k) * imageToDraw.width) * 4;
 
             let indexOfRedDestination =
-              (randomX * chunkSize +
+              (finalX * chunkSize +
                 j +
-                (randomY * chunkSize + k) * imageToDraw.width) *
+                (finalY * chunkSize + k) * imageToDraw.width) *
               4;
             destinationImg.pixels[indexOfRedDestination] =
               imageToDraw.pixels[indexOfRedOriginal]; // Red value
@@ -529,6 +537,7 @@ var serviceMode = function (p) {
     let currentTestScene = testScenes[currentTestSceneNum];
     currentTestScene.instructionsDelay = 0;
     currentTestScene.instructionsFlashCount = 0;
+    let destinationImage = videoFrameImgs[13];
     if (partNum < 64) {
       let partIndex = partNum % 8;
       let thisGroup = Math.floor(partNum / 8);
@@ -538,9 +547,10 @@ var serviceMode = function (p) {
       // Then iterate through the pixels array
 
       // Change pace of glitch to once every second....
-      let destinationImage = videoFrameImgs[11];
-      if (Math.floor(t / 200) % 5 == 0) {
-        drawGlitchImage(thisGroup, destinationImage);
+
+      // if (Math.floor(t / 200)) {
+      if (Math.random() > 0.7) {
+        drawGlitchImage(thisGroup, destinationImage, 5, 0.8);
       } else {
         drawImageToScale(destinationImage, 0, 0);
       }
@@ -566,6 +576,29 @@ var serviceMode = function (p) {
       let partIndex = (partNum - 64) % 4;
       let startingGroupNum = 8;
       let thisGroup = Math.floor((partNum - 64) / 4) + 8;
+
+      let glitchSettings = [
+        { chunkSize: 5, glitchAmount: 1 },
+        { chunkSize: 8, glitchAmount: 0.98 },
+        { chunkSize: 10, glitchAmount: 0.96 },
+        { chunkSize: 16, glitchAmount: 0.94 },
+        { chunkSize: 20, glitchAmount: 0.92 },
+        { chunkSize: 32, glitchAmount: 0.9 },
+        { chunkSize: 40, glitchAmount: 0.88 },
+        { chunkSize: 80, glitchAmount: 0.86 },
+      ];
+
+      let whichSettings = thisGroup - startingGroupNum;
+      if (Math.random() > 0.7) {
+        drawGlitchImage(
+          12,
+          destinationImage,
+          glitchSettings[whichSettings].chunkSize,
+          glitchSettings[whichSettings].glitchAmount,
+        );
+      } else {
+        drawImageToScale(destinationImage, 0, 0);
+      }
 
       // Show new line and the previous lines that have shown up
       if (partIndex >= 1) {
@@ -622,12 +655,16 @@ var serviceMode = function (p) {
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
+      let transitionTime = sceneTransitionTime;
+      if (e.detail.cutFast) {
+        transitionTime = 0;
+      }
       p.noLoop();
       isCurrentScene = false;
       thisCanvas.style.opacity = 0;
       setTimeout(function () {
         thisCanvas.style.visibility = "hidden";
-      }, sceneTransitionTime);
+      }, transitionTime);
     });
   }
 
@@ -669,18 +706,21 @@ var serviceMode = function (p) {
     //Handle case for menu navigation
     if (isCurrentScene) {
       let currentTestScene = testScenes[currentTestSceneNum];
+      let currentPart = currentTestScene.parts[currentTestScene.currentPartNum];
       // for now assume enter progresses the current instructions
+      // console.log(keyCode);
+      // console.log(currentTestScene);
+      // console.log(currentPart);
+      // console.log(currentPart.triggerKey);
 
-      if (keyCode == "Enter") {
+      if (keyCode == "Enter" && currentPart.triggerKey == "ENTER") {
         // need to get current part
         console.log(currentTestScene);
         currentTestScene.triggerSelect();
       }
 
       if (currentTestSceneNum == 4) {
-        let instructionsShowing =
-          currentTestScene.parts[currentTestScene.currentPartNum].instructions
-            .showing;
+        let instructionsShowing = currentPart.instructions.showing;
         if (
           keyCode == "ArrowLeft" &&
           currentTestScene.currentPartNum == 0 &&
@@ -720,8 +760,7 @@ var serviceMode = function (p) {
         currentTestSceneNum == 6 ||
         currentTestSceneNum == 7
       ) {
-        let instructionsObj =
-          currentTestScene.parts[currentTestScene.currentPartNum].instructions;
+        let instructionsObj = currentPart.instructions;
         let instructionsShowing = instructionsObj.showing;
         if (keyCode == "ArrowLeft") {
           if (
@@ -763,6 +802,23 @@ var serviceMode = function (p) {
   //     screenTestDisplacement.x += 1;
   //   }
   // }
+
+  function triggerReboot() {
+    let hideServiceModeEvent = new CustomEvent("hideScene", {
+      detail: {
+        cutFast: true,
+      },
+    });
+    document
+      .getElementById("serviceModeCanvas")
+      .dispatchEvent(hideServiceModeEvent);
+    gameIsReboot = true;
+    setTimeout(function () {
+      part1_bg_player.start();
+      document.getElementById("backgroundCanvas").dispatchEvent(showSceneEvent);
+      document.getElementById("titleCanvas").dispatchEvent(showSceneEvent);
+    }, 2000);
+  }
 
   function handleInputForScreenTest(keyCode) {
     if (keyCode == "ArrowLeft") {
@@ -823,10 +879,13 @@ var serviceMode = function (p) {
     constructor(partsList) {
       this.parts = [];
       let _this = this;
+      // this.triggerKey;
       partsList.forEach(function (part) {
         let partData = {};
         partData.dialogue = new typedText(part.dialogue);
         partData.instructions = new instructions(part.instructions);
+        partData.triggerKey = part.trigger;
+        // _this.triggerKey = part.trigger;
         _this.parts.push(partData);
       });
 
@@ -881,12 +940,19 @@ var serviceMode = function (p) {
         let _this = this;
         let progressScene = function () {
           if (_this.currentPartNum < _this.parts.length - 1) {
+            console.log("moving to next part");
             _this.currentPartNum += 1;
             _this.animatePart();
           } else {
             // this.currentPartNum = 0;
-            currentTestSceneNum += 1;
-            testScenes[currentTestSceneNum].animatePart();
+            console.log("moving to next scene");
+            // Account for end of test mode
+            if (currentTestSceneNum == testScenes.length - 1) {
+              triggerReboot();
+            } else {
+              currentTestSceneNum += 1;
+              testScenes[currentTestSceneNum].animatePart();
+            }
             clearInterval(_this.sceneInterval);
           }
         };

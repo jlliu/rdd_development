@@ -1,5 +1,11 @@
 // Global js helpers
 
+// REBOOT SETTINGS
+
+let gameIsReboot = false;
+
+//////////////////////////////////////
+
 let characterString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[] `;
 let characterList = characterString.split("");
 
@@ -429,6 +435,14 @@ let songList = [
     scores: [],
   },
 ];
+
+const part1_bg_player = new Tone.Player(
+  "assets/audio/RDD_p1_ambience_loop.mp3",
+  // enableStartButton,
+).toDestination();
+part1_bg_player.loop = true;
+part1_bg_player.fadeIn = 2;
+part1_bg_player.fadeIn = 0.5;
 
 // Player test images
 // let playerTextSpritesheet;

@@ -97,20 +97,39 @@ var songSelector = function (p) {
     p.clear();
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      drawImageToScale(songSelectionInstructionsImg, 0, 0);
-      drawText(`${storyModeDifficulty}`, "smallYellow", 1, null, 20);
+      if (!gameIsReboot) {
+        drawImageToScale(songSelectionInstructionsImg, 0, 0);
+      }
 
-      drawMenu();
+      if (gameIsReboot) {
+        drawText(`I WILL PRACTICE`, "smallYellow", 1, null, 80);
+        drawText(`A NEW DANCE`, "smallYellow", 1, null, 120);
+      } else {
+        drawText(`${storyModeDifficulty}`, "smallYellow", 1, null, 20);
+      }
 
-      let currentSongBanner = songBannersImgs[currentCdQueue[2]];
-      drawImageToScale(
-        currentSongBanner,
-        320 - (currentSongBanner.width * 0.9) / 2,
-        90,
-        0.9,
-      );
+      if (gameIsReboot) {
+        drawFinalSongCD();
+      } else {
+        drawMenu();
+      }
+
+      if (!gameIsReboot) {
+        let currentSongBanner = songBannersImgs[currentCdQueue[2]];
+        drawImageToScale(
+          currentSongBanner,
+          320 - (currentSongBanner.width * 0.9) / 2,
+          90,
+          0.9,
+        );
+      }
+
+      let instructionsToDraw = gameIsReboot
+        ? "WILL YOU TOO?"
+        : "PRESS ENTER TO SELECT";
+
       if (Math.floor(globalClock.seconds) % 2 == 0) {
-        drawText("PRESS ENTER TO SELECT", "greenHelper", 1, null, 430);
+        drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
     }
   };
@@ -124,7 +143,9 @@ var songSelector = function (p) {
         thisCanvas.style.opacity = 1;
         isCurrentScene = true;
         menu_track_player.stop();
-        changePreviewSong();
+        if (!gameIsReboot) {
+          changePreviewSong();
+        }
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
@@ -244,7 +265,16 @@ var songSelector = function (p) {
   }
 
   function selectCurrentSong() {
-    if (!currentlyAnimatingLeft && !currentlyAnimatingRight) {
+    console.log("select current song function");
+    // Go to ending song if it is reboot...
+    if (gameIsReboot) {
+      console.log("trigger select");
+      document
+        .querySelector("#experimentalCanvas")
+        .dispatchEvent(showSceneEvent);
+      songSelectorCanvas.dispatchEvent(hideSceneEvent);
+      //Otherwise business as normal
+    } else if (!currentlyAnimatingLeft && !currentlyAnimatingRight) {
       let songId = mod(selectedMenuItemIndex, menuItems.length);
       menuItems[songId].select();
     }
@@ -272,31 +302,33 @@ var songSelector = function (p) {
     console.log(keyCode);
     //Handle case for menu navigation
     if (isCurrentScene) {
-      if (keyCode == "ArrowLeft" || keyCode == "KeyA") {
-        if (!currentlyAnimatingRight) {
-          animateMenu("left");
-        }
-      }
-      if (keyCode == "ArrowRight" || keyCode == "KeyD") {
-        if (!currentlyAnimatingLeft) {
-          animateMenu("right");
-        }
-      }
       if (keyCode == "Enter") {
         selectCurrentSong();
       }
-
-      if (keyCode == "ArrowUp" || keyCode == "KeyW") {
-        let doubleTap = assessDoubleTap("up");
-        if (doubleTap) {
-          changeDifficulty("up");
+      if (!gameIsReboot) {
+        if (keyCode == "ArrowLeft" || keyCode == "KeyA") {
+          if (!currentlyAnimatingRight) {
+            animateMenu("left");
+          }
         }
-      }
+        if (keyCode == "ArrowRight" || keyCode == "KeyD") {
+          if (!currentlyAnimatingLeft) {
+            animateMenu("right");
+          }
+        }
 
-      if (keyCode == "ArrowDown" || keyCode == "KeyS") {
-        let doubleTap = assessDoubleTap("down");
-        if (doubleTap) {
-          changeDifficulty("down");
+        if (keyCode == "ArrowUp" || keyCode == "KeyW") {
+          let doubleTap = assessDoubleTap("up");
+          if (doubleTap) {
+            changeDifficulty("up");
+          }
+        }
+
+        if (keyCode == "ArrowDown" || keyCode == "KeyS") {
+          let doubleTap = assessDoubleTap("down");
+          if (doubleTap) {
+            changeDifficulty("down");
+          }
         }
       }
     }
@@ -450,8 +482,33 @@ var songSelector = function (p) {
         yPos_original - (cd.h * currentScale) / 2,
         currentScale,
       );
+
       currentPositionIndex++;
     });
+
+    p.pop();
+  }
+
+  function drawFinalSongCD() {
+    p.push();
+    p.translate((640 / 2) * scaleRatio, 335 * scaleRatio);
+    //Current position is number 0-4 of visible CD position
+    let currentPositionIndex = 2;
+
+    let xPos_original = currentCdPositions[currentPositionIndex];
+
+    let yPos_original = parabolaY(xPos_original);
+
+    let currentScale = currentCdScales[currentPositionIndex];
+
+    drawImageToScale(
+      menuItems[5].cdImg,
+      xPos_original - (cd.w * currentScale) / 2,
+      yPos_original - (cd.h * currentScale) / 2 - 50,
+      currentScale,
+    );
+
+    currentPositionIndex++;
 
     p.pop();
   }
