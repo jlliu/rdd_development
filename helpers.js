@@ -287,6 +287,10 @@ const sceneTransitionTime = 1000;
 // Background, title, tutorial, difficulty, songSelector, mainSong, revelation, unlockCanvas, scoreCanvas, experimental, gates, service mode
 let totalCanvases = 11; // remove tutorial
 
+let frameRate = 30;
+
+// Game mode is Story or Arcade
+let gameMode = "Story";
 let storyModeDifficulty = "Medium";
 
 let globalClock = new Tone.Clock((time) => {}, 1);
@@ -319,7 +323,7 @@ menu_track_player.fadeIn = 2;
 menu_track_player.fadeOut = 0.5;
 menu_track_player.volume.value = -15;
 
-menu_track_player.autostart = true;
+// menu_track_player.autostart = true;
 
 let songList = [
   {

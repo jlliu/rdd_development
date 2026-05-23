@@ -31,12 +31,13 @@ var background = function (p) {
 
   p.preload = function () {
     //Preload shaders here
-    mainGlow = p.loadShader("shaders/basic.vert", "shaders/pinkGlow.frag");
+    mainGlow = p.loadShader("shaders/basic.vert", "shaders/mainGlow.frag");
     radialGlow = p.loadShader("shaders/basic.vert", "shaders/radialGlow.frag");
   };
 
   p.setup = function () {
     // put setup code here
+    p.frameRate(frameRate);
     p.pixelDensity(1);
     calculateCanvasDimensions(p);
 
@@ -115,10 +116,7 @@ var background = function (p) {
     thisCanvas.addEventListener("showScene", (e) => {
       if (e.detail && e.detail.shaderType) {
         shaderType = e.detail.shaderType;
-        // //Override to make purple if needed
-        // if (e.detail.colorCode == 49) {
-        //   narrativeCue = 49;
-        // }
+
         //Animate in.revelation radio glow
         if (shaderType == "radialGlow") {
           glowAmount = 1.0;
@@ -129,6 +127,16 @@ var background = function (p) {
           }, sceneTransitionTime);
         }
       } else {
+        //Override to make purple if needed
+        console.log("show scene");
+        console.log(gameIsReboot);
+
+        // Reset narrative cue later...
+        if (gameIsReboot) {
+          console.log("show scene");
+          narrativeCue = 97;
+        }
+
         shaderType = "mainGlow";
       }
       p.loop();

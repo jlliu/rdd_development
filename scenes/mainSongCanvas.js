@@ -6,7 +6,8 @@ var mainScene = function (p) {
 
   let thisSongData;
 
-  let updateArrowsInterval;
+  // let updateArrowsInterval;
+  let updateNotesInterval;
 
   let canvasSizeOriginal = { width: 640, height: 480 };
   let canvasWidth = canvasSizeOriginal.width;
@@ -29,7 +30,12 @@ var mainScene = function (p) {
     right: hitPos.x + arrowWidth * 3,
   };
 
+  let hitArrowSpritesheet;
   let arrowSpritesheet;
+  let rainbowArrowSpritesheet;
+
+  // save only one image obj and clear it
+  // let newImgObj;
 
   // let arrowImgs;
   // let arrowImgsOriginal;
@@ -92,6 +98,7 @@ var mainScene = function (p) {
   p.preload = function () {
     //Preload a background here
     //Preload whatever needs to be preloaded
+    hitArrowSpritesheet = p.loadImage("assets/hitArrowSpritesheet.png");
     arrowSpritesheet = p.loadImage("assets/arrowSpritesheet.png");
 
     comboTextImg = p.loadImage("assets/comboText.png");
@@ -107,8 +114,8 @@ var mainScene = function (p) {
 
   p.setup = function () {
     // put setup code here
+    p.frameRate(frameRate);
     p.pixelDensity(3);
-    p.frameRate(60);
     calculateCanvasDimensions(p);
     mainSongCanvas = p.createCanvas(canvasWidth, canvasHeight).elt;
     mainSongCanvas.classList.add("gameCanvas");
@@ -119,77 +126,74 @@ var mainScene = function (p) {
 
     // Setup arrow images from spritesheet
 
+    // newImgObj = p.createImage(64, 64);
+
+    // hitArrowImgs = {
+    //   left: arrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
+    //   down: arrowSpritesheet.get(arrowWidth, 0, arrowWidth, arrowWidth),
+    //   up: arrowSpritesheet.get(arrowWidth * 2, 0, arrowWidth, arrowWidth),
+    //   right: arrowSpritesheet.get(arrowWidth * 3, 0, arrowWidth, arrowWidth),
+    // };
     hitArrowImgs = {
-      left: arrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
-      down: arrowSpritesheet.get(arrowWidth, 0, arrowWidth, arrowWidth),
-      up: arrowSpritesheet.get(arrowWidth * 2, 0, arrowWidth, arrowWidth),
-      right: arrowSpritesheet.get(arrowWidth * 3, 0, arrowWidth, arrowWidth),
+      left: hitArrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
+      down: hitArrowSpritesheet.get(0, arrowWidth, arrowWidth, arrowWidth),
+      up: hitArrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
+      right: hitArrowSpritesheet.get(0, arrowWidth * 3, arrowWidth, arrowWidth),
     };
 
     arrowImgsOriginal = {
-      left: arrowSpritesheet.get(0, arrowWidth, arrowWidth, arrowWidth),
-      down: arrowSpritesheet.get(
-        arrowWidth,
-        arrowWidth,
-        arrowWidth,
-        arrowWidth,
-      ),
-      up: arrowSpritesheet.get(
-        arrowWidth * 2,
-        arrowWidth,
-        arrowWidth,
-        arrowWidth,
-      ),
-      right: arrowSpritesheet.get(
-        arrowWidth * 3,
-        arrowWidth,
-        arrowWidth,
-        arrowWidth,
-      ),
+      left: arrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
+      down: arrowSpritesheet.get(0, arrowWidth * 1, arrowWidth, arrowWidth),
+      up: arrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
+      right: arrowSpritesheet.get(0, arrowWidth * 3, arrowWidth, arrowWidth),
     };
+    // arrowImgs = {
+    //   left: {},
+    //   down: {},
+    //   right: {},
+    //   up: {},
+    // };
+
+    // numbers are where they are in the spritesheet
     arrowImgs = {
-      left: {},
-      down: {},
-      right: {},
-      up: {},
+      left: 0,
+      down: 1,
+      up: 2,
+      right: 3,
     };
 
     holdEndImgsOriginal = {
-      left: arrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
-      down: arrowSpritesheet.get(
-        arrowWidth,
-        arrowWidth * 2,
-        arrowWidth,
-        arrowWidth,
-      ),
-      up: arrowSpritesheet.get(
-        arrowWidth * 2,
-        arrowWidth * 2,
-        arrowWidth,
-        arrowWidth,
-      ),
-      right: arrowSpritesheet.get(
-        arrowWidth * 3,
-        arrowWidth * 2,
-        arrowWidth,
-        arrowWidth,
-      ),
+      left: arrowSpritesheet.get(0, arrowWidth * 4, arrowWidth, arrowWidth),
+      down: arrowSpritesheet.get(0, arrowWidth * 5, arrowWidth, arrowWidth),
+      up: arrowSpritesheet.get(0, arrowWidth * 6, arrowWidth, arrowWidth),
+      right: arrowSpritesheet.get(0, arrowWidth * 7, arrowWidth, arrowWidth),
     };
 
+    // holdEndImgs = {
+    //   left: {},
+    //   down: {},
+    //   right: {},
+    //   up: {},
+    // };
+
     holdEndImgs = {
-      left: {},
-      down: {},
-      right: {},
-      up: {},
+      left: { hitTrue: 4, hitFalse: 5 },
+      down: { hitTrue: 6, hitFalse: 7 },
+      up: { hitTrue: 8, hitFalse: 9 },
+      right: { hitTrue: 10, hitFalse: 11 },
     };
 
     holdMiddleImgOriginal = arrowSpritesheet.get(
       0,
-      arrowWidth * 3,
+      arrowWidth * 8,
       arrowWidth,
       arrowWidth,
     );
-    holdMiddleImg = {};
+    // holdMiddleImg = {};
+    holdMiddleImg = {
+      hitTrue: 12,
+      hitFalse: 13,
+    };
 
     hitArrowObjs = {
       left: new HitArrow("left", hitPos.x, hitPos.y),
@@ -231,6 +235,8 @@ var mainScene = function (p) {
     Object.values(holdEndImgsOriginal).forEach(function (imgObj) {
       imgObj.loadPixels();
     });
+
+    arrowSpritesheet.loadPixels();
 
     window.dispatchEvent(canvasLoadedEvent);
     setupNavigation(mainSongCanvas);
@@ -350,6 +356,7 @@ var mainScene = function (p) {
       }
       //Are we ALMOST at a new batch? Update the batch data!
       else if (currentMeasure % batchSize == batchSize - 1) {
+        console.log("updating batch data");
         //Discard old ones BEFORE 1 measure ago....
         let remainingNotes = relevantNotes.filter(function (note) {
           //Keep only if this note is a hold and it's done...
@@ -501,10 +508,11 @@ var mainScene = function (p) {
     //For negative songDelays, start song before notes
     if (songDelay < 0) {
       setTimeout(function () {
-        updateArrowsInterval = setInterval(function () {
+        updateNotesInterval = setInterval(function () {
           updateNotes();
           updateArrowRainbow();
         }, 10);
+
         startDrawingArrows = true;
         //Start a tone.js clock to keep time
         // clock.start();
@@ -512,10 +520,11 @@ var mainScene = function (p) {
       }, -songDelay * 1000);
     } else {
       // For positive songDelays, startNotes before song
-      updateArrowsInterval = setInterval(function () {
+      updateNotesInterval = setInterval(function () {
         updateNotes();
         updateArrowRainbow();
       }, 10);
+
       startDrawingArrows = true;
       //Start a tone.js clock to keep time
       // clock.start();
@@ -776,85 +785,108 @@ var mainScene = function (p) {
   }
 
   function updateArrowRainbow() {
+    // Code for testing performance
+    // holdMiddleImg.hitTrue = holdMiddleImgOriginal;
+    // holdMiddleImg.hitFalse = holdMiddleImgOriginal;
+    // arrowImgs.left = arrowImgsOriginal.left;
+    // arrowImgs.up = arrowImgsOriginal.up;
+    // arrowImgs.down = arrowImgsOriginal.down;
+    // arrowImgs.right = arrowImgsOriginal.right;
+
+    // holdEndImgs.left.hitFalse = holdEndImgsOriginal.left;
+    // holdEndImgs.up.hitFalse = holdEndImgsOriginal.up;
+    // holdEndImgs.down.hitFalse = holdEndImgsOriginal.down;
+    // holdEndImgs.right.hitFalse = holdEndImgsOriginal.right;
+
+    // holdEndImgs.left.hitTrue = holdEndImgsOriginal.left;
+    // holdEndImgs.up.hitTrue = holdEndImgsOriginal.up;
+    // holdEndImgs.down.hitTrue = holdEndImgsOriginal.down;
+    // holdEndImgs.right.hitTrue = holdEndImgsOriginal.right;
+
     let rgb_gradient = calculateRgbValues();
 
-    holdMiddleImg.hitTrue = convertArrowImgToRainbow(
-      holdMiddleImgOriginal,
-      rgb_gradient,
-      "holdMiddle",
-      true,
-    );
-
-    holdMiddleImg.hitFalse = convertArrowImgToRainbow(
-      holdMiddleImgOriginal,
-      rgb_gradient,
-      "holdMiddle",
-      false,
-    );
-
-    arrowImgs.left = convertArrowImgToRainbow(
-      arrowImgsOriginal.left,
-      rgb_gradient,
-    );
-    arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up, rgb_gradient);
-    arrowImgs.down = convertArrowImgToRainbow(
-      arrowImgsOriginal.down,
-      rgb_gradient,
-    );
-    arrowImgs.right = convertArrowImgToRainbow(
-      arrowImgsOriginal.right,
+    rainbowArrowSpritesheet = convertArrowSpritesheetToRainbow(
+      arrowSpritesheet,
       rgb_gradient,
     );
 
-    holdEndImgs.left.hitFalse = convertArrowImgToRainbow(
-      holdEndImgsOriginal.left,
-      rgb_gradient,
-      "holdEnd",
-      false,
-    );
-    holdEndImgs.up.hitFalse = convertArrowImgToRainbow(
-      holdEndImgsOriginal.up,
-      rgb_gradient,
-      "holdEnd",
-      false,
-    );
-    holdEndImgs.down.hitFalse = convertArrowImgToRainbow(
-      holdEndImgsOriginal.down,
-      rgb_gradient,
-      "holdEnd",
-      false,
-    );
-    holdEndImgs.right.hitFalse = convertArrowImgToRainbow(
-      holdEndImgsOriginal.right,
-      rgb_gradient,
-      "holdEnd",
-      false,
-    );
+    // holdMiddleImg.hitTrue = convertArrowImgToRainbow(
+    //   holdMiddleImgOriginal,
+    //   rgb_gradient,
+    //   "holdMiddle",
+    //   true,
+    // );
 
-    holdEndImgs.left.hitTrue = convertArrowImgToRainbow(
-      holdEndImgsOriginal.left,
-      rgb_gradient,
-      "holdEnd",
-      true,
-    );
-    holdEndImgs.up.hitTrue = convertArrowImgToRainbow(
-      holdEndImgsOriginal.up,
-      rgb_gradient,
-      "holdEnd",
-      true,
-    );
-    holdEndImgs.down.hitTrue = convertArrowImgToRainbow(
-      holdEndImgsOriginal.down,
-      rgb_gradient,
-      "holdEnd",
-      true,
-    );
-    holdEndImgs.right.hitTrue = convertArrowImgToRainbow(
-      holdEndImgsOriginal.right,
-      rgb_gradient,
-      "holdEnd",
-      true,
-    );
+    // holdMiddleImg.hitFalse = convertArrowImgToRainbow(
+    //   holdMiddleImgOriginal,
+    //   rgb_gradient,
+    //   "holdMiddle",
+    //   false,
+    // );
+
+    // arrowImgs.left = convertArrowImgToRainbow(
+    //   arrowImgsOriginal.left,
+    //   rgb_gradient,
+    // );
+    // arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up, rgb_gradient);
+    // arrowImgs.down = convertArrowImgToRainbow(
+    //   arrowImgsOriginal.down,
+    //   rgb_gradient,
+    // );
+    // arrowImgs.right = convertArrowImgToRainbow(
+    //   arrowImgsOriginal.right,
+    //   rgb_gradient,
+    // );
+
+    // holdEndImgs.left.hitFalse = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.left,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   false,
+    // );
+    // holdEndImgs.up.hitFalse = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.up,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   false,
+    // );
+    // holdEndImgs.down.hitFalse = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.down,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   false,
+    // );
+    // holdEndImgs.right.hitFalse = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.right,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   false,
+    // );
+
+    // holdEndImgs.left.hitTrue = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.left,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   true,
+    // );
+    // holdEndImgs.up.hitTrue = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.up,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   true,
+    // );
+    // holdEndImgs.down.hitTrue = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.down,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   true,
+    // );
+    // holdEndImgs.right.hitTrue = convertArrowImgToRainbow(
+    //   holdEndImgsOriginal.right,
+    //   rgb_gradient,
+    //   "holdEnd",
+    //   true,
+    // );
   }
 
   function calculateRgbValues() {
@@ -862,15 +894,17 @@ var mainScene = function (p) {
     return hsl2rgb_gradient(currentHue, 0.97, 0.6);
   }
 
-  function convertArrowImgToRainbow(imgObj, rgb_gradient, imgType, isHit) {
-    // Iterates across each pixel in the canvas
-    // let arrowImg = arrowImgs["left"];
-    // let currentHue = (t * 50) % 360;
-    // let rgb = hsl2rgb(currentHue, 0.97, 0.6);
-
-    let newImgObj = p.createImage(64, 64);
-    newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
+  function convertArrowSpritesheetToRainbow(
+    imgObj,
+    rgb_gradient,
+    imgType,
+    isHit,
+  ) {
+    // Let's try this again except convert the whole spritesheet to rainbow...
+    let newImgObj = p.createImage(64, 896);
     newImgObj.loadPixels();
+
+    // imgObj.loadPixels();
 
     for (let y = 0; y < newImgObj.height; y++) {
       for (let x = 0; x < newImgObj.width; x++) {
@@ -881,33 +915,192 @@ var mainScene = function (p) {
         let alphaIndex = redIndex + 3;
         // Top of arrow
         let isWhite =
-          newImgObj.pixels[redIndex] == 255 &&
-          newImgObj.pixels[greenIndex] == 255 &&
-          newImgObj.pixels[blueIndex] == 255 &&
-          newImgObj.pixels[alphaIndex] == 255;
+          arrowSpritesheet.pixels[redIndex] == 255 &&
+          arrowSpritesheet.pixels[greenIndex] == 255 &&
+          arrowSpritesheet.pixels[blueIndex] == 255 &&
+          arrowSpritesheet.pixels[alphaIndex] == 255;
         // Middle of arrow
         let isBlue =
-          newImgObj.pixels[redIndex] == 0 &&
-          newImgObj.pixels[greenIndex] == 0 &&
-          newImgObj.pixels[blueIndex] == 255 &&
-          newImgObj.pixels[alphaIndex] == 255;
+          arrowSpritesheet.pixels[redIndex] == 0 &&
+          arrowSpritesheet.pixels[greenIndex] == 0 &&
+          arrowSpritesheet.pixels[blueIndex] == 255 &&
+          arrowSpritesheet.pixels[alphaIndex] == 255;
         // Bottom of arrow
         let isGreen =
-          newImgObj.pixels[redIndex] == 0 &&
-          newImgObj.pixels[greenIndex] == 255 &&
-          newImgObj.pixels[blueIndex] == 0 &&
-          newImgObj.pixels[alphaIndex] == 255;
+          arrowSpritesheet.pixels[redIndex] == 0 &&
+          arrowSpritesheet.pixels[greenIndex] == 255 &&
+          arrowSpritesheet.pixels[blueIndex] == 0 &&
+          arrowSpritesheet.pixels[alphaIndex] == 255;
         let isRed =
-          newImgObj.pixels[redIndex] == 255 &&
-          newImgObj.pixels[greenIndex] == 0 &&
-          newImgObj.pixels[blueIndex] == 0 &&
-          newImgObj.pixels[alphaIndex] == 255;
+          arrowSpritesheet.pixels[redIndex] == 255 &&
+          arrowSpritesheet.pixels[greenIndex] == 0 &&
+          arrowSpritesheet.pixels[blueIndex] == 0 &&
+          arrowSpritesheet.pixels[alphaIndex] == 255;
         let isTransparent =
-          newImgObj.pixels[redIndex] == 0 &&
-          newImgObj.pixels[greenIndex] == 0 &&
-          newImgObj.pixels[blueIndex] == 0 &&
-          newImgObj.pixels[alphaIndex] == 0;
+          arrowSpritesheet.pixels[redIndex] == 0 &&
+          arrowSpritesheet.pixels[greenIndex] == 0 &&
+          arrowSpritesheet.pixels[blueIndex] == 0 &&
+          arrowSpritesheet.pixels[alphaIndex] == 0;
 
+        let isBlack =
+          arrowSpritesheet.pixels[redIndex] == 0 &&
+          arrowSpritesheet.pixels[greenIndex] == 0 &&
+          arrowSpritesheet.pixels[blueIndex] == 0 &&
+          arrowSpritesheet.pixels[alphaIndex] == 255;
+
+        let isHoldEnd = y >= 4 * 64 && y < 12 * 64;
+        let isHoldMiddle = y >= 12 * 64;
+        // let isHoldMiddle)Hit = y > 12 * 64;
+        let isHit = Math.floor(y / 64) % 2 == 0;
+
+        // Make sure the non colored pixels ones are the same value
+        if (!(isRed || isGreen || isBlue || isWhite)) {
+          newImgObj.pixels[redIndex] = arrowSpritesheet.pixels[redIndex]; // Red value
+          newImgObj.pixels[greenIndex] = arrowSpritesheet.pixels[greenIndex]; // Green value
+          newImgObj.pixels[blueIndex] = arrowSpritesheet.pixels[blueIndex]; // Blue value
+          newImgObj.pixels[alphaIndex] = arrowSpritesheet.pixels[alphaIndex]; // Alpha value
+        }
+        // Change Red pixels to rainbow effect
+        if (isRed) {
+          // Use the last calculated color for the end of holds to make more continuous
+
+          if (isHoldEnd) {
+            newImgObj.pixels[redIndex] = rgb_gradient[63][0] * 255; // Red value
+            newImgObj.pixels[greenIndex] = rgb_gradient[63][1] * 255; // Green value
+            newImgObj.pixels[blueIndex] = rgb_gradient[63][2] * 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          } else {
+            newImgObj.pixels[redIndex] = rgb_gradient[y % 64][0] * 255; // Red value
+            newImgObj.pixels[greenIndex] = rgb_gradient[y % 64][1] * 255; // Green value
+            newImgObj.pixels[blueIndex] = rgb_gradient[y % 64][2] * 255; // Blue value
+            newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          }
+        }
+
+        if (isHoldMiddle || isHoldEnd) {
+          if (isWhite) {
+            if (isHit) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else if (!isHit) {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+        } else {
+          // Change bottom section
+          if (isGreen) {
+            // Note: fix timing.. it should be that on the beat
+            if ((currentBeat * 100) % 100 > 25) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+          if (isBlue) {
+            if ((currentBeat * 100) % 100 > 50) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+          if (isWhite) {
+            if ((currentBeat * 100) % 100 > 75) {
+              newImgObj.pixels[redIndex] = 255; // Red value
+              newImgObj.pixels[greenIndex] = 255; // Green value
+              newImgObj.pixels[blueIndex] = 255; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            } else {
+              newImgObj.pixels[redIndex] = 180; // Red value
+              newImgObj.pixels[greenIndex] = 180; // Green value
+              newImgObj.pixels[blueIndex] = 192; // Blue value
+              newImgObj.pixels[alphaIndex] = 255; // Alpha value
+            }
+          }
+        }
+      }
+    }
+    // console.log("updating pixels");
+    newImgObj.updatePixels();
+    return newImgObj;
+  }
+
+  function convertArrowImgToRainbow(imgObj, rgb_gradient, imgType, isHit) {
+    // Iterates across each pixel in the canvas
+    // let arrowImg = arrowImgs["left"];
+    // let currentHue = (t * 50) % 360;
+    // let rgb = hsl2rgb(currentHue, 0.97, 0.6);
+    // if (newImgObj) {
+    //   console.log("removing");
+    //   console.log(newImgObj);
+    //   newImgObj.remove();
+    // }
+    // newImgObj.clear();
+    // newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
+    let newImgObj = p.createImage(64, 64);
+    newImgObj.loadPixels();
+
+    imgObj.loadPixels();
+
+    for (let y = 0; y < newImgObj.height; y++) {
+      for (let x = 0; x < newImgObj.width; x++) {
+        // Gets the index of the red value for this pixel
+        let redIndex = (x + y * newImgObj.width) * 4;
+        let greenIndex = redIndex + 1;
+        let blueIndex = redIndex + 2;
+        let alphaIndex = redIndex + 3;
+        // Top of arrow
+        let isWhite =
+          imgObj.pixels[redIndex] == 255 &&
+          imgObj.pixels[greenIndex] == 255 &&
+          imgObj.pixels[blueIndex] == 255 &&
+          imgObj.pixels[alphaIndex] == 255;
+        // Middle of arrow
+        let isBlue =
+          imgObj.pixels[redIndex] == 0 &&
+          imgObj.pixels[greenIndex] == 0 &&
+          imgObj.pixels[blueIndex] == 255 &&
+          imgObj.pixels[alphaIndex] == 255;
+        // Bottom of arrow
+        let isGreen =
+          imgObj.pixels[redIndex] == 0 &&
+          imgObj.pixels[greenIndex] == 255 &&
+          imgObj.pixels[blueIndex] == 0 &&
+          imgObj.pixels[alphaIndex] == 255;
+        let isRed =
+          imgObj.pixels[redIndex] == 255 &&
+          imgObj.pixels[greenIndex] == 0 &&
+          imgObj.pixels[blueIndex] == 0 &&
+          imgObj.pixels[alphaIndex] == 255;
+        let isTransparent =
+          imgObj.pixels[redIndex] == 0 &&
+          imgObj.pixels[greenIndex] == 0 &&
+          imgObj.pixels[blueIndex] == 0 &&
+          imgObj.pixels[alphaIndex] == 0;
+
+        // Make sure transparent is transparent
+        if (isTransparent) {
+          newImgObj.pixels[redIndex] = 0; // Red value
+          newImgObj.pixels[greenIndex] = 0; // Green value
+          newImgObj.pixels[blueIndex] = 0; // Blue value
+          newImgObj.pixels[alphaIndex] = 0; // Alpha value
+        }
         // Change Red pixels to rainbow effect
         if (isRed) {
           // Use the last calculated color for the end of holds to make more continuous
@@ -1207,7 +1400,8 @@ var mainScene = function (p) {
     currentBeat = 0;
     pixelsElapsed = 0;
     startDrawingArrows = false;
-    clearInterval(updateArrowsInterval);
+    // clearInterval(updateArrowsInterval);
+    clearInterval(updateNotesInterval);
     measureData = null;
     songBpm = null;
     songDelay = null;
@@ -1373,7 +1567,7 @@ var mainScene = function (p) {
         let opacity = this.hasPassedOver ? 127 : 255;
         //Draw passed over notes greyed out
         p.tint(255, opacity);
-        drawImageToScale(
+        drawArrowPiece(
           arrowImgs[this.direction],
           arrow_xPos[this.direction],
           yPos,
@@ -1386,20 +1580,20 @@ var mainScene = function (p) {
           // hit first note, is currently holding in the middle of hold
           rectangleHeight = pixelsPerBeat * (this.endBeat - currentBeat);
           // Draw rectangle
-          drawImageToScaleWithHeight(
+          drawArrowPiece(
             holdMiddleImg.hitTrue,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
-          drawImageToScale(
+          drawArrowPiece(
             holdEndImgs[this.direction].hitTrue,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
-          drawImageToScale(
+          drawArrowPiece(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos,
@@ -1416,20 +1610,20 @@ var mainScene = function (p) {
             pixelsElapsed;
 
           // Draw rectangle
-          drawImageToScaleWithHeight(
+          drawArrowPiece(
             holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
             yPosReleased + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
-          drawImageToScale(
+          drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
-          drawImageToScale(
+          drawArrowPiece(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             yPosReleased,
@@ -1443,18 +1637,18 @@ var mainScene = function (p) {
           let opacity = this.hasPassedOver ? 127 : 255;
           p.tint(255, opacity);
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
-          drawImageToScaleWithHeight(
+          drawArrowPiece(
             holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
             yPos + 32,
             rectangleHeight,
           );
-          drawImageToScale(
+          drawArrowPiece(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             yPos,
           );
-          drawImageToScale(
+          drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPos + rectangleHeight,
@@ -1962,6 +2156,27 @@ var mainScene = function (p) {
       y * scaleRatio,
       img.width * scaleRatio,
       height * scaleRatio,
+    );
+  }
+
+  function drawArrowPiece(pieceType, x, y, height) {
+    // Draw arrow from spritesheet
+    let positionInSpritesheet = pieceType * 64;
+
+    //Account for null height values
+    if (height == null) {
+      height = 64;
+    }
+    p.image(
+      rainbowArrowSpritesheet,
+      x * scaleRatio,
+      y * scaleRatio,
+      64 * scaleRatio,
+      height * scaleRatio,
+      0, //sx
+      positionInSpritesheet, //sy
+      64,
+      64,
     );
   }
 

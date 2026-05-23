@@ -53,6 +53,7 @@ var songSelector = function (p) {
 
   p.setup = function () {
     // put setup code here
+    p.frameRate(60);
     p.pixelDensity(3);
     calculateCanvasDimensions(p);
 
@@ -139,6 +140,7 @@ var songSelector = function (p) {
     thisCanvas.addEventListener("showScene", (e) => {
       p.loop();
       setTimeout(function () {
+        resetCdQueue(selectedMenuItemIndex);
         thisCanvas.style.visibility = "visible";
         thisCanvas.style.opacity = 1;
         isCurrentScene = true;
@@ -436,15 +438,22 @@ var songSelector = function (p) {
   //Returns the songs IDS (0-5) of the current queue as a list... and resets the positions
   // Input index is an int that can be negative or positive in any direction....
   function resetCdQueue(index) {
+    let menuItemsNumber;
+    if (gameMode == "Story") {
+      menuItemsNumber = menuItems.length;
+    } else if (gameMode == "Arcade") {
+      menuItemsNumber = menuItems.length - 1;
+    }
+
     currentCdPositions = originalCdPositions.slice();
     currentCdScales = originalCdScales.slice();
 
     currentCdQueue = [
-      mod(index - 2, menuItems.length),
-      mod(index - 1, menuItems.length),
-      mod(index, menuItems.length),
-      mod(index + 1, menuItems.length),
-      mod(index + 2, menuItems.length),
+      mod(index - 2, menuItemsNumber),
+      mod(index - 1, menuItemsNumber),
+      mod(index, menuItemsNumber),
+      mod(index + 1, menuItemsNumber),
+      mod(index + 2, menuItemsNumber),
     ];
   }
   function changePreviewSong() {

@@ -17,25 +17,7 @@ var serviceMode = function (p) {
 
   let menuAnimationTimer = 0.0;
 
-  // let mainMenuItems = [];
-
-  // let mainMenu;
-
-  // let currentMenu;
-
-  // let showSettings = false;
-
-  // let visibleScene = null;
-
-  // let settingsDialogueScenes = [];
-
-  // let exitDialogueScenes = [];
-
-  // let currentDialogueSceneIndex = 0;
-
-  // let dialogueSceneType;
-
-  let currentTestSceneNum = 0;
+  let currentTestSceneNum = 7;
 
   let testScenes = [];
   let imageTestDialogues = [];
@@ -114,10 +96,14 @@ var serviceMode = function (p) {
     memoryTestWords.forEach(function (dialogueText) {
       let thisDialogue = [];
       thisDialogue.push(
-        new typedText(dialogueText, { x: 20, y: 200 }, "mainIceBlue"),
+        new typedText(dialogueText, { x: 20, y: 200 }, "mainIceBlue", 20),
       );
-      thisDialogue.push(new typedText("IS", { x: 380, y: 200 }, "mainIceBlue"));
-      thisDialogue.push(new typedText("OK", { x: 500, y: 200 }, "mainGreen"));
+      thisDialogue.push(
+        new typedText("IS", { x: 380, y: 200 }, "mainIceBlue", 20),
+      );
+      thisDialogue.push(
+        new typedText("OK", { x: 500, y: 200 }, "mainGreen", 20),
+      );
       memoryTestDialogues.push(thisDialogue);
     });
 
@@ -126,13 +112,23 @@ var serviceMode = function (p) {
     for (var i = 0; i < 8; i++) {
       let thisDialogue = [];
       thisDialogue.push(
-        new typedText("I", { x: 100, y: startingY + i * 58 }, "mainIceBlue"),
+        new typedText("I", { x: 100, y: startingY + i * 58 }, "mainIceBlue", 5),
       );
       thisDialogue.push(
-        new typedText("AM", { x: 200, y: startingY + i * 58 }, "mainIceBlue"),
+        new typedText(
+          "AM",
+          { x: 200, y: startingY + i * 58 },
+          "mainIceBlue",
+          5,
+        ),
       );
       thisDialogue.push(
-        new typedText("HERE", { x: 400, y: startingY + i * 58 }, "mainGreen"),
+        new typedText(
+          "HERE",
+          { x: 400, y: startingY + i * 58 },
+          "mainGreen",
+          5,
+        ),
       );
       memoryTestDialogues.push(thisDialogue);
     }
@@ -940,12 +936,12 @@ var serviceMode = function (p) {
         let _this = this;
         let progressScene = function () {
           if (_this.currentPartNum < _this.parts.length - 1) {
-            console.log("moving to next part");
+            // console.log("moving to next part");
             _this.currentPartNum += 1;
             _this.animatePart();
           } else {
             // this.currentPartNum = 0;
-            console.log("moving to next scene");
+            // console.log("moving to next scene");
             // Account for end of test mode
             if (currentTestSceneNum == testScenes.length - 1) {
               triggerReboot();
@@ -969,7 +965,7 @@ var serviceMode = function (p) {
   }
 
   class typedText {
-    constructor(textLines, pos, font) {
+    constructor(textLines, pos, font, typeSpeed) {
       this.textLines = textLines;
       if (font) {
         this.font = font;
@@ -979,6 +975,12 @@ var serviceMode = function (p) {
         this.font = "whiteTerminal";
         this.charWidth = fonts["whiteTerminal"].sets[0].size.width;
         this.charHeight = fonts["whiteTerminal"].sets[0].size.height;
+      }
+
+      if (typeSpeed) {
+        this.typeSpeed = typeSpeed;
+      } else {
+        this.typeSpeed = 40;
       }
 
       //Account for height of multiple lines
@@ -1074,7 +1076,7 @@ var serviceMode = function (p) {
               // _this.menuGroup.animateMenu();
             }
           }
-        }, 40);
+        }, this.typeSpeed);
       }
     }
   }

@@ -51,18 +51,18 @@ var difficulty = function (p) {
   };
 
   p.draw = function () {
-    if (gameIsReboot) {
-      menuItems[0].menuText = "NEW";
-      menuItems[1].menuText = "MODES ARE";
-      menuItems[2].menuText = "POSSIBLE";
-    }
+    // if (gameIsReboot) {
+    //   menuItems[0].menuText = "NEW";
+    //   menuItems[1].menuText = "MODES ARE";
+    //   menuItems[2].menuText = "POSSIBLE";
+    // }
 
     p.clear();
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
       let instructionsToDraw = gameIsReboot
-        ? "I CAN BELIEVE"
+        ? "TO DO HARD THINGS"
         : "PRESS ENTER TO SELECT";
       drawMenu();
       if (Math.floor(globalClock.seconds) % 2 == 0) {
@@ -92,6 +92,10 @@ var difficulty = function (p) {
         thisCanvas.style.opacity = 1;
         animateMenuIn();
         isCurrentScene = true;
+
+        if (!gameIsReboot) {
+          menu_track_player.start();
+        }
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {

@@ -42,6 +42,8 @@
     <!-- <audio controls src="assets/song.mp3"></audio> -->
     <!-- <audio controls src="assets/audio/Heaven.OGG"></audio> -->
 
+
+
     <div id="song-video-container">
     <video class="songVideo" id="songVideo" preload="none" muted>
       <source src="songAssets/Backgrounds/cowgirlvideo.mp4" type="video/mp4">
@@ -68,13 +70,13 @@
       <br />
     </div>
 
-    <div id="connectDevice-overlay" class="overlay">
+    <!-- <div id="connectDevice-overlay" class="overlay">
       <h1>Connect to the game pad!</h1>
       <h2>Select "L-Tek Dance Pad PRO"</h2>
       <button onclick="connectDevice()">Connect</button>
       <select id="deviceSelect" oninput="deviceSelectionChanged()"></select>
       <br />
-    </div>
+    </div> -->
 
     <div id="credits" class="overlay">
       <h1>Game art, design, writing by Jackie Liu</h2>
@@ -82,6 +84,15 @@
       <h2>Restarting in <span id="endingCountdown">20</span></h2>
       <br />
     </div>
+
+            <div id="intro-video-container">
+    <video class="introVideo" id="introVideo" preload="true" >
+      <source src="assets/intro_video.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    </div>
+
+
 
 
   </main>
@@ -107,6 +118,7 @@
   <script src="scenes/backgroundCanvas.js" defer></script>
   <script src="scenes/titleScreenCanvas.js" defer></script>
   <!-- <script src="scenes/tutorialCanvas.js" defer></script> -->
+     <!-- <script src="scenes/gameModeCanvas.js" defer></script> -->
   <script src="scenes/difficultyCanvas.js" defer></script>
   <script src="scenes/unlockCanvas.js" defer></script>
   <script src="scenes/songSelectorCanvas.js" defer></script>
