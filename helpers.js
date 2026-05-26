@@ -4,10 +4,12 @@
 
 let gameIsReboot = false;
 
+//story or arcade
+let gameMode = "story";
+
 //////////////////////////////////////
 
 let characterString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[] `;
-let characterList = characterString.split("");
 
 let digitString = "1234567890";
 
@@ -15,14 +17,15 @@ let digitList = digitString.split("");
 
 let scoreDigitString = "o0123456789";
 
-let scoreDigitList = scoreDigitString.split("");
-
 let mainPinkCharacters = `ABCDEFGHIJKLNOPQRSTUVXYZabcdefghijklnopqrstuvxyz1234567890.,?!-"'()[] `;
 
 let terminalString = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890.,?!-_"'()[]>= `;
-let terminalList = terminalString.split("");
 
 let widePinkCharacters = `MWmw`;
+
+let neuropolSet1 = `ABCDEFGHKLNOPQRSTUVXYZabcdeghknopqsuvxyz234567890?!-"'()[] `;
+let neuropolSet2 = `IJfijlrt1.,`;
+let neuropolSet3 = `MWmw`;
 
 let fonts = {
   mainYellow: {
@@ -36,6 +39,29 @@ let fonts = {
       },
     ],
 
+    charsToImgs: {},
+  },
+
+  neuropol: {
+    sets: [
+      {
+        src: "assets/neuropol-spritesheet-1.png",
+        charSet: neuropolSet1.split(""),
+        size: { width: 40, height: 42 },
+      },
+      {
+        src: "assets/neuropol-spritesheet-2.png",
+        charSet: neuropolSet2.split(""),
+        size: { width: 27, height: 42 },
+        imgObj: null,
+      },
+      {
+        src: "assets/neuropol-spritesheet-3.png",
+        charSet: neuropolSet3.split(""),
+        size: { width: 52, height: 42 },
+        imgObj: null,
+      },
+    ],
     charsToImgs: {},
   },
 
@@ -290,7 +316,6 @@ let totalCanvases = 11; // remove tutorial
 let frameRate = 30;
 
 // Game mode is Story or Arcade
-let gameMode = "Story";
 let storyModeDifficulty = "Medium";
 
 let globalClock = new Tone.Clock((time) => {}, 1);
@@ -311,6 +336,7 @@ let sound_fx = {
   },
   energyBlast: new Tone.Player(`assets/fx/energy_blast.mp3`).toDestination(),
   shimmer: new Tone.Player(`assets/fx/shimmer.mp3`).toDestination(),
+  timer: new Tone.Player(`assets/fx/timer.mp3`).toDestination(),
 };
 
 sound_fx.energyBlast.volume = -6;
@@ -451,6 +477,10 @@ part1_bg_player.fadeIn = 0.5;
 // Player test images
 // let playerTextSpritesheet;
 let playerTextImgs = {};
+
+let uiTopBarImgs = {};
+
+let gameModeImgs = {};
 
 //Shared Arrow UI images
 let hitArrowImgs;

@@ -111,9 +111,13 @@ var score = function (p) {
 
         // Draw Continue
         if (Math.floor(globalClock.seconds) % 2 == 0) {
-          drawText("PRESS ENTER TO CONTINUE", "greenHelper", 1, null, 430);
+          drawText("ENTER TO CONTINUE", "greenHelper", 1, null, 430);
         }
       }
+
+      //Draw top bar
+      drawImageToScale(uiTopBarImgs.results, 0, 0);
+      drawImageToScale(gameModeImgs[gameMode], 10, 8);
     }
   };
 

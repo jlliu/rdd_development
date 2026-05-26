@@ -35,7 +35,7 @@ var unlock = function (p) {
   let preventEnter = false;
 
   let bottomTextOptions = {
-    default: "PRESS ENTER TO GO BACK",
+    default: "ENTER TO GO BACK",
     denied: "ACCESS DENIED",
     granted: "ACCESS GRANTED",
   };

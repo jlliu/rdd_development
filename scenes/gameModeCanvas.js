@@ -65,7 +65,7 @@ var gameModeCanv = function (p) {
     if (allCanvasesLoaded) {
       let instructionsToDraw = gameIsReboot
         ? "I CAN BELIEVE"
-        : "PRESS ENTER TO SELECT";
+        : "ENTER TO SELECT";
       drawMenu();
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText(instructionsToDraw, "greenHelper", 1, null, 430);

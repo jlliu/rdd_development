@@ -32,6 +32,7 @@ var background = function (p) {
   p.preload = function () {
     //Preload shaders here
     mainGlow = p.loadShader("shaders/basic.vert", "shaders/mainGlow.frag");
+    topGlow = p.loadShader("shaders/basic.vert", "shaders/topGlow.frag");
     radialGlow = p.loadShader("shaders/basic.vert", "shaders/radialGlow.frag");
   };
 
@@ -85,6 +86,12 @@ var background = function (p) {
     mainGlow.setUniform("u_transitionStarted", transitionStarted);
     mainGlow.setUniform("u_narrativeCue", narrativeCue);
 
+    topGlow.setUniform("u_resolution", [canvasWidth, canvasHeight]);
+    topGlow.setUniform("u_time", clock.seconds);
+    topGlow.setUniform("u_percentageElapsed", percentageElapsed);
+    topGlow.setUniform("u_transitionStarted", transitionStarted);
+    topGlow.setUniform("u_narrativeCue", narrativeCue);
+
     radialGlow.setUniform("u_resolution", [canvasWidth, canvasHeight]);
     radialGlow.setUniform("u_glowAmount", glowAmount);
 
@@ -99,7 +106,8 @@ var background = function (p) {
     radialGlow.setUniform("u_glowPosition", glowPosition);
 
     if (shaderType == "mainGlow") {
-      p.shader(mainGlow);
+      // p.shader(mainGlow);
+      p.shader(topGlow);
     } else {
       p.shader(radialGlow);
     }

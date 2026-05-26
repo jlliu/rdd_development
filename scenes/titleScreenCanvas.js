@@ -50,14 +50,19 @@ var title = function (p) {
 
   let playerTextSpritesheet;
 
+  let uiTopBarSpritesheet;
+
+  let gameModeSpritesheet;
+
   let introVideo;
   // let introVideoLimit = 35;
-  let introVideoLimit = 2;
+  let introVideoLimit = 0.1;
   let introFinished = false;
 
   // Setup all fonts in this file
   let fontsToLoad = [
     "mainYellow",
+    "neuropol",
     "smallYellow",
     "pink",
     "greenHelper",
@@ -83,7 +88,11 @@ var title = function (p) {
         fontSet.imgObj = p.loadImage(fontSet.src);
       });
     });
+
+    //Load global assets
     playerTextSpritesheet = p.loadImage("assets/playerTextSheet.png");
+    uiTopBarSpritesheet = p.loadImage("assets/ui-top-bar-spritesheet.png");
+    gameModeSpritesheet = p.loadImage("assets/gameModeSpritesheet.png");
   };
 
   p.setup = function () {
@@ -117,6 +126,23 @@ var title = function (p) {
       Medium: playerTextImgsArray[3],
       Hard: playerTextImgsArray[4],
       Xtreme: playerTextImgsArray[5],
+    };
+
+    let uiBarImgsArray = [];
+    for (var i = 0; i < 3; i++) {
+      let croppedImg = uiTopBarSpritesheet.get(0, 72 * i, 640, 72);
+      uiBarImgsArray.push(croppedImg);
+    }
+
+    gameModeImgs = {
+      story: gameModeSpritesheet.get(0, 0, 115, 14),
+      arcade: gameModeSpritesheet.get(0, 14, 115, 14),
+    };
+
+    uiTopBarImgs = {
+      difficulty: uiBarImgsArray[0],
+      music: uiBarImgsArray[1],
+      results: uiBarImgsArray[2],
     };
 
     menuItems = [
@@ -165,16 +191,14 @@ var title = function (p) {
       drawImageToScale(logoImgToDraw, 94, 176);
       // Draw Title Screen Elements
       if (!menuVisible) {
-        let textToDraw = gameIsReboot ? "TO THE BODY" : "PRESS ENTER TO SELECT";
+        let textToDraw = gameIsReboot ? "TO THE BODY" : "ENTER TO SELECT";
         if (Math.floor(globalClock.seconds) % 2 == 0) {
           drawText(textToDraw, "greenHelper", 1, null, 430);
         }
       } else {
         // Draw Menu Screen Elements
         drawMenu();
-        let textToDraw = gameIsReboot
-          ? "I CAN BELIEVE"
-          : "PRESS ENTER TO SELECT";
+        let textToDraw = gameIsReboot ? "I CAN BELIEVE" : "ENTER TO SELECT";
         if (Math.floor(globalClock.seconds) % 2 == 0) {
           drawText(textToDraw, "greenHelper", 1, null, 430);
         }
@@ -235,10 +259,12 @@ var title = function (p) {
 
   function startArcadeMode() {
     console.log("start Arcade mode");
+    gameMode = "arcade";
   }
 
   function startStoryMode() {
     console.log("start story mode");
+    gameMode = "story";
 
     // Show tutorial
     // document.getElementById("tutorial").dispatchEvent(showSceneEvent);
@@ -458,10 +484,9 @@ var title = function (p) {
       this.animationTimer = 0.0;
     }
     display() {
-      // console.log("drawing menu item");
       p.push();
       p.translate(this.offset - this.offset * this.animationTimer, 0);
-      drawText(this.menuText, "mainYellow", 1, null, this.yPos);
+      drawText(this.menuText, "neuropol", 1, null, this.yPos);
       p.pop();
     }
     select() {
@@ -470,12 +495,11 @@ var title = function (p) {
   }
 
   function drawMenu() {
-    let menuOpacity = menuOpacityAmount * 0.6;
+    let menuOpacity = menuOpacityAmount * 0.5;
 
     // console.log(menuOpacity);
-    let overlayColor = `rgba(0,0,0,${menuOpacity})`;
-
-    p.fill(p.color(overlayColor));
+    let overlayColor1 = `rgba(0,0,0,${menuOpacity})`;
+    p.fill(p.color(overlayColor1));
 
     p.rect(0, 0, p.width, p.height);
 

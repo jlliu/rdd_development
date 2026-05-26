@@ -22,6 +22,9 @@ var songSelector = function (p) {
 
   let songSelectionInstructionsImg;
 
+  let difficultyUiSpritesheet;
+  let difficultySelectorUiImgs = {};
+
   let banner = { w: 400, h: 125 };
   let cd = { w: 281, h: 176 };
   let currentCdQueue = [];
@@ -49,6 +52,9 @@ var songSelector = function (p) {
     songSelectionInstructionsImg = p.loadImage(
       "assets/song_selection_instructions.png",
     );
+    difficultyUiSpritesheet = p.loadImage(
+      "assets/difficulty-menu-spritesheet.png",
+    );
   };
 
   p.setup = function () {
@@ -72,6 +78,19 @@ var songSelector = function (p) {
       songBannersImgs.push(thisBannerImg);
       let thisCdImg = songCdsSpritesheet.get(0, cd.h * i, cd.w, cd.h);
       songCdsImgs.push(thisCdImg);
+    }
+
+    //Initialize difficulty UI
+    for (var i = 0; i < 3; i++) {
+      let thisImg = difficultyUiSpritesheet.get(0, 110 * i, 120, 110);
+
+      if (i == 0) {
+        difficultySelectorUiImgs["Easy"] = thisImg;
+      } else if (i == 1) {
+        difficultySelectorUiImgs["Medium"] = thisImg;
+      } else if (i == 2) {
+        difficultySelectorUiImgs["Hard"] = thisImg;
+      }
     }
 
     p.noSmooth();
@@ -98,16 +117,16 @@ var songSelector = function (p) {
     p.clear();
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      if (!gameIsReboot) {
-        drawImageToScale(songSelectionInstructionsImg, 0, 0);
-      }
+      // if (!gameIsReboot) {
+      //   drawImageToScale(songSelectionInstructionsImg, 0, 0);
+      // }
 
-      if (gameIsReboot) {
-        drawText(`I WILL PRACTICE`, "smallYellow", 1, null, 80);
-        drawText(`A NEW DANCE`, "smallYellow", 1, null, 120);
-      } else {
-        drawText(`${storyModeDifficulty}`, "smallYellow", 1, null, 20);
-      }
+      // if (gameIsReboot) {
+      //   drawText(`I WILL PRACTICE`, "smallYellow", 1, null, 80);
+      //   drawText(`A NEW DANCE`, "smallYellow", 1, null, 120);
+      // } else {
+      //   drawText(`${storyModeDifficulty}`, "smallYellow", 1, null, 20);
+      // }
 
       if (gameIsReboot) {
         drawFinalSongCD();
@@ -127,11 +146,18 @@ var songSelector = function (p) {
 
       let instructionsToDraw = gameIsReboot
         ? "WILL YOU TOO?"
-        : "PRESS ENTER TO SELECT";
+        : "ENTER TO SELECT";
 
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
+
+      //Draw top bar
+      drawImageToScale(uiTopBarImgs.music, 0, 0);
+      drawImageToScale(gameModeImgs[gameMode], 10, 8);
+
+      // Draw difficulty selector
+      drawImageToScale(difficultySelectorUiImgs[storyModeDifficulty], 6, 364);
     }
   };
 
@@ -320,17 +346,19 @@ var songSelector = function (p) {
         }
 
         if (keyCode == "ArrowUp" || keyCode == "KeyW") {
-          let doubleTap = assessDoubleTap("up");
-          if (doubleTap) {
-            changeDifficulty("up");
-          }
+          changeDifficulty("up");
+          // let doubleTap = assessDoubleTap("up");
+          // if (doubleTap) {
+          //   changeDifficulty("up");
+          // }
         }
 
         if (keyCode == "ArrowDown" || keyCode == "KeyS") {
-          let doubleTap = assessDoubleTap("down");
-          if (doubleTap) {
-            changeDifficulty("down");
-          }
+          changeDifficulty("down");
+          // let doubleTap = assessDoubleTap("down");
+          // if (doubleTap) {
+          //   changeDifficulty("down");
+          // }
         }
       }
     }
@@ -439,9 +467,9 @@ var songSelector = function (p) {
   // Input index is an int that can be negative or positive in any direction....
   function resetCdQueue(index) {
     let menuItemsNumber;
-    if (gameMode == "Story") {
+    if (gameMode == "story") {
       menuItemsNumber = menuItems.length;
-    } else if (gameMode == "Arcade") {
+    } else if (gameMode == "arcade") {
       menuItemsNumber = menuItems.length - 1;
     }
 

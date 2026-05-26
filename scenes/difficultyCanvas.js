@@ -63,11 +63,15 @@ var difficulty = function (p) {
     if (allCanvasesLoaded) {
       let instructionsToDraw = gameIsReboot
         ? "TO DO HARD THINGS"
-        : "PRESS ENTER TO SELECT";
+        : "ENTER TO SELECT";
       drawMenu();
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
+
+      //Draw top bar
+      drawImageToScale(uiTopBarImgs.difficulty, 0, 0);
+      drawImageToScale(gameModeImgs[gameMode], 10, 8);
     }
   };
 
@@ -288,9 +292,11 @@ var difficulty = function (p) {
   function drawMenu() {
     let menuOpacity = 0.4;
     // console.log(menuOpacity);
+
     let overlayColor = `rgba(0,0,0,${menuOpacity})`;
     p.fill(p.color(overlayColor));
     p.rect(0, 0, p.width, p.height);
+
     menuItems.forEach(function (menuItem, index) {
       if (index != selectedMenuItemIndex) {
         menuItem.display();

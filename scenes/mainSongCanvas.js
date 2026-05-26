@@ -356,7 +356,7 @@ var mainScene = function (p) {
       }
       //Are we ALMOST at a new batch? Update the batch data!
       else if (currentMeasure % batchSize == batchSize - 1) {
-        console.log("updating batch data");
+        // console.log("updating batch data");
         //Discard old ones BEFORE 1 measure ago....
         let remainingNotes = relevantNotes.filter(function (note) {
           //Keep only if this note is a hold and it's done...
@@ -511,7 +511,7 @@ var mainScene = function (p) {
         updateNotesInterval = setInterval(function () {
           updateNotes();
           updateArrowRainbow();
-        }, 10);
+        }, 30);
 
         startDrawingArrows = true;
         //Start a tone.js clock to keep time
@@ -523,7 +523,7 @@ var mainScene = function (p) {
       updateNotesInterval = setInterval(function () {
         updateNotes();
         updateArrowRainbow();
-      }, 10);
+      }, 30);
 
       startDrawingArrows = true;
       //Start a tone.js clock to keep time
