@@ -23,6 +23,7 @@ var background = function (p) {
   let narrativeCue = 0;
 
   let glowAmount = 1.0;
+
   let glowSongIndex = 0;
 
   let myBuffer;
@@ -33,7 +34,11 @@ var background = function (p) {
     //Preload shaders here
     mainGlow = p.loadShader("shaders/basic.vert", "shaders/mainGlow.frag");
     topGlow = p.loadShader("shaders/basic.vert", "shaders/topGlow.frag");
-    radialGlow = p.loadShader("shaders/basic.vert", "shaders/radialGlow.frag");
+    revelationGlow = p.loadShader(
+      "shaders/basic.vert",
+      "shaders/revelationGlow.frag",
+    );
+    // radialGlow = p.loadShader("shaders/basic.vert", "shaders/radialGlow.frag");
   };
 
   p.setup = function () {
@@ -92,24 +97,30 @@ var background = function (p) {
     topGlow.setUniform("u_transitionStarted", transitionStarted);
     topGlow.setUniform("u_narrativeCue", narrativeCue);
 
-    radialGlow.setUniform("u_resolution", [canvasWidth, canvasHeight]);
-    radialGlow.setUniform("u_glowAmount", glowAmount);
+    // radialGlow.setUniform("u_resolution", [canvasWidth, canvasHeight]);
+    // radialGlow.setUniform("u_glowAmount", glowAmount);
 
-    radialGlow.setUniform("u_songIndex", glowSongIndex);
+    // radialGlow.setUniform("u_songIndex", glowSongIndex);
 
     let glowPosition = Math.min(
       (clock.seconds / revelationGlowTime) * 0.5,
       0.5,
     );
+    revelationGlow.setUniform("u_resolution", [canvasWidth, canvasHeight]);
+    revelationGlow.setUniform("u_time", clock.seconds);
+    revelationGlow.setUniform("u_glowAmount", glowAmount);
+    revelationGlow.setUniform("u_songId", glowSongIndex);
+    revelationGlow.setUniform("u_glowPosition", glowPosition);
+    // console.log(glowPosition);
 
-    radialGlow.setUniform("u_time", clock.seconds);
-    radialGlow.setUniform("u_glowPosition", glowPosition);
+    // radialGlow.setUniform("u_time", clock.seconds);
+    // radialGlow.setUniform("u_glowPosition", glowPosition);
 
     if (shaderType == "mainGlow") {
       // p.shader(mainGlow);
       p.shader(topGlow);
     } else {
-      p.shader(radialGlow);
+      p.shader(revelationGlow);
     }
 
     // rect gives us some geometry on the screen
@@ -126,7 +137,7 @@ var background = function (p) {
         shaderType = e.detail.shaderType;
 
         //Animate in.revelation radio glow
-        if (shaderType == "radialGlow") {
+        if (shaderType == "revelationGlow") {
           glowAmount = 1.0;
           glowSongIndex = parseInt(e.detail.songIndex);
           clock.stop();
@@ -163,7 +174,7 @@ var background = function (p) {
     thisCanvas.addEventListener("endRevelationScene", (e) => {
       setTimeout(function () {
         let explodeGlowInterval = setInterval(function () {
-          glowAmount *= 1.03;
+          glowAmount *= 1.015;
           if (glowAmount >= 100.0) {
             clearInterval(explodeGlowInterval);
             console.log("hide background");

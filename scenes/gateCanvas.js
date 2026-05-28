@@ -43,6 +43,7 @@ var gate = function (p) {
       gateImgsForTest.push(thisGateL);
       gateImgsForTest.push(thisGateR);
     }
+    unlockGateImg = gateSpritesheet.get(0, 480 * 6, 640, 480);
 
     p.noSmooth();
 

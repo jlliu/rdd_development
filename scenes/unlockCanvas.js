@@ -76,6 +76,7 @@ var unlock = function (p) {
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
+      drawImageToScale(unlockGateImg, 0, 0);
       //Include direction to go back if accessed from screen
       if (!unlockFromRevelation) {
         if (bottomText.default) {
@@ -89,13 +90,13 @@ var unlock = function (p) {
 
       //For each song in the list (minus ???) draw a space for each input and underline
       glows.forEach(function (glow, index) {
-        p.fill("white");
-        p.rect(
-          (135 + index * 80) * scaleRatio,
-          300 * scaleRatio,
-          60 * scaleRatio,
-          10 * scaleRatio,
-        );
+        // p.fill("white");
+        // p.rect(
+        //   (135 + index * 80) * scaleRatio,
+        //   300 * scaleRatio,
+        //   60 * scaleRatio,
+        //   10 * scaleRatio,
+        // );
         let showGlow = songList[index].cleared || attemptedCode.length > index;
         glow.display(showGlow);
       });

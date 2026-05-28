@@ -24,6 +24,8 @@ var difficulty = function (p) {
 
   let padSelectTimer = null;
 
+  let difficultyTimer;
+
   p.preload = function () {};
 
   p.setup = function () {
@@ -44,6 +46,8 @@ var difficulty = function (p) {
       new menuItem("Medium", null, 160, selectDifficulty),
       new menuItem("Hard", null, 240, selectDifficulty),
     ];
+
+    difficultyTimer = new timer(10, selectCurrentOption);
 
     window.dispatchEvent(canvasLoadedEvent);
 
@@ -72,6 +76,7 @@ var difficulty = function (p) {
       //Draw top bar
       drawImageToScale(uiTopBarImgs.difficulty, 0, 0);
       drawImageToScale(gameModeImgs[gameMode], 10, 8);
+      difficultyTimer.display();
     }
   };
 
@@ -99,6 +104,7 @@ var difficulty = function (p) {
 
         if (!gameIsReboot) {
           menu_track_player.start();
+          difficultyTimer.start();
         }
       }, sceneTransitionTime);
     });
@@ -107,6 +113,7 @@ var difficulty = function (p) {
       isCurrentScene = false;
       thisCanvas.style.opacity = 0;
       setTimeout(function () {
+        difficultyTimer.reset();
         thisCanvas.style.visibility = "hidden";
       }, sceneTransitionTime);
     });
@@ -138,7 +145,6 @@ var difficulty = function (p) {
     let songSelectorCanvas = document.querySelector("#songSelectorCanvas");
     songSelectorCanvas.dispatchEvent(showSceneEvent);
     document.querySelector("#backgroundCanvas").dispatchEvent(showSceneEvent);
-    console.log("select difficulty action");
     //Hide this canvas
     difficultyCanvas.dispatchEvent(hideSceneEvent);
     sound_fx.select.start();
@@ -254,6 +260,42 @@ var difficulty = function (p) {
       handleInput(e.code);
     }
   });
+
+  class timer {
+    constructor(amount, callback) {
+      this.amount = amount;
+      this.timeLeft = amount;
+      this.timerInterval;
+      this.callback = callback;
+    }
+    start() {
+      let _this = this;
+      this.timerInterval = setInterval(function () {
+        _this.timeLeft -= 1;
+        if (_this.timeLeft >= 0 && _this.timeLeft < 10) {
+          sound_fx.timer.start();
+        }
+        if (_this.timeLeft == 0) {
+          // Timer run out
+          clearInterval(_this.timerInterval);
+          setTimeout(function () {
+            _this.callback();
+          }, 1000);
+          setTimeout(function () {
+            console.log("resetting difficulty timer");
+            _this.reset();
+          }, 3000);
+        }
+      }, 1000);
+    }
+    display() {
+      drawText(this.timeLeft.toString(), "mainYellow", 1, 550, 25);
+    }
+    reset() {
+      clearInterval(this.timerInterval);
+      this.timeLeft = this.amount;
+    }
+  }
 
   //Create a class for menu items
   // Create each one has an animation timer to calculate the offset

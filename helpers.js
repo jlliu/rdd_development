@@ -502,6 +502,7 @@ let failImg;
 let gateSpritesheet;
 let gateImgs = [];
 let gateImgsForTest = [];
+let unlockGateImg;
 
 // Access images from song selector and score canvas
 let songBannersImgs = [];

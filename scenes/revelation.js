@@ -23,15 +23,15 @@ var revelation = function (p) {
 
   let revelations = [
     // 0. Walking on Eggshells
-    ['"Thank you for', "trying to", 'keep me safe"'],
+    ["Thank you for", "working to", "keep me safe"],
     // 1. Kung Fu Fawning
-    ['"Thank you for', "showing your capacity", 'for compassion"'],
+    ["Thank you for", "showing your", "capacity to", "give"],
     // 2. Chasing Breadcrumbs
-    ['"Thank you for', "being in search", 'of connection"'],
+    ["Thank you for", "trying to keep", "connection alive"],
     // 3. Lone Ranger
-    ['"Thank you for', "wanting to soften", 'the pain"'],
+    ["Thank you for", "trying to", "soften the hurt"],
     // 4. Filling the Void
-    ['"Thank you for', "trying to keep me", 'moving forward"'],
+    ["Thank you for", "trying to keep", "moving forward"],
   ];
 
   p.preload = function () {};
@@ -72,8 +72,8 @@ var revelation = function (p) {
             textToDraw = line;
           }
         }
-        drawText(textToDraw, "whitePixel", 1, null, yPos);
-        yPos += 50;
+        drawText(textToDraw, "mainYellow", 1, null, yPos);
+        yPos += 70;
       });
     }
   };

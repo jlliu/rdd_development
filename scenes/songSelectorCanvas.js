@@ -46,6 +46,8 @@ var songSelector = function (p) {
 
   let enterPressed = false;
 
+  let songTimer;
+
   p.preload = function () {
     songBannersSpritesheet = p.loadImage("songAssets/songBanners.png");
     songCdsSpritesheet = p.loadImage("songAssets/songCds.png");
@@ -106,6 +108,8 @@ var songSelector = function (p) {
       new menuItem(5, null, 240, selectSong),
     ];
 
+    songTimer = new timer(60, startSongFromTimer);
+
     resetCdQueue(selectedMenuItemIndex);
 
     window.dispatchEvent(canvasLoadedEvent);
@@ -158,6 +162,7 @@ var songSelector = function (p) {
 
       // Draw difficulty selector
       drawImageToScale(difficultySelectorUiImgs[storyModeDifficulty], 6, 364);
+      songTimer.display();
     }
   };
 
@@ -173,6 +178,7 @@ var songSelector = function (p) {
         menu_track_player.stop();
         if (!gameIsReboot) {
           changePreviewSong();
+          songTimer.start();
         }
       }, sceneTransitionTime);
     });
@@ -181,7 +187,9 @@ var songSelector = function (p) {
       isCurrentScene = false;
       thisCanvas.style.opacity = 0;
       songPreviewPlayer.stop();
+
       setTimeout(function () {
+        songTimer.reset();
         thisCanvas.style.visibility = "hidden";
       }, sceneTransitionTime);
     });
@@ -198,6 +206,26 @@ var songSelector = function (p) {
       allCanvasesLoaded = true;
     }
   });
+
+  function startSongFromTimer() {
+    let songId = mod(selectedMenuItemIndex, menuItems.length);
+    console.log(songId);
+    if (songId == 5) {
+      console.log("song id is 5");
+      // Find the first song that is NOT completed
+      let idOfNextSong = null;
+      songList.forEach(function (song, songIndex) {
+        if (!song.cleared && idOfNextSong == null) {
+          idOfNextSong = songIndex;
+        }
+      });
+      console.log(idOfNextSong);
+      selectCurrentSong(idOfNextSong);
+    } else {
+      console.log("song id is not 5");
+      selectCurrentSong();
+    }
+  }
 
   function selectSong(songId) {
     if (!enterPressed) {
@@ -292,7 +320,7 @@ var songSelector = function (p) {
     }
   }
 
-  function selectCurrentSong() {
+  function selectCurrentSong(override) {
     console.log("select current song function");
     // Go to ending song if it is reboot...
     if (gameIsReboot) {
@@ -303,8 +331,12 @@ var songSelector = function (p) {
       songSelectorCanvas.dispatchEvent(hideSceneEvent);
       //Otherwise business as normal
     } else if (!currentlyAnimatingLeft && !currentlyAnimatingRight) {
-      let songId = mod(selectedMenuItemIndex, menuItems.length);
-      menuItems[songId].select();
+      if (override != null) {
+        menuItems[override].select();
+      } else {
+        let songId = mod(selectedMenuItemIndex, menuItems.length);
+        menuItems[songId].select();
+      }
     }
   }
 
@@ -425,6 +457,41 @@ var songSelector = function (p) {
     }
   });
 
+  class timer {
+    constructor(amount, callback) {
+      this.amount = amount;
+      this.timeLeft = amount;
+      this.timerInterval;
+      this.callback = callback;
+    }
+    start() {
+      let _this = this;
+      this.timerInterval = setInterval(function () {
+        _this.timeLeft -= 1;
+        if (_this.timeLeft >= 0 && _this.timeLeft < 10) {
+          sound_fx.timer.start();
+        }
+        if (_this.timeLeft == 0) {
+          // Timer run out
+          clearInterval(_this.timerInterval);
+          setTimeout(function () {
+            _this.callback();
+          }, 1000);
+          setTimeout(function () {
+            console.log("resetting difficulty timer");
+            _this.reset();
+          }, 3000);
+        }
+      }, 1000);
+    }
+    display() {
+      drawText(this.timeLeft.toString(), "mainYellow", 1, 550, 25);
+    }
+    reset() {
+      clearInterval(this.timerInterval);
+      this.timeLeft = this.amount;
+    }
+  }
   //Create a class for menu items
   // Create each one has an animation timer to calculate the offset
   class menuItem {

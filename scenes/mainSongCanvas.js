@@ -95,6 +95,8 @@ var mainScene = function (p) {
   let songVideo;
   let videoLoadedFirstTime = false;
 
+  let endSongIfFailed = true;
+
   p.preload = function () {
     //Preload a background here
     //Preload whatever needs to be preloaded
@@ -311,6 +313,9 @@ var mainScene = function (p) {
     // Start song a bit after
     setTimeout(function () {
       startSong(songId);
+
+      // Test revelatoin
+      // handleSongEnd(true);
     }, sceneTransitionTime + 2000);
     // }
 
@@ -397,8 +402,8 @@ var mainScene = function (p) {
     if (thisMeasure > measureData.length) {
       let win = scoreData.ranking != "E";
       // Comment for install
-      // handleSongEnd(win);
-      handleSongEnd(true);
+      handleSongEnd(win);
+      // handleSongEnd(true);
     }
   }
 
@@ -446,7 +451,7 @@ var mainScene = function (p) {
 
         let showBackgroundShaderEvent = new CustomEvent("showScene", {
           detail: {
-            shaderType: "radialGlow",
+            shaderType: "revelationGlow",
             songIndex: songId,
           },
         });
@@ -1902,7 +1907,10 @@ var mainScene = function (p) {
       if (this.amountFilled <= 0) {
         console.log("FAILED");
         // Comment for install
-        // handleSongEnd(false);
+
+        if (endSongIfFailed) {
+          handleSongEnd(false);
+        }
       }
     }
     reset() {

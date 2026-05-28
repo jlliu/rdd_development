@@ -26,6 +26,8 @@ var score = function (p) {
 
   let enterPressed = false;
 
+  let scoreTimer;
+
   p.preload = function () {};
 
   p.setup = function () {
@@ -44,6 +46,8 @@ var score = function (p) {
     window.dispatchEvent(canvasLoadedEvent);
 
     setupNavigation(scoreCanvas);
+
+    scoreTimer = new timer(30, goToNextScene);
   };
 
   p.draw = function () {
@@ -118,6 +122,7 @@ var score = function (p) {
       //Draw top bar
       drawImageToScale(uiTopBarImgs.results, 0, 0);
       drawImageToScale(gameModeImgs[gameMode], 10, 8);
+      scoreTimer.display();
     }
   };
 
@@ -181,6 +186,7 @@ var score = function (p) {
         // animateMenuIn();
         isCurrentScene = true;
         menu_track_player.start();
+        scoreTimer.start();
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
@@ -189,6 +195,7 @@ var score = function (p) {
       thisCanvas.style.opacity = 0;
       setTimeout(function () {
         thisCanvas.style.visibility = "hidden";
+        scoreTimer.reset();
       }, sceneTransitionTime);
     });
   }
@@ -312,6 +319,41 @@ var score = function (p) {
     }
   });
 
+  class timer {
+    constructor(amount, callback) {
+      this.amount = amount;
+      this.timeLeft = amount;
+      this.timerInterval;
+      this.callback = callback;
+    }
+    start() {
+      let _this = this;
+      this.timerInterval = setInterval(function () {
+        _this.timeLeft -= 1;
+        if (_this.timeLeft >= 0 && _this.timeLeft < 10) {
+          sound_fx.timer.start();
+        }
+        if (_this.timeLeft == 0) {
+          // Timer run out
+          clearInterval(_this.timerInterval);
+          setTimeout(function () {
+            _this.callback();
+          }, 1000);
+          setTimeout(function () {
+            console.log("resetting difficulty timer");
+            _this.reset();
+          }, 3000);
+        }
+      }, 1000);
+    }
+    display() {
+      drawText(this.timeLeft.toString(), "mainYellow", 1, 550, 25);
+    }
+    reset() {
+      clearInterval(this.timerInterval);
+      this.timeLeft = this.amount;
+    }
+  }
   //Create a class for menu items
   // Create each one has an animation timer to calculate the offset
   class menuItem {
