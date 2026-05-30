@@ -182,10 +182,6 @@ var unlock = function (p) {
             //Go back to STATS SCENE
             setTimeout(function () {
               thisCanvas.dispatchEvent(hideSceneEvent);
-              // document
-              //   .querySelector("#songSelectorCanvas")
-              //   .dispatchEvent(showSceneEvent);
-
               // Figure out how to pass scoreData here
               let showScoreSceneEvent = new CustomEvent("showScene", {
                 detail: {
@@ -195,6 +191,15 @@ var unlock = function (p) {
               document
                 .getElementById("scoreCanvas")
                 .dispatchEvent(showScoreSceneEvent);
+
+              let showBackgroundShaderEvent = new CustomEvent("showScene", {
+                detail: {
+                  shaderType: "topGlow",
+                },
+              });
+              document
+                .getElementById("backgroundCanvas")
+                .dispatchEvent(showBackgroundShaderEvent);
             }, 5000);
           }
         }
@@ -314,6 +319,14 @@ var unlock = function (p) {
       enterPressed = true;
       let songSelectorCanvas = document.querySelector("#songSelectorCanvas");
       songSelectorCanvas.dispatchEvent(showSceneEvent);
+      // let showBackgroundShaderEvent = new CustomEvent("showScene", {
+      //   detail: {
+      //     shaderType: "topGlow",
+      //   },
+      // });
+      // document
+      //   .getElementById("backgroundCanvas")
+      //   .dispatchEvent(showBackgroundShaderEvent);
       unlockCanvas.dispatchEvent(hideSceneEvent);
       setTimeout(function () {
         enterPressed = false;

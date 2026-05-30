@@ -117,9 +117,11 @@ var background = function (p) {
     // radialGlow.setUniform("u_glowPosition", glowPosition);
 
     if (shaderType == "mainGlow") {
-      // p.shader(mainGlow);
+      p.shader(mainGlow);
+      // p.shader(topGlow);
+    } else if (shaderType == "topGlow") {
       p.shader(topGlow);
-    } else {
+    } else if (shaderType == "revelationGlow") {
       p.shader(revelationGlow);
     }
 
@@ -133,6 +135,8 @@ var background = function (p) {
 
   function setupNavigation(thisCanvas) {
     thisCanvas.addEventListener("showScene", (e) => {
+      console.log("showScene");
+      console.log(e);
       if (e.detail && e.detail.shaderType) {
         shaderType = e.detail.shaderType;
 
@@ -147,16 +151,14 @@ var background = function (p) {
         }
       } else {
         //Override to make purple if needed
-        console.log("show scene");
-        console.log(gameIsReboot);
-
-        // Reset narrative cue later...
-        if (gameIsReboot) {
-          console.log("show scene");
-          narrativeCue = 97;
-        }
-
-        shaderType = "mainGlow";
+        // console.log("show scene");
+        // console.log(gameIsReboot);
+        // // Reset narrative cue later...
+        // if (gameIsReboot) {
+        //   console.log("show scene");
+        //   // narrativeCue = 97;
+        // }
+        // // shaderType = "mainGlow";
       }
       p.loop();
       thisCanvas.style.visibility = "visible";
@@ -184,7 +186,7 @@ var background = function (p) {
               setTimeout(function () {
                 thisCanvas.style.visibility = "hidden";
                 //Show canvas again for unlock scene
-                thisCanvas.dispatchEvent(showSceneEvent);
+                // thisCanvas.dispatchEvent(showSceneEvent);
               }, sceneTransitionTime);
             }, 2000);
           }

@@ -17,7 +17,8 @@ var serviceMode = function (p) {
 
   let menuAnimationTimer = 0.0;
 
-  let currentTestSceneNum = 7;
+  let currentTestSceneNum = 0;
+  // let currentTestSceneNum = 7;
 
   let testScenes = [];
   let imageTestDialogues = [];
@@ -811,7 +812,14 @@ var serviceMode = function (p) {
     gameIsReboot = true;
     setTimeout(function () {
       part1_bg_player.start();
-      document.getElementById("backgroundCanvas").dispatchEvent(showSceneEvent);
+      let showBackgroundShaderEvent = new CustomEvent("showScene", {
+        detail: {
+          shaderType: "mainGlow",
+        },
+      });
+      document
+        .getElementById("backgroundCanvas")
+        .dispatchEvent(showBackgroundShaderEvent);
       document.getElementById("titleCanvas").dispatchEvent(showSceneEvent);
     }, 2000);
   }

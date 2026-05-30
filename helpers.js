@@ -322,6 +322,11 @@ let globalClock = new Tone.Clock((time) => {}, 1);
 
 globalClock.start();
 
+function calculateRgbValues() {
+  let currentHue = (globalClock.seconds * 50) % 360;
+  return hsl2rgb_gradient(currentHue, 0.97, 0.6);
+}
+
 let sound_fx = {
   eggCrack: new Tone.Player(`assets/fx/egg-crack.mp3`).toDestination(),
   doorShut: new Tone.Player(`assets/fx/door-shut.mp3`).toDestination(),

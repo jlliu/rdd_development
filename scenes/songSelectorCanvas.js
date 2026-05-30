@@ -48,6 +48,10 @@ var songSelector = function (p) {
 
   let songTimer;
 
+  let finalCdSpritesheet;
+  let finalCdImgs = [];
+  let finalCdIndex = 0;
+
   p.preload = function () {
     songBannersSpritesheet = p.loadImage("songAssets/songBanners.png");
     songCdsSpritesheet = p.loadImage("songAssets/songCds.png");
@@ -57,6 +61,7 @@ var songSelector = function (p) {
     difficultyUiSpritesheet = p.loadImage(
       "assets/difficulty-menu-spritesheet.png",
     );
+    finalCdSpritesheet = p.loadImage("assets/final-cd-spritesheet.png");
   };
 
   p.setup = function () {
@@ -80,6 +85,13 @@ var songSelector = function (p) {
       songBannersImgs.push(thisBannerImg);
       let thisCdImg = songCdsSpritesheet.get(0, cd.h * i, cd.w, cd.h);
       songCdsImgs.push(thisCdImg);
+    }
+
+    // final CD Spritesheet
+
+    for (var i = 0; i < 10; i++) {
+      let thisCdImg = finalCdSpritesheet.get(0, cd.h * i, cd.w, cd.h);
+      finalCdImgs.push(thisCdImg);
     }
 
     //Initialize difficulty UI
@@ -133,12 +145,12 @@ var songSelector = function (p) {
       // }
 
       if (gameIsReboot) {
+        drawText("I WILL PRACTICE", "neuropol", 1, null, 40);
+        drawText("A NEW DANCE", "neuropol", 1, null, 90);
         drawFinalSongCD();
       } else {
         drawMenu();
-      }
 
-      if (!gameIsReboot) {
         let currentSongBanner = songBannersImgs[currentCdQueue[2]];
         drawImageToScale(
           currentSongBanner,
@@ -146,6 +158,14 @@ var songSelector = function (p) {
           90,
           0.9,
         );
+
+        //Draw top bar
+        drawImageToScale(uiTopBarImgs.music, 0, 0);
+        drawImageToScale(gameModeImgs[gameMode], 10, 8);
+
+        // Draw difficulty selector
+        drawImageToScale(difficultySelectorUiImgs[storyModeDifficulty], 6, 364);
+        songTimer.display();
       }
 
       let instructionsToDraw = gameIsReboot
@@ -155,14 +175,6 @@ var songSelector = function (p) {
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
-
-      //Draw top bar
-      drawImageToScale(uiTopBarImgs.music, 0, 0);
-      drawImageToScale(gameModeImgs[gameMode], 10, 8);
-
-      // Draw difficulty selector
-      drawImageToScale(difficultySelectorUiImgs[storyModeDifficulty], 6, 364);
-      songTimer.display();
     }
   };
 
@@ -324,7 +336,7 @@ var songSelector = function (p) {
     console.log("select current song function");
     // Go to ending song if it is reboot...
     if (gameIsReboot) {
-      console.log("trigger select");
+      sound_fx.select.start();
       document
         .querySelector("#experimentalCanvas")
         .dispatchEvent(showSceneEvent);
@@ -605,10 +617,12 @@ var songSelector = function (p) {
 
     let currentScale = currentCdScales[currentPositionIndex];
 
+    finalCdIndex = Math.floor(globalClock.seconds * 15) % finalCdImgs.length;
+
     drawImageToScale(
-      menuItems[5].cdImg,
+      finalCdImgs[finalCdIndex],
       xPos_original - (cd.w * currentScale) / 2,
-      yPos_original - (cd.h * currentScale) / 2 - 50,
+      yPos_original - (cd.h * currentScale) / 2 - 70,
       currentScale,
     );
 

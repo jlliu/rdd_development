@@ -55,8 +55,8 @@ var title = function (p) {
   let gameModeSpritesheet;
 
   let introVideo;
-  // let introVideoLimit = 35;
-  let introVideoLimit = 0.1;
+  let introVideoLimit = 35;
+  // let introVideoLimit = 0.1;
   let introFinished = false;
 
   // Setup all fonts in this file
@@ -250,16 +250,28 @@ var title = function (p) {
   });
 
   function showCredits() {
-    console.log("show credits");
+    if (gameIsReboot) {
+      startStoryMode();
+    } else {
+      console.log("show credits");
+    }
   }
 
   function showSettings() {
-    console.log("show settings");
+    if (gameIsReboot) {
+      startStoryMode();
+    } else {
+      console.log("show settings");
+    }
   }
 
   function startArcadeMode() {
-    console.log("start Arcade mode");
-    gameMode = "arcade";
+    if (gameIsReboot) {
+      startStoryMode();
+    } else {
+      console.log("start Arcade mode");
+      gameMode = "arcade";
+    }
   }
 
   function startStoryMode() {
@@ -285,16 +297,15 @@ var title = function (p) {
     titleCanvas.dispatchEvent(hideSceneEvent);
 
     // document.getElementById("revelationCanvas").dispatchEvent(showSceneEvent);
-    // let showBackgroundShaderEvent = new CustomEvent("showScene", {
-    //   detail: {
-    //     shaderType: "radialGlow",
-    //     songIndex: 2,
-    //   },
-    // });
-
-    // document
-    //   .getElementById("backgroundCanvas")
-    //   .dispatchEvent(showBackgroundShaderEvent);
+    let shaderType = gameIsReboot ? "mainGlow" : "topGlow";
+    let showBackgroundShaderEvent = new CustomEvent("showScene", {
+      detail: {
+        shaderType: shaderType,
+      },
+    });
+    document
+      .getElementById("backgroundCanvas")
+      .dispatchEvent(showBackgroundShaderEvent);
 
     // document.getElementById("backgroundCanvas").dispatchEvent(hideSceneEvent);
   }

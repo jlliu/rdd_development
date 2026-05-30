@@ -26,7 +26,16 @@ var difficulty = function (p) {
 
   let difficultyTimer;
 
-  p.preload = function () {};
+  let difficultyCardSpritesheet;
+  let difficultyCardImgs = [];
+
+  let rebootRainbowCardImg;
+
+  p.preload = function () {
+    difficultyCardSpritesheet = p.loadImage(
+      "assets/difficulty-card-spritesheet.png",
+    );
+  };
 
   p.setup = function () {
     // put setup code here
@@ -41,13 +50,21 @@ var difficulty = function (p) {
 
     p.noStroke();
 
+    //Initialize song assets
+    for (var i = 0; i < 9; i++) {
+      let thisImg = difficultyCardSpritesheet.get(0, 240 * i, 170, 240);
+      difficultyCardImgs.push(thisImg);
+    }
+
+    difficultyCardImgs[7].loadPixels();
+
     menuItems = [
-      new menuItem("Easy", null, 80, selectDifficulty),
-      new menuItem("Medium", null, 160, selectDifficulty),
-      new menuItem("Hard", null, 240, selectDifficulty),
+      new menuItem("Easy", 45, 140, selectDifficulty, 0),
+      new menuItem("Medium", 235, 140, selectDifficulty, 2),
+      new menuItem("Hard", 425, 140, selectDifficulty, 4),
     ];
 
-    difficultyTimer = new timer(10, selectCurrentOption);
+    difficultyTimer = new timer(30, selectCurrentOption);
 
     window.dispatchEvent(canvasLoadedEvent);
 
@@ -55,28 +72,32 @@ var difficulty = function (p) {
   };
 
   p.draw = function () {
-    // if (gameIsReboot) {
-    //   menuItems[0].menuText = "NEW";
-    //   menuItems[1].menuText = "MODES ARE";
-    //   menuItems[2].menuText = "POSSIBLE";
-    // }
-
     p.clear();
 
     // Start drawing things if all canvases have loaded
     if (allCanvasesLoaded) {
-      let instructionsToDraw = gameIsReboot
-        ? "TO DO HARD THINGS"
-        : "ENTER TO SELECT";
-      drawMenu();
+      let instructionsToDraw;
+      if (!gameIsReboot) {
+        instructionsToDraw = "ENTER TO SELECT";
+        drawMenu();
+        //Draw top bar
+        drawImageToScale(uiTopBarImgs.difficulty, 0, 0);
+        drawImageToScale(gameModeImgs[gameMode], 10, 8);
+        difficultyTimer.display();
+      } else {
+        drawText("I CAN BUILD THE", "neuropol", 1, null, 40);
+        instructionsToDraw = "TO DO HARD THINGS";
+        updateRebootRainbow();
+        //Draw shadow
+        drawImageToScale(difficultyCardImgs[6], 235, 140);
+        let y_offset = Math.sin(globalClock.seconds * 2.5) * 5;
+        drawImageToScale(rebootRainbowCardImg, 235 - 10, 140 - 10 + y_offset);
+        drawImageToScale(difficultyCardImgs[8], 235 - 10, 140 - 10 + y_offset);
+      }
+
       if (Math.floor(globalClock.seconds) % 2 == 0) {
         drawText(instructionsToDraw, "greenHelper", 1, null, 430);
       }
-
-      //Draw top bar
-      drawImageToScale(uiTopBarImgs.difficulty, 0, 0);
-      drawImageToScale(gameModeImgs[gameMode], 10, 8);
-      difficultyTimer.display();
     }
   };
 
@@ -131,6 +152,123 @@ var difficulty = function (p) {
     }
   });
 
+  function updateRebootRainbow() {
+    let rgb_gradient = calculateRgbValues();
+
+    rebootRainbowCardImg = convertRebootCardToRainbow(rgb_gradient);
+  }
+
+  function convertRebootCardToRainbow(rgb_gradient) {
+    // Let's try this again except convert the whole spritesheet to rainbow...
+    let newImgObj = p.createImage(170, 240);
+    newImgObj.loadPixels();
+
+    // console.log(rgb_gradient);
+
+    let pixels = difficultyCardImgs[7].pixels;
+
+    for (let y = 0; y < newImgObj.height; y++) {
+      for (let x = 0; x < newImgObj.width; x++) {
+        // Gets the index of the red value for this pixel
+        let redIndex = (x + y * newImgObj.width) * 4;
+        let greenIndex = redIndex + 1;
+        let blueIndex = redIndex + 2;
+        let alphaIndex = redIndex + 3;
+
+        //text outline
+        let isRed =
+          pixels[redIndex] == 255 &&
+          pixels[greenIndex] == 0 &&
+          pixels[blueIndex] == 0 &&
+          pixels[alphaIndex] == 255;
+
+        // Text inner
+        let isBlue =
+          pixels[redIndex] == 0 &&
+          pixels[greenIndex] == 0 &&
+          pixels[blueIndex] == 255 &&
+          pixels[alphaIndex] == 255;
+        // figure
+        let isYellow =
+          pixels[redIndex] == 255 &&
+          pixels[greenIndex] == 255 &&
+          pixels[blueIndex] == 0 &&
+          pixels[alphaIndex] == 255;
+        // Background
+        let isGreen =
+          pixels[redIndex] == 0 &&
+          pixels[greenIndex] == 255 &&
+          pixels[blueIndex] == 0 &&
+          pixels[alphaIndex] == 255;
+        // hearts
+        let isMagenta =
+          pixels[redIndex] == 255 &&
+          pixels[greenIndex] == 0 &&
+          pixels[blueIndex] == 255 &&
+          pixels[alphaIndex] == 255;
+        pixels[alphaIndex] == 0;
+
+        // Make sure the non colored pixels ones are the same value
+        if (!(isRed || isGreen || isBlue || isYellow || isMagenta)) {
+          newImgObj.pixels[redIndex] = pixels[redIndex]; // Red value
+          newImgObj.pixels[greenIndex] = pixels[greenIndex]; // Green value
+          newImgObj.pixels[blueIndex] = pixels[blueIndex]; // Blue value
+          newImgObj.pixels[alphaIndex] = pixels[alphaIndex]; // Alpha value
+        }
+        // Change Red pixels to rainbow effect + darker
+        if (isRed) {
+          newImgObj.pixels[redIndex] = rgb_gradient[y % 64][0] * 0.45 * 255; // Red value
+          newImgObj.pixels[greenIndex] = rgb_gradient[y % 64][1] * 0.5 * 255; // Green value
+          newImgObj.pixels[blueIndex] = rgb_gradient[y % 64][2] * 0.5 * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+          // newImgObj.pixels[redIndex] = 0; // Red value
+          // newImgObj.pixels[greenIndex] = 0; // Green value
+          // newImgObj.pixels[blueIndex] = 255; // Blue value
+          // newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+        if (isBlue) {
+          newImgObj.pixels[redIndex] = rgb_gradient[y % 23][0] * 2 * 255; // Red value
+          newImgObj.pixels[greenIndex] = rgb_gradient[y % 23][1] * 2 * 255; // Green value
+          newImgObj.pixels[blueIndex] = rgb_gradient[y % 23][2] * 2 * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+
+        if (isYellow) {
+          newImgObj.pixels[redIndex] = rgb_gradient[y % 64][0] * 4 * 255; // Red value
+          newImgObj.pixels[greenIndex] = rgb_gradient[y % 64][1] * 4 * 255; // Green value
+          newImgObj.pixels[blueIndex] = rgb_gradient[y % 64][2] * 4 * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+
+        if (isMagenta) {
+          newImgObj.pixels[redIndex] = rgb_gradient[y % 64][0] * 1.5 * 255; // Red value
+          newImgObj.pixels[greenIndex] = rgb_gradient[y % 64][1] * 1.5 * 255; // Green value
+          newImgObj.pixels[blueIndex] = rgb_gradient[y % 64][2] * 1.5 * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+
+        // Make it a radial vibe...
+        // Calculate the distance from center...
+        // use that to map to a value from 0 to 64....
+        let distance = Math.sqrt(
+          (x - newImgObj.width / 2) ** 2 + (y - 143) ** 2,
+        );
+        let indexForGreen = Math.floor(p.map(distance, 0, 150, 0, 63));
+        if (isGreen) {
+          newImgObj.pixels[redIndex] = rgb_gradient[indexForGreen][0] * 1 * 255; // Red value
+          newImgObj.pixels[greenIndex] =
+            rgb_gradient[indexForGreen][1] * 1 * 255; // Green value
+          newImgObj.pixels[blueIndex] =
+            rgb_gradient[indexForGreen][2] * 1 * 255; // Blue value
+          newImgObj.pixels[alphaIndex] = 255; // Alpha value
+        }
+      }
+    }
+    // console.log("updating pixels");
+    newImgObj.updatePixels();
+    return newImgObj;
+  }
+
   function selectDifficulty(option) {
     if (option == "Easy") {
       storyModeDifficulty = "Easy";
@@ -144,7 +282,7 @@ var difficulty = function (p) {
     // //Progress to song selector
     let songSelectorCanvas = document.querySelector("#songSelectorCanvas");
     songSelectorCanvas.dispatchEvent(showSceneEvent);
-    document.querySelector("#backgroundCanvas").dispatchEvent(showSceneEvent);
+    // document.querySelector("#backgroundCanvas").dispatchEvent(showSceneEvent);
     //Hide this canvas
     difficultyCanvas.dispatchEvent(hideSceneEvent);
     sound_fx.select.start();
@@ -183,18 +321,21 @@ var difficulty = function (p) {
   function handleInput(keyCode) {
     //Handle case for menu navigation
     if (isCurrentScene) {
-      if (keyCode == "ArrowDown" || keyCode == "KeyS") {
-        if (selectedMenuItemIndex < menuItems.length - 1) {
-          selectedMenuItemIndex++;
-          sound_fx.menuChange.start();
+      if (!gameIsReboot) {
+        if (keyCode == "ArrowRight" || keyCode == "KeyD") {
+          if (selectedMenuItemIndex < menuItems.length - 1) {
+            selectedMenuItemIndex++;
+            sound_fx.menuChange.start();
+          }
+        }
+        if (keyCode == "ArrowLeft" || keyCode == "KeyA") {
+          if (selectedMenuItemIndex > 0) {
+            selectedMenuItemIndex--;
+            sound_fx.menuChange.start();
+          }
         }
       }
-      if (keyCode == "ArrowUp" || keyCode == "KeyW") {
-        if (selectedMenuItemIndex > 0) {
-          selectedMenuItemIndex--;
-          sound_fx.menuChange.start();
-        }
-      }
+
       //Select menu item
       if (keyCode == "Enter") {
         selectCurrentOption();
@@ -300,13 +441,14 @@ var difficulty = function (p) {
   //Create a class for menu items
   // Create each one has an animation timer to calculate the offset
   class menuItem {
-    constructor(menuText, xPos, yPos, action) {
+    constructor(menuText, xPos, yPos, action, imgId) {
       this.menuText = menuText;
       this.offset = 640 * scaleRatio;
       this.animationTimer = 0.0;
       this.yPos = yPos;
-      this.xPos = yPos;
+      this.xPos = xPos;
       this.action = action;
+      this.imgId = imgId;
     }
     startAnimation() {
       // Create timer for animation menu overlay and text
@@ -319,11 +461,30 @@ var difficulty = function (p) {
         }
       }, 30);
     }
-    display() {
+    display(displaySelected) {
       // console.log("drawing menu item");
+
       p.push();
       p.translate(this.offset - this.offset * this.animationTimer, 0);
-      drawText(this.menuText, "mainYellow", 1, null, this.yPos);
+
+      if (displaySelected) {
+        //Draw shadow
+        drawImageToScale(difficultyCardImgs[6], this.xPos, this.yPos);
+
+        let y_offset = Math.sin(globalClock.seconds * 2.5) * 5;
+        drawImageToScale(
+          difficultyCardImgs[this.imgId],
+          this.xPos - 10,
+          this.yPos - 10 + y_offset,
+        );
+      } else {
+        drawImageToScale(
+          difficultyCardImgs[this.imgId + 1],
+          this.xPos,
+          this.yPos,
+        );
+      }
+
       p.pop();
     }
     select() {
@@ -332,21 +493,23 @@ var difficulty = function (p) {
   }
 
   function drawMenu() {
-    let menuOpacity = 0.4;
-    // console.log(menuOpacity);
+    // let menuOpacity = 0.4;
+    // // console.log(menuOpacity);
 
-    let overlayColor = `rgba(0,0,0,${menuOpacity})`;
-    p.fill(p.color(overlayColor));
-    p.rect(0, 0, p.width, p.height);
+    // let overlayColor = `rgba(0,0,0,${menuOpacity})`;
+    // p.fill(p.color(overlayColor));
+    // p.rect(0, 0, p.width, p.height);
 
     menuItems.forEach(function (menuItem, index) {
-      if (index != selectedMenuItemIndex) {
-        menuItem.display();
+      if (index == selectedMenuItemIndex) {
+        menuItem.display(true);
+      } else {
+        menuItem.display(false);
       }
     });
-    p.rect(0, 0, p.width, p.height);
+    // p.rect(0, 0, p.width, p.height);
     //Display selected menu item at full brightness
-    menuItems[selectedMenuItemIndex].display();
+    // menuItems[selectedMenuItemIndex].display();
   }
 
   // Draw text centered on the screen or at a certain position if specified

@@ -790,113 +790,12 @@ var mainScene = function (p) {
   }
 
   function updateArrowRainbow() {
-    // Code for testing performance
-    // holdMiddleImg.hitTrue = holdMiddleImgOriginal;
-    // holdMiddleImg.hitFalse = holdMiddleImgOriginal;
-    // arrowImgs.left = arrowImgsOriginal.left;
-    // arrowImgs.up = arrowImgsOriginal.up;
-    // arrowImgs.down = arrowImgsOriginal.down;
-    // arrowImgs.right = arrowImgsOriginal.right;
-
-    // holdEndImgs.left.hitFalse = holdEndImgsOriginal.left;
-    // holdEndImgs.up.hitFalse = holdEndImgsOriginal.up;
-    // holdEndImgs.down.hitFalse = holdEndImgsOriginal.down;
-    // holdEndImgs.right.hitFalse = holdEndImgsOriginal.right;
-
-    // holdEndImgs.left.hitTrue = holdEndImgsOriginal.left;
-    // holdEndImgs.up.hitTrue = holdEndImgsOriginal.up;
-    // holdEndImgs.down.hitTrue = holdEndImgsOriginal.down;
-    // holdEndImgs.right.hitTrue = holdEndImgsOriginal.right;
-
     let rgb_gradient = calculateRgbValues();
 
     rainbowArrowSpritesheet = convertArrowSpritesheetToRainbow(
       arrowSpritesheet,
       rgb_gradient,
     );
-
-    // holdMiddleImg.hitTrue = convertArrowImgToRainbow(
-    //   holdMiddleImgOriginal,
-    //   rgb_gradient,
-    //   "holdMiddle",
-    //   true,
-    // );
-
-    // holdMiddleImg.hitFalse = convertArrowImgToRainbow(
-    //   holdMiddleImgOriginal,
-    //   rgb_gradient,
-    //   "holdMiddle",
-    //   false,
-    // );
-
-    // arrowImgs.left = convertArrowImgToRainbow(
-    //   arrowImgsOriginal.left,
-    //   rgb_gradient,
-    // );
-    // arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up, rgb_gradient);
-    // arrowImgs.down = convertArrowImgToRainbow(
-    //   arrowImgsOriginal.down,
-    //   rgb_gradient,
-    // );
-    // arrowImgs.right = convertArrowImgToRainbow(
-    //   arrowImgsOriginal.right,
-    //   rgb_gradient,
-    // );
-
-    // holdEndImgs.left.hitFalse = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.left,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   false,
-    // );
-    // holdEndImgs.up.hitFalse = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.up,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   false,
-    // );
-    // holdEndImgs.down.hitFalse = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.down,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   false,
-    // );
-    // holdEndImgs.right.hitFalse = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.right,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   false,
-    // );
-
-    // holdEndImgs.left.hitTrue = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.left,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   true,
-    // );
-    // holdEndImgs.up.hitTrue = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.up,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   true,
-    // );
-    // holdEndImgs.down.hitTrue = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.down,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   true,
-    // );
-    // holdEndImgs.right.hitTrue = convertArrowImgToRainbow(
-    //   holdEndImgsOriginal.right,
-    //   rgb_gradient,
-    //   "holdEnd",
-    //   true,
-    // );
-  }
-
-  function calculateRgbValues() {
-    let currentHue = (t * 50) % 360;
-    return hsl2rgb_gradient(currentHue, 0.97, 0.6);
   }
 
   function convertArrowSpritesheetToRainbow(

@@ -27,7 +27,7 @@ vec4 dark = vec4(12./255., 15./255., 68./255., 1.0);
 vec4 orange = vec4(231./255., 131./255., 0./255., 1.0);
 
 
-vec4 UI_color = vec4(40./255.,  30./255., 150./255., 1.0);
+vec4 UI_color = vec4(65./255.,  30./255., 150./255., 1.0);
 
 uniform int u_transitionStarted;
 
