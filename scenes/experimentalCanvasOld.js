@@ -1,26 +1,39 @@
+let track = document.querySelector("audio");
+let startSongButton = document.querySelector("#startSong");
+
+// let enableStartButton = function () {
+//   startSongButton.innerHTML = "Click to start";
+//   startSongButton.disabled = false;
+// };
+
+// const songPlayer = new Tone.Player("assets/audio/Heaven.OGG").toDestination();
+// const part1_bg_player = new Tone.Player(
+//   "assets/audio/RDD_p1_ambience_loop.mp3",
+//   enableStartButton,
+// ).toDestination();
+// part1_bg_player.loop = true;
+// part1_bg_player.fadeIn = 2;
+// part1_bg_player.fadeIn = 0.5;
+
+const part2_bg_player = new Tone.Player(
+  "assets/audio/RDD_p2_background_v2.mp3",
+).toDestination();
+part2_bg_player.loop = false;
+part2_bg_player.fadeOut = 2;
+
 var experimentalScene = function (p) {
-  let experimentalCanvas;
-  let isCurrentScene = false;
+  let thisCanvas;
 
-  let thisSongPlayer;
-
-  let thisSongData;
-
-  // let updateArrowsInterval;
-  let updateNotesInterval;
-
-  let canvasSizeOriginal = { width: 640, height: 480 };
-  let canvasWidth = canvasSizeOriginal.width;
-  let canvasHeight = canvasSizeOriginal.height;
-
+  let canvasWidth = 640;
+  let canvasHeight = 480;
   let canvasRatio = canvasWidth / canvasHeight;
+  let canvasSizeOriginal = { width: 640, height: 480 };
   let scaleRatio = 1;
 
   let numCanvasesLoaded = 0;
   let allCanvasesLoaded = false;
 
-  let songId = 0;
-
+  // let hitArrowImgs;
   let arrowWidth = 64;
   let hitPos = { x: 192, y: 208 };
   let hitPosFinal = { x: 192, y: 56 };
@@ -31,42 +44,28 @@ var experimentalScene = function (p) {
     right: hitPos.x + arrowWidth * 3,
   };
 
-  let hitArrowSpritesheet;
-  let arrowSpritesheet;
-  let rainbowArrowSpritesheet;
-
-  // save only one image obj and clear it
-  // let newImgObj;
-
-  // let arrowImgs;
-  // let arrowImgsOriginal;
-
-  let scoreBackgroundImg;
-
-  let eggBombImg;
-
-  let fawningAnimation;
+  // let holdMiddleImg;
+  // let holdEndImgs;
+  // let comboTextImg;
+  // let healthBarFrameImg;
+  // let greenGradientImg;
+  // let rainbowGradientImg;
+  // let hitGlowImg;
 
   //relevantNotes stores an array of note objects
   let relevantNotes = [];
-  // let hitMargin = 100;
-
+  let hitMargin = 90;
   let measureData;
   let songBpm;
-  let currentBpmStartBeat = 0;
-  let currentBpmChangeTime = 0;
   let songDelay;
   let secondsPerBeat;
-  let stops;
-  let hasBpmChanges = false;
-  let bpmChanges = [];
-  let hasStops = false;
 
   let hitArrowObjs = {};
   let feedbackObj;
   let comboObj;
   let scoreData;
   let healthBar;
+  let scoreSpan = document.querySelector("#score");
 
   // current batch num is the measure of the current batch
   let batchSize = 2;
@@ -75,25 +74,15 @@ var experimentalScene = function (p) {
   let t = 0;
   let currentBeat = 0;
   let pixelsElapsed = 0;
-  let pixelsPerBeat = 120;
+  let pixelsPerBeat = 100;
 
-  let hitMargin = 0.4 * pixelsPerBeat;
-
-  let hitMarginTime = 0.5;
-
-  let secondsSinceStop = 0;
-
-  let startDrawingArrows = false;
-
-  let songVideo;
-  let videoLoadedFirstTime = false;
-
-  let endSongIfFailed = false;
-
-  //Experimental scene variables
+  let clock = new Tone.Clock((time) => {}, 1);
 
   let reverseClock = new Tone.Clock((time) => {}, 1);
 
+  let fontsToLoad = ["mainYellow", "pink"];
+
+  //Experimental scene variables
   let waitForHit = true;
   let timerPaused = false;
   let t_holdLeftStart;
@@ -108,90 +97,96 @@ var experimentalScene = function (p) {
 
   let animationIntervals = 50;
 
+  //Is a list of text objects
   let narrativeTextObjs = [];
   let whiteBackground = true;
   let part1HoldsDone = false;
   let part2Started = false;
   let endingStarted = false;
+
+  let isCurrentScene = false;
+
   let assetsSetup = false;
 
   p.preload = function () {
     //Preload a background here
     //Preload whatever needs to be preloaded
-    hitArrowSpritesheet = p.loadImage("assets/hitArrowSpritesheet.png");
-    arrowSpritesheet = p.loadImage("assets/arrowSpritesheet.png");
-
-    comboTextImg = p.loadImage("assets/comboText.png");
-    healthBarFrameImg = p.loadImage("assets/healthBarFrame.png");
-    greenGradientImg = p.loadImage("assets/greenGradient.png");
-    rainbowGradientImg = p.loadImage("assets/rainbowGradient.png");
-    hitGlowImg = p.loadImage("assets/hit-glow.png");
-    eggBombImg = p.loadImage("assets/egg-bomb.png");
-    scoreBackgroundImg = p.loadImage("assets/scoreBackground.png");
-
-    attackSpritesheet = p.loadImage("assets/attackSpritesheet.png");
+    // hitArrowImgs = {
+    //   left: p.loadImage("assets/hit-arrow-left.png"),
+    //   up: p.loadImage("assets/hit-arrow-up.png"),
+    //   right: p.loadImage("assets/hit-arrow-right.png"),
+    //   down: p.loadImage("assets/hit-arrow-down.png"),
+    // };
+    // holdMiddleImg = p.loadImage("assets/hold-middle.png");
+    // holdEndImgs = {
+    //   left: p.loadImage("assets/hold-end-left.png"),
+    //   up: p.loadImage("assets/hold-end-up.png"),
+    //   right: p.loadImage("assets/hold-end-right.png"),
+    //   down: p.loadImage("assets/hold-end-down.png"),
+    // };
+    // arrowImgs = {
+    //   left: p.loadImage("assets/arrow-left.png"),
+    //   up: p.loadImage("assets/arrow-up.png"),
+    //   right: p.loadImage("assets/arrow-right.png"),
+    //   down: p.loadImage("assets/arrow-down.png"),
+    // };
+    // fontsToLoad.forEach(function (fontName) {
+    //   fonts[fontName].sets.forEach(function (fontSet) {
+    //     fontSet.imgObj = p.loadImage(fontSet.src);
+    //   });
+    // });
+    // comboTextImg = p.loadImage("assets/comboText.png");
+    // healthBarFrameImg = p.loadImage("assets/healthBarFrame.png");
+    // greenGradientImg = p.loadImage("assets/greenGradient.png");
+    // rainbowGradientImg = p.loadImage("assets/rainbowGradient.png");
+    // hitGlowImg = p.loadImage("assets/hit-glow.png");
   };
 
   p.setup = function () {
     // put setup code here
-    p.frameRate(frameRate);
     p.pixelDensity(3);
     calculateCanvasDimensions(p);
     experimentalCanvas = p.createCanvas(canvasWidth, canvasHeight).elt;
     experimentalCanvas.classList.add("gameCanvas");
     experimentalCanvas.classList.add("experimentalCanvas");
     experimentalCanvas.id = "experimentalCanvas";
-
+    thisCanvas = experimentalCanvas;
     p.noSmooth();
 
-    // Setup arrow images from spritesheet
-    hitArrowImgs = {
-      left: hitArrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
-      down: hitArrowSpritesheet.get(0, arrowWidth, arrowWidth, arrowWidth),
-      up: hitArrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
-      right: hitArrowSpritesheet.get(0, arrowWidth * 3, arrowWidth, arrowWidth),
-    };
+    // let songData = JSON.parse(heavenSongData);
+    let songData = JSON.parse(part1);
+    measureData = songData.measureData;
+    songBpm = songData.bpm;
+    // songBpm = 300;
+    songDelay = songData.delay;
+    secondsPerBeat = 1 / (songBpm / 60);
+    t_holdLeftStart = secondsPerBeat * 4 * 26;
+    t_holdRightStart = secondsPerBeat * 4 * 27;
+    t_holdsFinished = secondsPerBeat * 4 * 34;
 
-    arrowImgsOriginal = {
-      left: arrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
-      down: arrowSpritesheet.get(0, arrowWidth * 1, arrowWidth, arrowWidth),
-      up: arrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
-      right: arrowSpritesheet.get(0, arrowWidth * 3, arrowWidth, arrowWidth),
-    };
-    // numbers are where they are in the spritesheet
-    arrowImgs = {
-      left: 0,
-      down: 1,
-      up: 2,
-      right: 3,
-    };
+    // holdMiddleImg.loadPixels();
+    // Object.values(arrowImgs).forEach(function (imgObj) {
+    //   imgObj.loadPixels();
+    // });
+    // Object.values(holdEndImgs).forEach(function (imgObj) {
+    //   imgObj.loadPixels();
+    // });
 
-    holdEndImgsOriginal = {
-      left: arrowSpritesheet.get(0, arrowWidth * 4, arrowWidth, arrowWidth),
-      down: arrowSpritesheet.get(0, arrowWidth * 5, arrowWidth, arrowWidth),
-      up: arrowSpritesheet.get(0, arrowWidth * 6, arrowWidth, arrowWidth),
-      right: arrowSpritesheet.get(0, arrowWidth * 7, arrowWidth, arrowWidth),
-    };
+    // Setup fonts
+    // setupFont("mainYellow");
+    // setupFont("pink");
 
-    holdEndImgs = {
-      left: { hitTrue: 4, hitFalse: 5 },
-      down: { hitTrue: 6, hitFalse: 7 },
-      up: { hitTrue: 8, hitFalse: 9 },
-      right: { hitTrue: 10, hitFalse: 11 },
-    };
+    setupNavigation(thisCanvas);
 
-    holdMiddleImgOriginal = arrowSpritesheet.get(
-      0,
-      arrowWidth * 8,
-      arrowWidth,
-      arrowWidth,
-    );
-    // holdMiddleImg = {};
-    holdMiddleImg = {
-      hitTrue: 12,
-      hitFalse: 13,
-    };
+    const canvasLoadedEvent = new Event("canvasLoaded");
 
+    window.dispatchEvent(canvasLoadedEvent);
+  };
+
+  let startDrawingArrows = false;
+
+  // Setup things that depend on loading from mainSong
+  function setupAssets() {
     hitArrowObjs = {
       left: new HitArrow("left", hitPos.x, hitPos.y),
       down: new HitArrow("down", hitPos.x + arrowWidth, hitPos.y),
@@ -199,107 +194,56 @@ var experimentalScene = function (p) {
       right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
     };
 
-    attackImages = {
-      left: {
-        day: attackSpritesheet.get(0, 0, 320, 240),
-        night: attackSpritesheet.get(0, 240, 320, 240),
-      },
-      down: {
-        day: attackSpritesheet.get(0, 240 * 2, 320, 240),
-        night: attackSpritesheet.get(0, 240 * 3, 320, 240),
-      },
-      up: {
-        day: attackSpritesheet.get(0, 240 * 4, 320, 240),
-        night: attackSpritesheet.get(0, 240 * 5, 320, 240),
-      },
-      right: {
-        day: attackSpritesheet.get(0, 240 * 6, 320, 240),
-        night: attackSpritesheet.get(0, 240 * 7, 320, 240),
-      },
-    };
-
     feedbackObj = new FeedbackText();
     comboObj = new ComboText();
-
     scoreData = new Score();
     healthBar = new HealthBar();
-    fawningAnimation = new FawningAnimation();
-
-    holdMiddleImgOriginal.loadPixels();
-    Object.values(arrowImgsOriginal).forEach(function (imgObj) {
-      imgObj.loadPixels();
-    });
-    Object.values(holdEndImgsOriginal).forEach(function (imgObj) {
-      imgObj.loadPixels();
-    });
-
-    arrowSpritesheet.loadPixels();
-
-    window.dispatchEvent(canvasLoadedEvent);
-    setupNavigation(experimentalCanvas);
-  };
+  }
 
   p.draw = function () {
-    // p.background("pink");
-    p.clear();
-    if (whiteBackground) {
-      p.background("white");
-    } else {
-      p.clear();
-    }
-
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.displayGlow();
-    });
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.display();
-    });
-
-    if (startDrawingArrows) {
-      drawArrows();
-    }
-
-    feedbackObj.display();
-    // comboObj.display();
-    // healthBar.display();
-    // scoreData.displayTotalScore();
-    //draw narrative text
-    narrativeTextObjs.forEach(function (textObj) {
-      if (textObj.showing) {
-        textObj.display();
+    if (allCanvasesLoaded) {
+      if (!assetsSetup) {
+        setupAssets();
+        assetsSetup = true;
       }
-    });
-  };
+      if (whiteBackground) {
+        p.background("white");
+      } else {
+        p.clear();
+      }
 
-  function setupNavigation(thisCanvas) {
-    p.noLoop();
-    thisCanvas.addEventListener("showScene", (e) => {
-      p.loop();
-      setTimeout(function () {
-        thisCanvas.style.visibility = "visible";
-        thisCanvas.style.opacity = 1;
-        isCurrentScene = true;
-        startSong();
-      }, sceneTransitionTime);
-    });
-    thisCanvas.addEventListener("hideScene", (e) => {
-      p.noLoop();
-      isCurrentScene = false;
-      thisCanvas.style.opacity = 0;
-      setTimeout(function () {
-        thisCanvas.style.visibility = "hidden";
-      }, sceneTransitionTime);
-    });
-  }
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.displayGlow();
+      });
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.display();
+      });
+
+      if (startDrawingArrows) {
+        drawArrows();
+      }
+
+      feedbackObj.display();
+      // comboObj.display();
+      // healthBar.display();
+
+      //draw narrative text
+      narrativeTextObjs.forEach(function (textObj) {
+        if (textObj.showing) {
+          textObj.display();
+        }
+      });
+    }
+  };
 
   function pauseTimer() {
     timerPaused = true;
-    Tone.Transport.pause();
+    clock.pause();
   }
 
   function unpauseTimer() {
     timerPaused = false;
-    Tone.Transport.start();
+    clock.start();
   }
 
   function startReverseTimer() {
@@ -316,20 +260,15 @@ var experimentalScene = function (p) {
     noteObj.isHolding = false;
     noteObj.isHit = false;
     noteObj.completedHold = false;
-    noteObj.hasPassedOver = false;
   }
 
-  // we need a way to calculate the current beat ( and measure ), according to the bpm changes.
-  // current beat should be Start beat of the current interval, plus time that has elapsed within that beat
-
   function updateNotes() {
-    // Experimental logic
+    //Keep a queue of relevantNotes
+
     // Part 1 Timing
     if (!part2Started) {
       if (reverseClock.seconds > 0) {
         t = t_released - reverseClock.seconds;
-        Tone.Transport.seconds = t;
-
         if (t < t_holdRightStart) {
           resetHoldNote(rightHoldNote);
         }
@@ -338,22 +277,17 @@ var experimentalScene = function (p) {
           t = t_holdLeftStart;
           // We always want to get back to this start position if released early...
           resetReverseTimer();
-          // Tone.Transport.stop();
-          //Set it to t before holding
-          Tone.Transport.seconds = t_holdLeftStart;
-          // unpauseTimer();
+          clock.stop();
           attemptedHoldsOnce = true;
         }
       } else if (attemptedHoldsOnce) {
-        t = Tone.Transport.seconds;
-
-        // t = Tone.Transport.seconds + t_holdLeftStart;
+        t = clock.seconds + t_holdLeftStart;
       } else {
-        t = Tone.Transport.seconds;
+        t = clock.seconds;
       }
     } else {
       //Part 2 timing
-      t = Tone.Transport.seconds;
+      t = clock.seconds;
       //Loop ending after 2:08, .. to 2:17
       if (t > 129) {
         part2_bg_player.loopStart = 129.5;
@@ -368,14 +302,8 @@ var experimentalScene = function (p) {
     }
 
     //Given current time, what is the current measure?
-    if (hasBpmChanges) {
-      // make this time that has elapsed
-      currentBeat =
-        currentBpmStartBeat + (t - currentBpmChangeTime) / secondsPerBeat;
-    } else {
-      currentBeat = t / secondsPerBeat;
-    }
 
+    currentBeat = t / secondsPerBeat;
     let thisMeasure = Math.floor(currentBeat / 4);
     if (thisMeasure > currentMeasure) {
       console.log("Measure: " + thisMeasure);
@@ -383,6 +311,7 @@ var experimentalScene = function (p) {
 
       //Initialize start of song
       if (currentMeasure == 0) {
+        console.log("initializing");
         let measuresInBatch = measureData.slice(
           currentBatchStartMeasure,
           currentBatchStartMeasure + batchSize,
@@ -399,7 +328,6 @@ var experimentalScene = function (p) {
       }
       //Are we ALMOST at a new batch? Update the batch data!
       else if (currentMeasure % batchSize == batchSize - 1) {
-        // console.log("updating batch data");
         //Discard old ones BEFORE 1 measure ago....
         let remainingNotes = relevantNotes.filter(function (note) {
           //Keep only if this note is a hold and it's done...
@@ -409,7 +337,7 @@ var experimentalScene = function (p) {
           ) {
             return true;
           } else if (
-            (note.noteType == "instant" || note.noteType == "mine") &&
+            note.noteType == "instant" &&
             note.measure >= currentMeasure - 1
           ) {
             return true;
@@ -441,451 +369,262 @@ var experimentalScene = function (p) {
         });
       }
     }
-
-    //Handle case for song end
-    if (thisMeasure > measureData.length) {
-      let win = scoreData.ranking != "E";
-      // Comment for install
-      handleSongEnd(win);
-      // handleSongEnd(true);
-    }
   }
 
-  function handleSongEnd(win) {
-    console.log("song ended!!");
-    Tone.Transport.stop();
-    thisSongPlayer.stop();
-    songVideo.pause();
-
-    //Update score in global data
-    songList[songId].scores.push(scoreData.getScoreInfo());
-
-    // Show gate transition (Blank gate)
-    let showGateEvent = new CustomEvent("showScene", {
-      detail: {
-        gateId: 5,
-        win: win,
-      },
-    });
-    document.querySelector("#gateCanvas").dispatchEvent(showGateEvent);
-
-    // Hide current scene after gate closed
-    setTimeout(function () {
-      mainSongCanvas.dispatchEvent(hideSceneEvent);
-    }, 2000);
-
-    // Continue to next scene after gate transition
-    setTimeout(function () {
-      let backgroundCanvas = document.querySelector("#backgroundCanvas");
-      backgroundCanvas.dispatchEvent(showSceneEvent);
-
-      if (!songList[songId].cleared && win) {
-        // If first time cleared, show revelation scene
-        songList[songId].cleared = true;
-        let showRevelationSceneEvent = new CustomEvent("showScene", {
-          detail: {
-            songIndex: songId,
-            scoreData: scoreData.getScoreInfo(),
-          },
-        });
-        document
-          .getElementById("revelationCanvas")
-          .dispatchEvent(showRevelationSceneEvent);
-
-        let showBackgroundShaderEvent = new CustomEvent("showScene", {
-          detail: {
-            shaderType: "revelationGlow",
-            songIndex: songId,
-          },
-        });
-        document
-          .getElementById("backgroundCanvas")
-          .dispatchEvent(showBackgroundShaderEvent);
-      } else {
-        // Show Score scene directly if failed or if we've cleared before
-        let showScoreSceneEvent = new CustomEvent("showScene", {
-          detail: {
-            scoreData: scoreData.getScoreInfo(),
-          },
-        });
-        document
-          .getElementById("scoreCanvas")
-          .dispatchEvent(showScoreSceneEvent);
-      }
-
-      //Reset at the end
-      window.setTimeout(function () {
-        console.log("resetting for new song");
-        resetForNewSong();
-      }, 3000);
-    }, 3000);
-  }
-
-  function startSong(songId) {
-    thisSongPlayer = part1_bg_player;
-    thisSongPlayer.loop = false;
-
-    //Setup info for the song: Part 1
-    let thisSongData = JSON.parse(part1);
-    measureData = thisSongData.measureData;
-    // songBpm = thisSongData.bpm;
-    songBpm = 400;
-
-    songDelay = thisSongData.delay;
-    // scoreData.songId = songId;
-    // scoreData.totalNotes = thisSongData.totalNotes;
-    // scoreData.calculateBaseNoteScore();
-    secondsPerBeat = 1 / (songBpm / 60);
-    t_holdLeftStart = secondsPerBeat * 4 * 26;
-    console.log("t_holdLeftStart is: " + t_holdLeftStart);
-    t_holdRightStart = secondsPerBeat * 4 * 27;
-    t_holdsFinished = secondsPerBeat * 4 * 34;
-    setHitMarginTime();
-
+  let startSong = function () {
     //For negative songDelays, start song before notes
-    // For positive songDelays, startNotes before song
-    updateNotesInterval = setInterval(function () {
-      updateNotes();
-      updateArrowRainbow();
-    }, 30);
-
-    startDrawingArrows = true;
-    //Start a tone.js clock to keep time
-    // clock.start();
-    Tone.Transport.start();
-  }
-
-  function passOverNotesOnStop() {
-    //after delay on stop, go through the ones that are note hit and make them pass over, and update it as a miss
-    relevantNotes.forEach(function (note) {
-      if (
-        isPassedHitBoundary(note.currentY) &&
-        !note.isHit &&
-        !note.hasPassedOver
-      ) {
-        note.hasPassedOver = true;
-        updateMiss("miss", note);
-      }
-    });
-  }
-  // calculate the transport time given current beat, factoring in bpm changes
-  function beatToTime(inputBeat) {
-    if (inputBeat && hasBpmChanges) {
-      let totalTime = 0;
-
-      bpmChanges.forEach(function (change, index) {
-        // First check, is beat within this interval? Then add partial time. Otherwise at the whole time
-
-        // Case 1: Beat is within this interval... either because it's the last one or not....
-
-        if (
-          (inputBeat >= change.beat && inputBeat < change.endBeat) ||
-          (inputBeat >= change.beat && change.endBeat == null)
-        ) {
-          let beatsElapsedInInterval = inputBeat - change.beat;
-          let timeElapsedInInterval =
-            beatsElapsedInInterval * change.secondsPerBeat;
-          totalTime += timeElapsedInInterval;
-        } else if (inputBeat < change.beat) {
-          // Case 2 : Beat is before  this interval, don't do anything
-        } else if (inputBeat > change.beat) {
-          //Case 3: Beat is after this interval
-          let beatsElapsedInInterval = change.endBeat - change.beat;
-          let timeElapsedInInterval =
-            beatsElapsedInInterval * change.secondsPerBeat;
-          totalTime += timeElapsedInInterval;
-        }
-      });
-      return totalTime;
-    } else if (inputBeat && !hasBpmChanges) {
-      let time = inputBeat * secondsPerBeat;
-      return time;
+    if (songDelay < 0) {
+      // part1_bg_player.start();
+      setTimeout(function () {
+        setInterval(function () {
+          updateNotes();
+          updateArrowRainbow();
+        }, 10);
+        startDrawingArrows = true;
+        //Start a tone.js clock to keep time
+        clock.start();
+      }, -songDelay * 1000);
     } else {
-      return null;
+      // For positive songDelays, startNotes before song
+      setInterval(function () {
+        updateNotes();
+        updateArrowRainbow();
+      }, 10);
+      startDrawingArrows = true;
+      //Start a tone.js clock to keep time
+      clock.start();
+
+      setTimeout(function () {
+        // part1_bg_player.start();
+      }, songDelay * 1000);
     }
-  }
+  };
   //Create arrows takes the relevant notes array and then creates objects for them
-
-  //Note: how would we evaluate it on time instead of distance?
-  //When reading the notes, pre-process to calculate the time on the transport that it should start (and end, for holds....)
-  // Or we can just edit it for the stops...
-
-  //Note: How do we asssess when notes are hit or not with stops?
-  //We assign a timed delay to when the stop happens. After that timed delay, any notes that are currently at the hit bar while the stop is happening will be set to
-  // "passed over"... and !isHit..
-  // Until we refactor all the arrow timings to use the transport (idk if this would work well...), we will create a timeout when the stop happens.
-  // That timeout will go through and set current arrows to be passed over
-
-  //Q: Let's say there are two consecutive arrows of the same time within the hit margin.
-  // How do we evaluate only the first note????
-  function setHitMarginTime() {
-    // Set hit margin time to half a beat...
-    // hitMarginTime = secondsPerBeat / 2;
-    // for testing... note that holds will be weird!
-    hitMarginTime = secondsPerBeat * 0.75;
-  }
-  function isWithinHitMargin(yPos) {
-    return (
-      yPos >= hitArrowObjs["left"].yPos - hitMargin &&
-      yPos <= hitArrowObjs["left"].yPos + hitMargin
-    );
-  }
-
-  function isPassedHitMarginTime(note) {
-    let currentTime = t;
-    return currentTime >= note.startTime + hitMarginTime;
-  }
-
-  function isPassedTime(time) {
-    let currentTime = t;
-    return currentTime >= time;
-  }
-
-  function isWithinHitMarginTime(note) {
-    let currentTime = t;
-    return (
-      currentTime >= note.startTime - hitMarginTime &&
-      currentTime <= note.startTime + hitMarginTime
-    );
-  }
-
-  function isPastHitTime(note) {
-    let currentTime = t;
-    return currentTime >= note.startTime;
-  }
-
-  function isPassedHitBoundary(yPos) {
-    return yPos <= hitArrowObjs["left"].yPos;
-  }
 
   function drawArrows() {
     relevantNotes.forEach(function (note) {
       let direction = note.direction;
-      // let passedOver = false;
+      let passedOver = false;
 
       // Get current y position: yPos is where the start of the note is currently on the p5 canvas
-
-      // If bpm changes, pixels elapsed needs to be based on the bpm segments...
-
       pixelsElapsed = (t / secondsPerBeat) * pixelsPerBeat;
-
       let yPos =
         hitArrowObjs["left"].yPos +
         pixelsPerBeat * note.startBeat -
         pixelsElapsed;
       note.currentY = yPos;
-
-      // Should this arrow be considered as a hit candidate?
-      if (Tone.Transport.state == "started") {
-        //Pause arrows for part 1 arrows and holds
-        if (isPastHitTime(note) && !part2Started && !note.isHit) {
-          // Tone.Transport.seconds = note.startTime;
-          // console.log(Tone.Transport.seconds);
+      if (waitForHit) {
+        if (yPos < hitArrowObjs["left"].yPos && !note.isHit) {
           pauseTimer();
         }
-
-        // console.log("Evaluating note: " + note.id);
-        // console.log("current t: " + t);
-        // console.log("current Transport time: " + Tone.Transport.seconds);
-        if (isWithinHitMarginTime(note)) {
-          console.log("Note is a hit candidate");
-          // console.log("note is hit candidate");
+        // For experimental... note is a hit candidate only if it's within range and UNHIT
+        if (
+          yPos > -Infinity &&
+          yPos < hitArrowObjs["left"].yPos + hitMargin &&
+          !note.isHit
+        ) {
           //Note within our hit window!
           note.isHitCandidate = true;
-        } else if (isPassedHitMarginTime(note)) {
-          // passedOver = true;
-          console.log("Note is passed over");
-          // console.log(note);
+        } else {
+          note.isHitCandidate = false;
+        }
+      } else {
+        // Should this arrow be considered as a hit candidate?
+        if (
+          yPos > hitArrowObjs["left"].yPos - hitMargin &&
+          yPos < hitArrowObjs["left"].yPos + hitMargin
+        ) {
+          //Note within our hit window!
+          note.isHitCandidate = true;
+        } else if (yPos < hitArrowObjs["left"].yPos - hitMargin) {
+          passedOver = true;
+
           //The note is passed over for the first time! THIS IS A MISS....
-          if (!note.hasPassedOver) {
+          if (note.hasPassedOver == null) {
             note.hasPassedOver = true;
             //If it's first time passing over a NOT hit note, reset combo
-            if (!note.isHit && note.noteType != "mine") {
+            if (!note.isHit) {
               updateMiss("miss", note);
             }
           }
           note.isHitCandidate = false;
         }
-        //Should this arrow, if a hold, be considered completed if we're still holding?
-        let end_yPos =
-          hitArrowObjs["left"].yPos +
-          pixelsPerBeat * note.endBeat -
-          pixelsElapsed;
-        if (
-          isPassedTime(note.endTime) &&
-          //end_yPos < hitArrowObjs["left"].yPos &&
-          note.isHolding &&
-          !note.completedHold
-        ) {
-          updateHit("ok", note);
-        }
-      } else if (Tone.Transport.state == "paused") {
-        // case: we're at a stop and hitting a note right on the beat
-        if (isWithinHitMarginTime(note)) {
-          note.isHitCandidate = true;
-        }
-
-        // Account for state of pause for part 1 holds....
       }
 
-      note.display(yPos);
+      //Should this arrow, if a hold, be considered completed if we're still holding?
+      let end_yPos =
+        hitArrowObjs["left"].yPos +
+        pixelsPerBeat * note.endBeat -
+        pixelsElapsed;
+      if (
+        end_yPos < hitArrowObjs["left"].yPos &&
+        note.isHolding &&
+        !note.completedHold
+      ) {
+        updateHit("ok", note);
+        hideHoldTexts(note.id + 1);
+
+        //Add logic for resetting for part 2
+        if (!part1HoldsDone && cueCount == 46) {
+          // Can we set a timer for the beat to start?
+          hideHoldTexts();
+          resetForPart2();
+        }
+
+        //Add logic for switching to end when final arrow passes
+        if (cueCount >= 221) {
+          console.log("transition to end after final arrow passes");
+          transitionToEnd();
+        }
+      }
+      note.display(yPos, passedOver);
     });
+  }
+
+  function resetForPart2() {
+    part1HoldsDone = true;
+    waitForHit = false;
+    part2Started = true;
+
+    part1_bg_player.stop();
+    clock.stop();
+
+    // Lets try resetting everything here!
+    relevantNotes = [];
+    currentBatchStartMeasure = 0;
+    currentMeasure = -1;
+    currentBeat = 0;
+    pixelsElapsed = 0;
+
+    let songData = JSON.parse(part2);
+    measureData = songData.measureData;
+    songBpm = songData.bpm;
+    songDelay = songData.delay;
+    secondsPerBeat = 1 / (songBpm / 60);
+    animationIntervals = 10;
+    let measuresUntilBeat = 1;
+    let delayForBeat = measuresUntilBeat * 4 * secondsPerBeat;
+    clock.start();
+    setTimeout(function () {
+      part2_bg_player.start();
+    }, delayForBeat * 1000);
+  }
+
+  //Transition to the end when you lift up at final RELEASE ME or it naturally ends
+  function transitionToEnd() {
+    if (!endingStarted) {
+      endingStarted = true;
+
+      console.log("TRANSITION TO END!!!");
+      let backgroundCanvas = document.querySelector("#backgroundCanvas");
+      thisCanvas.style.opacity = 0;
+      backgroundCanvas.style.opacity = 0;
+
+      part2_bg_player.stop();
+      window.setTimeout(function () {
+        experimentalCanvas.style.display = "none";
+        backgroundCanvas.style.display = "none";
+        let credits = document.querySelector("#credits");
+        credits.style.display = "flex";
+        let countdown = 20;
+        window.setInterval(function () {
+          countdown--;
+          let countdownSpan = document.querySelector("#endingCountdown");
+          countdownSpan.innerHTML = countdown;
+          if (countdown <= 0) {
+            countdown = 0;
+            location.reload();
+          }
+        }, 1000);
+      }, 3000);
+    }
   }
 
   function updateArrowRainbow() {
     let rgb_gradient = calculateRgbValues();
 
-    rainbowArrowSpritesheet = convertArrowSpritesheetToRainbow(
-      arrowSpritesheet,
+    holdMiddleImg.hitTrue = convertArrowImgToRainbow(
+      holdMiddleImgOriginal,
       rgb_gradient,
+      "holdMiddle",
+      true,
+    );
+
+    holdMiddleImg.hitFalse = convertArrowImgToRainbow(
+      holdMiddleImgOriginal,
+      rgb_gradient,
+      "holdMiddle",
+      false,
+    );
+
+    arrowImgs.left = convertArrowImgToRainbow(
+      arrowImgsOriginal.left,
+      rgb_gradient,
+    );
+    arrowImgs.up = convertArrowImgToRainbow(arrowImgsOriginal.up, rgb_gradient);
+    arrowImgs.down = convertArrowImgToRainbow(
+      arrowImgsOriginal.down,
+      rgb_gradient,
+    );
+    arrowImgs.right = convertArrowImgToRainbow(
+      arrowImgsOriginal.right,
+      rgb_gradient,
+    );
+
+    holdEndImgs.left.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.left,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.up.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.up,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.down.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.down,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+    holdEndImgs.right.hitFalse = convertArrowImgToRainbow(
+      holdEndImgsOriginal.right,
+      rgb_gradient,
+      "holdEnd",
+      false,
+    );
+
+    holdEndImgs.left.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.left,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.up.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.up,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.down.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.down,
+      rgb_gradient,
+      "holdEnd",
+      true,
+    );
+    holdEndImgs.right.hitTrue = convertArrowImgToRainbow(
+      holdEndImgsOriginal.right,
+      rgb_gradient,
+      "holdEnd",
+      true,
     );
   }
 
-  function convertArrowSpritesheetToRainbow(
-    imgObj,
-    rgb_gradient,
-    imgType,
-    isHit,
-  ) {
-    // Let's try this again except convert the whole spritesheet to rainbow...
-    let newImgObj = p.createImage(64, 896);
-    newImgObj.loadPixels();
-
-    // imgObj.loadPixels();
-
-    for (let y = 0; y < newImgObj.height; y++) {
-      for (let x = 0; x < newImgObj.width; x++) {
-        // Gets the index of the red value for this pixel
-        let redIndex = (x + y * newImgObj.width) * 4;
-        let greenIndex = redIndex + 1;
-        let blueIndex = redIndex + 2;
-        let alphaIndex = redIndex + 3;
-        // Top of arrow
-        let isWhite =
-          arrowSpritesheet.pixels[redIndex] == 255 &&
-          arrowSpritesheet.pixels[greenIndex] == 255 &&
-          arrowSpritesheet.pixels[blueIndex] == 255 &&
-          arrowSpritesheet.pixels[alphaIndex] == 255;
-        // Middle of arrow
-        let isBlue =
-          arrowSpritesheet.pixels[redIndex] == 0 &&
-          arrowSpritesheet.pixels[greenIndex] == 0 &&
-          arrowSpritesheet.pixels[blueIndex] == 255 &&
-          arrowSpritesheet.pixels[alphaIndex] == 255;
-        // Bottom of arrow
-        let isGreen =
-          arrowSpritesheet.pixels[redIndex] == 0 &&
-          arrowSpritesheet.pixels[greenIndex] == 255 &&
-          arrowSpritesheet.pixels[blueIndex] == 0 &&
-          arrowSpritesheet.pixels[alphaIndex] == 255;
-        let isRed =
-          arrowSpritesheet.pixels[redIndex] == 255 &&
-          arrowSpritesheet.pixels[greenIndex] == 0 &&
-          arrowSpritesheet.pixels[blueIndex] == 0 &&
-          arrowSpritesheet.pixels[alphaIndex] == 255;
-        let isTransparent =
-          arrowSpritesheet.pixels[redIndex] == 0 &&
-          arrowSpritesheet.pixels[greenIndex] == 0 &&
-          arrowSpritesheet.pixels[blueIndex] == 0 &&
-          arrowSpritesheet.pixels[alphaIndex] == 0;
-
-        let isBlack =
-          arrowSpritesheet.pixels[redIndex] == 0 &&
-          arrowSpritesheet.pixels[greenIndex] == 0 &&
-          arrowSpritesheet.pixels[blueIndex] == 0 &&
-          arrowSpritesheet.pixels[alphaIndex] == 255;
-
-        let isHoldEnd = y >= 4 * 64 && y < 12 * 64;
-        let isHoldMiddle = y >= 12 * 64;
-        // let isHoldMiddle)Hit = y > 12 * 64;
-        let isHit = Math.floor(y / 64) % 2 == 0;
-
-        // Make sure the non colored pixels ones are the same value
-        if (!(isRed || isGreen || isBlue || isWhite)) {
-          newImgObj.pixels[redIndex] = arrowSpritesheet.pixels[redIndex]; // Red value
-          newImgObj.pixels[greenIndex] = arrowSpritesheet.pixels[greenIndex]; // Green value
-          newImgObj.pixels[blueIndex] = arrowSpritesheet.pixels[blueIndex]; // Blue value
-          newImgObj.pixels[alphaIndex] = arrowSpritesheet.pixels[alphaIndex]; // Alpha value
-        }
-        // Change Red pixels to rainbow effect
-        if (isRed) {
-          // Use the last calculated color for the end of holds to make more continuous
-
-          if (isHoldEnd) {
-            newImgObj.pixels[redIndex] = rgb_gradient[63][0] * 255; // Red value
-            newImgObj.pixels[greenIndex] = rgb_gradient[63][1] * 255; // Green value
-            newImgObj.pixels[blueIndex] = rgb_gradient[63][2] * 255; // Blue value
-            newImgObj.pixels[alphaIndex] = 255; // Alpha value
-          } else {
-            newImgObj.pixels[redIndex] = rgb_gradient[y % 64][0] * 255; // Red value
-            newImgObj.pixels[greenIndex] = rgb_gradient[y % 64][1] * 255; // Green value
-            newImgObj.pixels[blueIndex] = rgb_gradient[y % 64][2] * 255; // Blue value
-            newImgObj.pixels[alphaIndex] = 255; // Alpha value
-          }
-        }
-
-        if (isHoldMiddle || isHoldEnd) {
-          if (isWhite) {
-            if (isHit) {
-              newImgObj.pixels[redIndex] = 255; // Red value
-              newImgObj.pixels[greenIndex] = 255; // Green value
-              newImgObj.pixels[blueIndex] = 255; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            } else if (!isHit) {
-              newImgObj.pixels[redIndex] = 180; // Red value
-              newImgObj.pixels[greenIndex] = 180; // Green value
-              newImgObj.pixels[blueIndex] = 192; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            }
-          }
-        } else {
-          // Change bottom section
-          if (isGreen) {
-            // Note: fix timing.. it should be that on the beat
-            if ((currentBeat * 100) % 100 > 25) {
-              newImgObj.pixels[redIndex] = 255; // Red value
-              newImgObj.pixels[greenIndex] = 255; // Green value
-              newImgObj.pixels[blueIndex] = 255; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            } else {
-              newImgObj.pixels[redIndex] = 180; // Red value
-              newImgObj.pixels[greenIndex] = 180; // Green value
-              newImgObj.pixels[blueIndex] = 192; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            }
-          }
-          if (isBlue) {
-            if ((currentBeat * 100) % 100 > 50) {
-              newImgObj.pixels[redIndex] = 255; // Red value
-              newImgObj.pixels[greenIndex] = 255; // Green value
-              newImgObj.pixels[blueIndex] = 255; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            } else {
-              newImgObj.pixels[redIndex] = 180; // Red value
-              newImgObj.pixels[greenIndex] = 180; // Green value
-              newImgObj.pixels[blueIndex] = 192; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            }
-          }
-          if (isWhite) {
-            if ((currentBeat * 100) % 100 > 75) {
-              newImgObj.pixels[redIndex] = 255; // Red value
-              newImgObj.pixels[greenIndex] = 255; // Green value
-              newImgObj.pixels[blueIndex] = 255; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            } else {
-              newImgObj.pixels[redIndex] = 180; // Red value
-              newImgObj.pixels[greenIndex] = 180; // Green value
-              newImgObj.pixels[blueIndex] = 192; // Blue value
-              newImgObj.pixels[alphaIndex] = 255; // Alpha value
-            }
-          }
-        }
-      }
-    }
-    // console.log("updating pixels");
-    newImgObj.updatePixels();
-    return newImgObj;
+  function calculateRgbValues() {
+    let currentHue = (t * 50) % 360;
+    return hsl2rgb_gradient(currentHue, 0.97, 0.6);
   }
 
   function convertArrowImgToRainbow(imgObj, rgb_gradient, imgType, isHit) {
@@ -893,17 +632,10 @@ var experimentalScene = function (p) {
     // let arrowImg = arrowImgs["left"];
     // let currentHue = (t * 50) % 360;
     // let rgb = hsl2rgb(currentHue, 0.97, 0.6);
-    // if (newImgObj) {
-    //   console.log("removing");
-    //   console.log(newImgObj);
-    //   newImgObj.remove();
-    // }
-    // newImgObj.clear();
-    // newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
-    let newImgObj = p.createImage(64, 64);
-    newImgObj.loadPixels();
 
-    imgObj.loadPixels();
+    let newImgObj = p.createImage(64, 64);
+    newImgObj.copy(imgObj, 0, 0, 64, 64, 0, 0, 64, 64);
+    newImgObj.loadPixels();
 
     for (let y = 0; y < newImgObj.height; y++) {
       for (let x = 0; x < newImgObj.width; x++) {
@@ -914,40 +646,33 @@ var experimentalScene = function (p) {
         let alphaIndex = redIndex + 3;
         // Top of arrow
         let isWhite =
-          imgObj.pixels[redIndex] == 255 &&
-          imgObj.pixels[greenIndex] == 255 &&
-          imgObj.pixels[blueIndex] == 255 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
         // Middle of arrow
         let isBlue =
-          imgObj.pixels[redIndex] == 0 &&
-          imgObj.pixels[greenIndex] == 0 &&
-          imgObj.pixels[blueIndex] == 255 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 255 &&
+          newImgObj.pixels[alphaIndex] == 255;
         // Bottom of arrow
         let isGreen =
-          imgObj.pixels[redIndex] == 0 &&
-          imgObj.pixels[greenIndex] == 255 &&
-          imgObj.pixels[blueIndex] == 0 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 255 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
         let isRed =
-          imgObj.pixels[redIndex] == 255 &&
-          imgObj.pixels[greenIndex] == 0 &&
-          imgObj.pixels[blueIndex] == 0 &&
-          imgObj.pixels[alphaIndex] == 255;
+          newImgObj.pixels[redIndex] == 255 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 255;
         let isTransparent =
-          imgObj.pixels[redIndex] == 0 &&
-          imgObj.pixels[greenIndex] == 0 &&
-          imgObj.pixels[blueIndex] == 0 &&
-          imgObj.pixels[alphaIndex] == 0;
+          newImgObj.pixels[redIndex] == 0 &&
+          newImgObj.pixels[greenIndex] == 0 &&
+          newImgObj.pixels[blueIndex] == 0 &&
+          newImgObj.pixels[alphaIndex] == 0;
 
-        // Make sure transparent is transparent
-        if (isTransparent) {
-          newImgObj.pixels[redIndex] = 0; // Red value
-          newImgObj.pixels[greenIndex] = 0; // Green value
-          newImgObj.pixels[blueIndex] = 0; // Blue value
-          newImgObj.pixels[alphaIndex] = 0; // Alpha value
-        }
         // Change Red pixels to rainbow effect
         if (isRed) {
           // Use the last calculated color for the end of holds to make more continuous
@@ -1028,6 +753,26 @@ var experimentalScene = function (p) {
     return newImgObj;
   }
 
+  function setupFont(fontName) {
+    let fontSets = fonts[fontName].sets;
+    fontSets.forEach(function (fontSet) {
+      let size = fontSet.size;
+      let imgObj = fontSet.imgObj;
+      let columns = imgObj.width / size.width;
+      let rows = imgObj.height / size.height;
+      fontSet.charSet.forEach(function (character, index) {
+        let startingX = (index % columns) * size.width;
+        let startingY = Math.floor(index / columns) * size.height;
+        let charImg = imgObj.get(startingX, startingY, size.width, size.height);
+        fonts[fontName].charsToImgs[character] = charImg;
+        fonts[fontName].charsToImgs[character].size = {
+          width: size.width,
+          height: size.height,
+        };
+      });
+    });
+  }
+
   // Draw text centered on the screen or at a certain position if specified
   function drawText(textToDraw, fontName, scaleFactor, start_xPos, start_yPos) {
     if (scaleFactor == null) {
@@ -1068,9 +813,10 @@ var experimentalScene = function (p) {
       );
     });
   }
-
+  //if no cue, hides all
   function hideHoldTexts(cue) {
     console.log("hide hold text");
+
     if (cue) {
       narrativeTextObjs.map(function (textObj) {
         if (
@@ -1089,16 +835,19 @@ var experimentalScene = function (p) {
       });
     }
   }
-
   function updateMiss(score, note) {
-    feedbackObj.updateState(score);
+    // feedbackObj.updateState(score);
     comboObj.resetCombo();
     scoreData.update("miss");
+
+    if (note.noteType == "hold") {
+      hideHoldTexts(note.id + 1);
+    }
   }
   function updateHit(score, note) {
     //Is this the first time hitting this note?
-    if (!note.isHit && note.noteType != "mine") {
-      if (Tone.Transport.state == "paused") {
+    if (!note.isHit) {
+      if (timerPaused) {
         unpauseTimer();
       }
       // comboObj.incrementCombo();
@@ -1106,222 +855,212 @@ var experimentalScene = function (p) {
       let scoreScale = 1;
       cueCount = parseInt(note.id) + 1;
       triggerNarrative(cueCount);
-      // if (score === "ok") {
-      //   feedbackObj.updateState("ok", true);
-      // } else if (score === "great") {
-      //   feedbackObj.updateState("great", true);
-      // } else if (score === "perfect") {
-      //   feedbackObj.updateState("perfect", true);
-      // }
-      // scoreData.update(score);
+      if (score === "ok") {
+        // feedbackObj.updateState("ok", true);
+      } else if (score === "great") {
+        // feedbackObj.updateState("great", true);
+      } else if (score === "perfect") {
+        // feedbackObj.updateState("perfect", true);
+      }
+      scoreData.update(score);
     }
 
     //Add logic for hitting holds in particular
     if (note.noteType == "hold" && !note.isHolding) {
       note.isHolding = true;
       note.completedHold = false;
-    } else if (note.noteType == "hold" && note.isHolding) {
+    } else {
       note.isHolding = false;
       note.completedHold = true;
     }
   }
 
-  function assessHitForNoteByTime(direction, hitType, note, isStopped) {
-    console.log("assessing hit for : " + note.id);
-    console.log(note);
-    //Assess notes that are the START of either instant or holds
-    let hitTime;
-    let hitSuccessful = false;
-    if (isStopped) {
-      hitTime = t + secondsSinceStop;
-    } else {
-      hitTime = t;
-    }
-    console.log(hitTime);
-    if (
-      hitType == "press" &&
-      note.isHitCandidate &&
-      note.direction == direction &&
-      !note.isHit
-    ) {
-      //TOO Early - failed
+  function allHoldsUnpaused() {
+    let isAnyHoldPaused = false;
+    relevantNotes.forEach(function (note) {
       if (
-        hitTime > note.startTime - hitMarginTime &&
-        hitTime < note.startTime - (hitMarginTime * 3) / 4
+        note.noteType == "hold" &&
+        note.isHolding == true &&
+        !note.completedHold &&
+        note.holdPaused == true
       ) {
-        console.log("too early");
+        isAnyHoldPaused = true;
       }
-      // A little early - Ok - PASS
-      else if (
-        hitTime >= note.startTime - (hitMarginTime * 3) / 4 &&
-        hitTime < note.startTime - (hitMarginTime * 2) / 4
-      ) {
-        updateHit("ok", note);
-        hitSuccessful = true;
-        console.log("ok");
-      }
-      // Almost perfect - early
-      else if (
-        hitTime >= note.startTime - (hitMarginTime * 2) / 4 &&
-        hitTime < note.startTime - hitMarginTime / 4
-      ) {
-        updateHit("great", note);
-        hitSuccessful = true;
-        console.log("great");
-      }
-      // Perfect - PASS
-      else if (
-        hitTime >= note.startTime - hitMarginTime / 4 &&
-        hitTime < note.startTime + hitMarginTime / 4
-      ) {
-        updateHit("perfect", note);
-        hitSuccessful = true;
-        console.log("perfect");
-      }
-      // Almost perfect - late - PASS
-      else if (
-        hitTime >= note.startTime + hitMarginTime / 4 &&
-        hitTime < note.startTime + (hitMarginTime * 2) / 4
-      ) {
-        updateHit("great", note);
-        hitSuccessful = true;
-        console.log("great");
-      }
-      // A little late - OK - PASS
-      else if (
-        hitTime >= note.startTime + (hitMarginTime * 2) / 4 &&
-        hitTime < note.startTime + (hitMarginTime * 3) / 4
-      ) {
-        updateHit("ok", note);
-        hitSuccessful = true;
-        console.log("ok");
-      }
-      // TOO LATE - Failed
-      else if (
-        hitTime >= note.startTime + (hitMarginTime * 3) / 4 &&
-        hitTime < note.startTime + hitMarginTime
-      ) {
-        updateMiss("late", note);
-        console.log("late");
-      }
-    }
-    //Assess notes that are currently being held. Did we lift before it's over or not?
-    // AKA did we lift before the END beat for the held note is here or not....
-    else if (
-      hitType == "lift" &&
-      note.noteType == "hold" &&
-      note.isHolding &&
-      note.direction == direction
-    ) {
-      // get the y pos of the end of the note
-      // let yPos =
-      //   note.currentY + (note.endBeat - note.startBeat) * pixelsPerBeat;
-      note.releasedBeat = currentBeat;
+    });
+    return !isAnyHoldPaused;
+  }
 
-      // Lift is at most Margin amount before the end of the end Time
-      if (hitTime >= note.endTime - hitMarginTime) {
-        updateHit("ok", note);
-      }
+  // move hit arrows gradually over the course of 16s if both holds are being held....
 
-      // Lift is TOO EARLY - Failed
-      else if (hitTime < note.endTime - hitMarginTime) {
-        feedbackObj.updateState("early");
+  function assessHit(direction, hitType) {
+    let hitSuccessful = false;
+    relevantNotes.forEach(function (note) {
+      //Assess notes that are the START of either instant or holds
 
-        //Are we lifting early before part 2 - aka the holds?
-        if (!part2Started) {
-          console.log("LIFTED EARLY ON PART 2 HOLDS");
-          pauseTimer();
-          if (reverseClock.seconds == 0) {
-            hideHoldTexts();
-            startReverseTimer();
-            console.log("started reverse timer");
-          }
-          note.isHolding = true;
-          note.completedHold = false;
-        } else {
-          note.isHolding = false;
-          note.completedHold = false;
+      if (
+        hitType == "press" &&
+        note.isHitCandidate &&
+        note.direction == direction &&
+        !note.isHit
+      ) {
+        let yPos = note.currentY;
+
+        //Determine quality of hit
+        //TOO LATE - failed
+        if (
+          yPos > -Infinity &&
+          yPos < hitArrowObjs["left"].yPos - 50 &&
+          waitForHit
+        ) {
+          updateHit("ok", note);
+        } else if (
+          yPos > hitArrowObjs["left"].yPos - hitMargin &&
+          yPos < hitArrowObjs["left"].yPos - 70 &&
+          !waitForHit
+        ) {
+          updateMiss("late", note);
+        }
+        // A little late - Ok - PASS
+        else if (
+          yPos >= hitArrowObjs["left"].yPos - 70 &&
+          yPos < hitArrowObjs["left"].yPos - 20
+        ) {
+          updateHit("ok", note);
+          hitSuccessful = true;
+        }
+        // Almost perfect - late
+        else if (
+          yPos >= hitArrowObjs["left"].yPos - 20 &&
+          yPos < hitArrowObjs["left"].yPos - 10
+        ) {
+          updateHit("great", note);
+          hitSuccessful = true;
+        }
+        // Perfect - PASS
+        else if (
+          yPos >= hitArrowObjs["left"].yPos - 10 &&
+          yPos < hitArrowObjs["left"].yPos + 10
+        ) {
+          updateHit("perfect", note);
+          hitSuccessful = true;
+        }
+        // Almost perfect - late - PASS
+        else if (
+          yPos >= hitArrowObjs["left"].yPos + 10 &&
+          yPos < hitArrowObjs["left"].yPos + 20
+        ) {
+          updateHit("great", note);
+          hitSuccessful = true;
+        }
+        // A little early - OK - PASS
+        else if (
+          yPos >= hitArrowObjs["left"].yPos + 20 &&
+          yPos < hitArrowObjs["left"].yPos + 70
+        ) {
+          updateHit("ok", note);
+          hitSuccessful = true;
+        }
+        // TOO EARLY - Failed
+        else if (
+          yPos >= hitArrowObjs["left"].yPos + 70 &&
+          yPos < hitArrowObjs["left"].yPos + hitMargin
+        ) {
+          updateMiss("early", note);
         }
       }
-    }
-    // console.log("assess hit: " + hitSuccessful);
+      //Assess notes that are currently being held. Did we lift before it's over or not?
+      // AKA did we lift before the END beat for the held note is here or not....
+      else if (
+        hitType == "lift" &&
+        note.noteType == "hold" &&
+        note.isHolding &&
+        note.direction == direction
+      ) {
+        // get the y pos of the end of the note
+        let yPos =
+          note.currentY + (note.endBeat - note.startBeat) * pixelsPerBeat;
+        note.releasedBeat = currentBeat;
+
+        // Lift is in range PASS
+        if (
+          yPos >= hitArrowObjs["left"].yPos - Infinity &&
+          yPos < hitArrowObjs["left"].yPos + 40
+        ) {
+          updateHit("ok", note);
+          if (!part1HoldsDone && cueCount == 46) {
+            // Can we set a timer for the beat to start?
+            hideHoldTexts();
+            resetForPart2();
+          }
+          if (cueCount >= 221) {
+            console.log("transition to end after lift in range");
+            transitionToEnd();
+          }
+        }
+
+        // Lift is TOO EARLY - Failed
+        else if (
+          yPos >= hitArrowObjs["left"].yPos + 40 &&
+          yPos < hitArrowObjs["left"].yPos + Infinity
+        ) {
+          if (waitForHit) {
+            pauseTimer();
+            if (reverseClock.seconds == 0) {
+              hideHoldTexts();
+              startReverseTimer();
+            }
+            note.holdPaused = true;
+          } else {
+            note.isHolding = false;
+            note.completedHold = false;
+          }
+        }
+
+        if (cueCount >= 221) {
+          console.log("transition to end after lift early");
+          transitionToEnd();
+        }
+        // Fade out any narrative texts for holds, for this cue
+        hideHoldTexts(note.id + 1);
+      }
+      // add another case for re-pressing a hold
+      // else if (
+      //   hitType == "press" &&
+      //   note.noteType == "hold" &&
+      //   note.isHolding &&
+      //   note.direction == direction
+      // ) {
+      //   //unpause timer if BOTH holds are holding...
+      //   // timerPaused = false;
+      //   note.holdPaused = false;
+      //   // if (allHoldsUnpaused()) {
+      //   //   unpauseTimer();
+      //   // }
+      //   unpauseTimer();
+      // }
+    });
     return hitSuccessful;
   }
 
-  // Iterates through the list of relative notes....
+  // window.addEventListener("startGame", (e) => {
+  //   let experimentalCanvas = document.querySelector("#arrowCanvas");
+  //   experimentalCanvas.style.display = "block";
+  //   setTimeout(function () {
+  //     experimentalCanvas.style.opacity = 1;
+  //   }, 4000);
 
-  // If you have previously hit a note with the SAME direction, don't assess hit for notes of that direction later
-  function assessHit(direction, hitType) {
-    let anyNoteHit = false;
-
-    let thisDirectionHit = false;
-
-    relevantNotes.forEach(function (note) {
-      console.log("Evaluating assess hit : " + note.id);
-      if (Tone.Transport.state == "started") {
-        if (!thisDirectionHit) {
-          if (assessHitForNoteByTime(direction, hitType, note)) {
-            thisDirectionHit = true;
-            anyNoteHit = true;
-          }
-        }
-      } else if (
-        Tone.Transport.state == "paused"
-        // && isPassedHitBoundary(note.currentY)
-      ) {
-        if (!thisDirectionHit) {
-          if (assessHitForNoteByTime(direction, hitType, note, true)) {
-            anyNoteHit = true;
-          }
-        } else {
-          console.log("Don't evaluate: " + note.id);
-        }
-      }
-    });
-    return anyNoteHit;
-  }
-
-  function resetForNewSong() {
-    // Lets try resetting everything here!
-    relevantNotes = [];
-    currentBatchStartMeasure = 0;
-    currentMeasure = -1;
-    currentBeat = 0;
-    pixelsElapsed = 0;
-    startDrawingArrows = false;
-    // clearInterval(updateArrowsInterval);
-    clearInterval(updateNotesInterval);
-    measureData = null;
-    songBpm = null;
-    songDelay = null;
-    secondsPerBeat = null;
-    t = 0;
-    stops = null;
-    scoreData = new Score();
-    healthBar.reset();
-    songVideo = null;
-    videoLoadedFirstTime = false;
-    hasBpmChanges = false;
-    bpmChanges = [];
-    hasStops = false;
-    comboObj = new ComboText();
-    Tone.Transport.cancel();
-  }
+  //   setTimeout(function () {
+  //     startSong();
+  //   }, 8000);
+  // });
 
   function padOrKeypress(direction) {
-    if (isCurrentScene) {
-      let hitSuccessful = false;
-      // if (Tone.Transport.state == "started") {
-      hitSuccessful = assessHit(direction, "press");
-      // }
-      hitArrowObjs[direction].press(hitSuccessful);
-    }
+    let hitSuccessful = assessHit(direction, "press");
+    hitArrowObjs[direction].press(hitSuccessful);
   }
   function padOrKeyrelease(direction) {
-    if (isCurrentScene) {
-      hitArrowObjs[direction].release();
-      assessHit(direction, "lift");
-    }
+    hitArrowObjs[direction].release();
+    assessHit(direction, "lift");
   }
 
   //Listen if all canvases in the game have been loaded
@@ -1331,61 +1070,68 @@ var experimentalScene = function (p) {
       allCanvasesLoaded = true;
     }
   });
-
   window.addEventListener("padPress", function (e) {
-    let direction = e.detail.direction;
-    padOrKeypress(direction);
+    if (isCurrentScene) {
+      let direction = e.detail.direction;
+      padOrKeypress(direction);
+    }
   });
   window.addEventListener("padRelease", function (e) {
-    let direction = e.detail.direction;
-    padOrKeyrelease(direction);
+    if (isCurrentScene) {
+      let direction = e.detail.direction;
+      padOrKeyrelease(direction);
+    }
   });
 
   window.addEventListener("keydown", function (e) {
     e.preventDefault();
-    //Ignore repeated keydown
-    if (e.repeat) {
-      return;
-    }
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
-      if (e.code == "ArrowLeft") {
-        padOrKeypress("left");
+    if (isCurrentScene) {
+      //Ignore repeated keydown
+      if (e.repeat) {
+        return;
       }
-      if (e.code == "ArrowRight") {
-        padOrKeypress("right");
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeypress("up");
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeypress("down");
+      if (
+        e.code == "ArrowLeft" ||
+        e.code == "ArrowRight" ||
+        e.code == "ArrowUp" ||
+        e.code == "ArrowDown"
+      ) {
+        if (e.code == "ArrowLeft") {
+          padOrKeypress("left");
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeypress("right");
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeypress("up");
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeypress("down");
+        }
       }
     }
   });
 
   window.addEventListener("keyup", function (e) {
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
-      if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left");
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeyrelease("right");
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeyrelease("up");
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeyrelease("down");
+    if (isCurrentScene) {
+      if (
+        e.code == "ArrowLeft" ||
+        e.code == "ArrowRight" ||
+        e.code == "ArrowUp" ||
+        e.code == "ArrowDown"
+      ) {
+        if (e.code == "ArrowLeft") {
+          padOrKeyrelease("left");
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeyrelease("right");
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeyrelease("up");
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeyrelease("down");
+        }
       }
     }
   });
@@ -1396,72 +1142,64 @@ var experimentalScene = function (p) {
   // -------------- SCENES --------------- //
   //////////////////////////////////////////
 
+  // // Game 1
+  // function displayGame() {
+  //   //Do things we need to do when entered minigame
+  //   if (gameEntered && !gameStarted) {
+  //     console.log("GAME ENTERED!");
+  //     gameStarted = true;
+  //   }
+  //   p.image(bg, 0, 0, canvasWidth, canvasHeight);
+
+  //   // Display Sprites
+
+  //   // Navigation
+  //   rightButton.display();
+  //   leftButton.display();
+  // }
+
   // CLASSES
 
   class Note {
     constructor(noteData) {
       this.id = noteData.id;
       this.direction = noteData.direction;
+      this.startBeat = noteData.startBeat;
+      this.startTime = noteData.startTime;
       this.noteType = noteData.noteType;
       this.measure = noteData.measure;
+      this.endTime = noteData.endTime;
       this.endBeat = noteData.endBeat;
-      this.startBeat = noteData.startBeat;
-      this.startTime = beatToTime(this.startBeat);
-      this.endTime = beatToTime(this.endBeat);
       this.endMeasure = noteData.endMeasure;
-      this.eggshellSceneOpacity = 0;
-      this.hasPassedOver = false;
-      this.isHit = false;
-
-      // Check if this is a fawning hit...
-      this.isFawningHit =
-        songId == 1 &&
-        [18, 19, 20, 21, 30, 31, 32, 33].indexOf(this.measure) > -1;
-
-      // Check if in second group of measures for night
-      this.isFawningNight =
-        this.isFawningHit && [30, 31, 32, 33].indexOf(this.measure) > -1;
     }
-
-    animateEggshellCrack() {
-      // console.log("aniimateEggshellCrack");
-      let i = 0;
-      let _this = this;
-      let eggshellAnimationInterval = setInterval(function () {
-        // console.log("interval step");
-        if (i < Object.keys(arrowHitGradientTimings).length) {
-          _this.eggshellSceneOpacity = arrowHitGradientTimings[i];
-          // console.log(_this.eggshellSceneOpacity);
-        } else {
-          _this.eggshellSceneOpacity = 0;
-          clearInterval(eggshellAnimationInterval);
-        }
-        i++;
-      }, 30);
-    }
-    display(yPos) {
-      // First, determine if we're currently at a stop... if so , unhit notes should not go over the original yPos
-      if (
-        Tone.Transport.state != "started" &&
-        yPos < hitArrowObjs["left"].yPos &&
-        // !this.hasPassedOver &&
-        isWithinHitMargin(yPos) &&
-        !this.isHit
-      ) {
-        yPos = hitArrowObjs["left"].yPos;
-      }
-
+    display(yPos, passedOver) {
       // Draw instant notes
+
       if (this.noteType == "instant" && !this.isHit) {
-        let opacity = this.hasPassedOver ? 127 : 255;
-        //Draw passed over notes greyed out
-        p.tint(255, opacity);
-        drawArrowPiece(
-          arrowImgs[this.direction],
-          arrow_xPos[this.direction],
-          yPos,
-        );
-        p.tint(255, 255);
+        if (waitForHit) {
+          drawImageToScale(
+            arrowImgs[this.direction],
+            arrow_xPos[this.direction],
+            Math.max(hitArrowObjs["left"].yPos, yPos),
+          );
+        } else {
+          if (passedOver) {
+            //Draw passed over notes greyed out
+            p.tint(255, 127);
+            drawImageToScale(
+              arrowImgs[this.direction],
+              arrow_xPos[this.direction],
+              yPos,
+            );
+            p.tint(255, 255);
+          } else {
+            drawImageToScale(
+              arrowImgs[this.direction],
+              arrow_xPos[this.direction],
+              yPos,
+            );
+          }
+        }
       } else if (this.noteType == "hold") {
         // Draw holds
         let rectangleHeight;
@@ -1469,20 +1207,20 @@ var experimentalScene = function (p) {
           // hit first note, is currently holding in the middle of hold
           rectangleHeight = pixelsPerBeat * (this.endBeat - currentBeat);
           // Draw rectangle
-          drawArrowPiece(
+          drawImageToScaleWithHeight(
             holdMiddleImg.hitTrue,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
-          drawArrowPiece(
+          drawImageToScale(
             holdEndImgs[this.direction].hitTrue,
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
-          drawArrowPiece(
+          drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos,
@@ -1490,29 +1228,27 @@ var experimentalScene = function (p) {
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
           //   What happens? need to grey out and keep on going
-
           p.tint(255, 127);
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.releasedBeat);
           let yPosReleased =
             hitArrowObjs["left"].yPos +
             pixelsPerBeat * this.releasedBeat -
             pixelsElapsed;
-
           // Draw rectangle
-          drawArrowPiece(
+          drawImageToScaleWithHeight(
             holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
             yPosReleased + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
-          drawArrowPiece(
+          drawImageToScale(
             holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
-          drawArrowPiece(
+          drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             yPosReleased,
@@ -1523,147 +1259,41 @@ var experimentalScene = function (p) {
           // case 3: hit first note, held to completion... show nothing!
         } else if (!this.isHit) {
           // last case: the note is not hit, either passed over or upcoming...
-          let opacity = this.hasPassedOver ? 127 : 255;
-          p.tint(255, opacity);
+          if (passedOver) {
+            p.tint(255, 127);
+          }
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
-          drawArrowPiece(
+          drawImageToScaleWithHeight(
             holdMiddleImg.hitFalse,
             arrow_xPos[this.direction],
             yPos + 32,
             rectangleHeight,
           );
-          drawArrowPiece(
+          drawImageToScale(
             arrowImgs[this.direction],
             arrow_xPos[this.direction],
             yPos,
           );
-          drawArrowPiece(
+          drawImageToScale(
             holdEndImgs[this.direction].hitFalse,
             arrow_xPos[this.direction],
             yPos + rectangleHeight,
           );
-          p.tint(255, 255);
+          if (passedOver) {
+            p.tint(255, 255);
+          }
         }
-      } else if (this.noteType == "mine" && !this.isHit) {
-        // Draw mines
-        let opacity = this.hasPassedOver ? 127 : 255;
-        p.tint(255, opacity);
-        drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
-        p.tint(255, 255);
-      }
-
-      // Display effect for eggshell hit
-      if (this.noteType == "mine" && this.eggshellSceneOpacity > 0) {
-        // Draw flash if eggshell opacity is hit
-        let c = p.color(255, 255, 255);
-        c.setAlpha(this.eggshellSceneOpacity * 255);
-        p.fill(c);
-        p.rect(0, 0, p.width, p.height);
-      }
-    }
-  }
-
-  // Create simple animation for fawning that times it out after 1 beat
-  class FawningAnimation {
-    constructor() {
-      this.currentDirection = "left";
-      this.animationPlaying = false;
-      this.cancelAnimationTimeout = null;
-      this.attackImageScale = 1;
-      this.isNight = false;
-    }
-    startAnimation(direction, isNight) {
-      this.currentDirection = direction;
-      this.isNight = isNight;
-      let _this = this;
-      _this.animationPlaying = true;
-      sound_fx.attack[this.currentDirection].start();
-      clearTimeout(_this.cancelAnimationTimeout);
-      clearInterval(_this.attackAnimationInterval);
-
-      let i = 1;
-      _this.attackAnimationInterval = setInterval(function () {
-        if (i < Object.keys(hitAnimationTimings).length) {
-          _this.attackImageScale = hitAnimationTimings[i];
-        } else {
-          _this.attackImageScale = 1;
-          clearInterval(_this.attackAnimationInterval);
-        }
-        i++;
-      }, 30);
-
-      _this.cancelAnimationTimeout = setTimeout(
-        function () {
-          _this.animationPlaying = false;
-        },
-        1 * secondsPerBeat * 1000,
-      );
-    }
-    display() {
-      if (this.animationPlaying) {
-        let dx = (640 * this.attackImageScale - 640) / 2;
-        let dy = (480 * this.attackImageScale - 480) / 2;
-        let imageToDraw = this.isNight
-          ? attackImages[this.currentDirection].night
-          : attackImages[this.currentDirection].day;
-
-        drawImageToScale(imageToDraw, -dx, -dy, 2 * this.attackImageScale);
       }
     }
   }
 
   class Score {
-    constructor(songId) {
+    constructor() {
       this.miss = 0;
       this.perfect = 0;
       this.ok = 0;
       this.great = 0;
       this.scoreCount = 0;
-      this.totalNotes = 0;
-      this.baseNoteScore = 0;
-      this.ranking;
-      this.songId = songId;
-    }
-    getScoreInfo() {
-      return {
-        songId: this.songId,
-        miss: this.miss,
-        ok: this.ok,
-        great: this.great,
-        perfect: this.perfect,
-        scoreCount: this.scoreCount,
-        ranking: this.ranking,
-      };
-    }
-    calculateBaseNoteScore() {
-      // this.baseNoteScore = Math.floor(
-      //   1000000 / ((this.totalNotes * (this.totalNotes + 1)) / 2)
-      // );
-
-      this.baseNoteScore = Math.floor(100000 / this.totalNotes);
-    }
-    calculateRanking() {
-      // AAA
-      if (this.scoreCount == 10 * this.baseNoteScore * this.totalNotes) {
-        this.ranking = "AAA";
-      }
-      //Fail
-      else if (this.scoreCount < 400000) {
-        this.ranking = "E";
-      } else if (this.scoreCount < 600000) {
-        this.ranking = "D";
-      } else if (this.scoreCount < 700000) {
-        this.ranking = "C";
-      } else if (this.scoreCount < 800000) {
-        this.ranking = "B";
-      } else if (this.scoreCount < 900000) {
-        this.ranking = "A";
-      } else if (this.scoreCount <= 1000000) {
-        this.ranking = "AA";
-      }
-    }
-    mineHit() {
-      healthBar.decrement(0.15);
     }
     update(scoreType) {
       if (scoreType == "miss") {
@@ -1672,66 +1302,29 @@ var experimentalScene = function (p) {
       } else {
         if (scoreType == "ok") {
           this.ok++;
-          // this.scoreCount += 1;
-          this.scoreCount += this.baseNoteScore * 3;
+          this.scoreCount += 1;
           healthBar.increment(1);
         }
         if (scoreType == "great") {
           this.great++;
-          // this.scoreCount += 3;
-          this.scoreCount += this.baseNoteScore * 7;
+          this.scoreCount += 3;
           healthBar.increment(3);
         }
         if (scoreType == "perfect") {
           this.perfect++;
-          // this.scoreCount += 5;
-          this.scoreCount += this.baseNoteScore * 10;
+          this.scoreCount += 5;
           healthBar.increment(5);
         }
       }
-
-      this.calculateRanking();
-    }
-
-    displayTotalScore() {
-      //Draw UI
-      drawImageToScale(scoreBackgroundImg, 0, 437);
-      drawImageToScale(playerTextImgs.player1, 0, 437 - 20);
-      drawImageToScale(
-        playerTextImgs[storyModeDifficulty],
-        playerTextImgs.player1.width,
-        437 - 20,
-      );
-      let scoreDigitLength = this.scoreCount.toString().length;
-      let numOfZeros = 7 - scoreDigitLength;
-      let zerosString = "";
-
-      let letterWidth = 24;
-      for (var i = 0; i < numOfZeros; i++) {
-        zerosString += "o";
-      }
-
-      // Draw zeros
-      p.tint(255, 100);
-      drawText(zerosString, "scoreDigits", 1, 8, 441);
-      p.tint(255, 255);
-
-      // Draw actual score
-      drawText(
-        this.scoreCount.toString(),
-        "scoreDigits",
-        1,
-        8 + numOfZeros * letterWidth,
-        441,
-      );
+      // scoreSpan.innerHTML = JSON.stringify(this);
     }
   }
 
   class HealthBar {
     constructor() {
       this.amountFilled = 0.5;
-      this.xPos = 8;
-      this.yPos = 8;
+      this.xPos = 165;
+      this.yPos = 0;
       this.tick = 0;
       this.animate = true;
       this.gradientColor = "green";
@@ -1744,25 +1337,23 @@ var experimentalScene = function (p) {
         gradientImg = rainbowGradientImg;
       }
       // first draw underlying bar
-      let darkOverlay = p.color("rgba(18, 11, 41, 0.5)");
-      p.fill(darkOverlay);
-      // p.fill("black");
-      let capacity = { width: 261, height: 18 };
+      p.fill("black");
+      drawRectToScale(193, 5, 254, 32);
 
-      drawRectToScale(16, 16, capacity.width, capacity.height);
-
+      p.fill("lime");
+      // drawRectToScale(193, 5, 254 * this.amountFilled, 32);
       let gradientToDraw = gradientImg.get(
-        this.tick % capacity.width,
+        this.tick % 254,
         0,
-        Math.max(1, capacity.width * this.amountFilled),
-        capacity.height + 1,
+        Math.max(1, 254 * this.amountFilled),
+        32,
       );
       let dw = this.animate ? Math.sin(this.tick * 0.05) * 3 : 0;
       drawImageToScaleWithWidth(
         gradientToDraw,
-        15,
-        15,
-        Math.min(capacity.width, gradientToDraw.width + dw),
+        193,
+        5,
+        gradientToDraw.width + dw,
       );
 
       //Draw frame over
@@ -1779,31 +1370,11 @@ var experimentalScene = function (p) {
         this.gradientColor = "rainbow";
       }
     }
-    decrement(amount) {
-      if (amount == null) {
-        amount = 0.025;
-      }
+    decrement() {
       if (this.amountFilled > 0) {
-        this.amountFilled -= amount;
+        this.amountFilled -= 0.01;
         this.gradientColor = "green";
       }
-      // Check for failing state, if bar goes to zero
-      if (this.amountFilled <= 0) {
-        console.log("FAILED");
-        // Comment for install
-
-        if (endSongIfFailed) {
-          handleSongEnd(false);
-        }
-      }
-    }
-    reset() {
-      this.amountFilled = 0.5;
-      this.xPos = 8;
-      this.yPos = 8;
-      this.tick = 0;
-      this.animate = true;
-      this.gradientColor = "green";
     }
   }
 
@@ -1857,6 +1428,25 @@ var experimentalScene = function (p) {
       this.pressed = false;
     }
     display() {
+      // Move hit arrows if time passes in part 2
+      if (!part2Started && t > t_holdRightStart && t < t_holdsFinished) {
+        let timeElapsed = t - t_holdRightStart;
+        let percentageElapsed =
+          timeElapsed / (t_holdsFinished - t_holdRightStart);
+
+        let backgroundTransitionEvent = new CustomEvent(
+          "backgroundTransition",
+          { detail: percentageElapsed },
+        );
+        document
+          .querySelector("#backgroundCanvas")
+          .dispatchEvent(backgroundTransitionEvent);
+        console.log("dispatching background transition");
+        // document.querySelector("#backgroundCanvas").dispatchEvent()
+        whiteBackground = false;
+        let yPos = p.map(percentageElapsed, 0, 1, hitPos.y, hitPosFinal.y);
+        this.yPos = yPos;
+      }
       //Draw arrow at scale
       let d = (this.imgToDraw.width * (1 - this.scale)) / 2;
       drawImageToScale(
@@ -1906,7 +1496,7 @@ var experimentalScene = function (p) {
             newScale = 1;
           }
           _this.scale = newScale;
-        }, 10);
+        }, animationIntervals);
 
         this.hideTimeout = setTimeout(function () {
           _this.showing = false;
@@ -1967,8 +1557,6 @@ var experimentalScene = function (p) {
         this.text = "Too late!";
       } else if (this.state == "miss") {
         this.text = "Miss";
-      } else if (this.state == "mine") {
-        this.text = "BAD!";
       }
       let _this = this;
       if (animate) {
@@ -1979,7 +1567,7 @@ var experimentalScene = function (p) {
             newScale = 1;
           }
           _this.scale = newScale;
-        }, 10);
+        }, animationIntervals);
       }
 
       this.hideTimeout = setTimeout(function () {
@@ -2087,6 +1675,33 @@ var experimentalScene = function (p) {
   // General Helpers      //
   //////////////////////////
 
+  function setupNavigation(thisCanvas) {
+    p.noLoop();
+    thisCanvas.addEventListener("showScene", (e) => {
+      p.loop();
+      setTimeout(function () {
+        thisCanvas.style.visibility = "visible";
+        thisCanvas.style.opacity = 1;
+        isCurrentScene = true;
+        startSong();
+      }, sceneTransitionTime);
+    });
+    thisCanvas.addEventListener("hideScene", (e) => {
+      p.noLoop();
+      isCurrentScene = false;
+      thisCanvas.style.opacity = 0;
+      setTimeout(function () {
+        thisCanvas.style.visibility = "hidden";
+      }, sceneTransitionTime);
+    });
+  }
+
+  function hideCanvas() {
+    //Add things we want to do when we leave this scene
+    // gameEntered = false;
+    // gameStarted = false;
+  }
+
   p.windowResized = function () {
     calculateCanvasDimensions();
     p.resizeCanvas(canvasWidth, canvasHeight);
@@ -2140,27 +1755,6 @@ var experimentalScene = function (p) {
     );
   }
 
-  function drawArrowPiece(pieceType, x, y, height) {
-    // Draw arrow from spritesheet
-    let positionInSpritesheet = pieceType * 64;
-
-    //Account for null height values
-    if (height == null) {
-      height = 64;
-    }
-    p.image(
-      rainbowArrowSpritesheet,
-      x * scaleRatio,
-      y * scaleRatio,
-      64 * scaleRatio,
-      height * scaleRatio,
-      0, //sx
-      positionInSpritesheet, //sy
-      64,
-      64,
-    );
-  }
-
   function calculateCanvasDimensions() {
     if (p.windowWidth / p.windowHeight > canvasRatio) {
       canvasWidth = p.windowHeight * canvasRatio;
@@ -2180,6 +1774,7 @@ var experimentalScene = function (p) {
       .querySelector("#backgroundCanvas")
       .dispatchEvent(backgroundCueEvent);
   }
+
   function triggerNarrative(cueCount) {
     if (cueCount == 1) {
       let newText = new NarrativeText(cueCount, "I");

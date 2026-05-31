@@ -479,6 +479,12 @@ part1_bg_player.loop = true;
 part1_bg_player.fadeIn = 2;
 part1_bg_player.fadeIn = 0.5;
 
+const part2_bg_player = new Tone.Player(
+  "assets/audio/RDD_p2_background_v2.mp3",
+).toDestination();
+part2_bg_player.loop = false;
+part2_bg_player.fadeOut = 2;
+
 // Player test images
 // let playerTextSpritesheet;
 let playerTextImgs = {};

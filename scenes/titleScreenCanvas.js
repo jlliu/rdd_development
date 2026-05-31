@@ -55,8 +55,8 @@ var title = function (p) {
   let gameModeSpritesheet;
 
   let introVideo;
-  let introVideoLimit = 35;
-  // let introVideoLimit = 0.1;
+  // let introVideoLimit = 35;
+  let introVideoLimit = 0.1;
   let introFinished = false;
 
   // Setup all fonts in this file
@@ -287,8 +287,8 @@ var title = function (p) {
     //   },
     // });
 
-    // document.getElementById("gameModeCanvas").dispatchEvent(showSceneEvent);
-    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+    document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
+    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
 
     // FOR TESTING SERVICE
     // document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);

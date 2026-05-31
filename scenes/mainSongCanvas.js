@@ -80,15 +80,7 @@ var mainScene = function (p) {
 
   let hitMarginTime = 0.5;
 
-  // let clock = new Tone.Clock((time) => {}, 1);
-
-  // let stopClock = new Tone.Clock((time) => {
-  //   // console.log(time);
-  // }, 1);
-
   let secondsSinceStop = 0;
-
-  // let clock = Tone.Transport((time) => {}, 1);
 
   let startDrawingArrows = false;
 
@@ -127,15 +119,6 @@ var mainScene = function (p) {
     p.noSmooth();
 
     // Setup arrow images from spritesheet
-
-    // newImgObj = p.createImage(64, 64);
-
-    // hitArrowImgs = {
-    //   left: arrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
-    //   down: arrowSpritesheet.get(arrowWidth, 0, arrowWidth, arrowWidth),
-    //   up: arrowSpritesheet.get(arrowWidth * 2, 0, arrowWidth, arrowWidth),
-    //   right: arrowSpritesheet.get(arrowWidth * 3, 0, arrowWidth, arrowWidth),
-    // };
     hitArrowImgs = {
       left: hitArrowSpritesheet.get(0, 0, arrowWidth, arrowWidth),
       down: hitArrowSpritesheet.get(0, arrowWidth, arrowWidth, arrowWidth),
@@ -149,13 +132,6 @@ var mainScene = function (p) {
       up: arrowSpritesheet.get(0, arrowWidth * 2, arrowWidth, arrowWidth),
       right: arrowSpritesheet.get(0, arrowWidth * 3, arrowWidth, arrowWidth),
     };
-    // arrowImgs = {
-    //   left: {},
-    //   down: {},
-    //   right: {},
-    //   up: {},
-    // };
-
     // numbers are where they are in the spritesheet
     arrowImgs = {
       left: 0,
@@ -170,13 +146,6 @@ var mainScene = function (p) {
       up: arrowSpritesheet.get(0, arrowWidth * 6, arrowWidth, arrowWidth),
       right: arrowSpritesheet.get(0, arrowWidth * 7, arrowWidth, arrowWidth),
     };
-
-    // holdEndImgs = {
-    //   left: {},
-    //   down: {},
-    //   right: {},
-    //   up: {},
-    // };
 
     holdEndImgs = {
       left: { hitTrue: 4, hitFalse: 5 },
@@ -409,7 +378,6 @@ var mainScene = function (p) {
 
   function handleSongEnd(win) {
     console.log("song ended!!");
-    // clock.stop();
     Tone.Transport.stop();
     thisSongPlayer.stop();
     songVideo.pause();
@@ -507,8 +475,6 @@ var mainScene = function (p) {
     scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
     setHitMarginTime();
-    // console.log("hitMarginTime is " + hitMarginTime);
-    // hitMargin =  pixelsPerBeat * songBpm(/200);
 
     //For negative songDelays, start song before notes
     if (songDelay < 0) {
@@ -520,7 +486,6 @@ var mainScene = function (p) {
 
         startDrawingArrows = true;
         //Start a tone.js clock to keep time
-        // clock.start();
         Tone.Transport.start();
       }, -songDelay * 1000);
     } else {
@@ -569,7 +534,6 @@ var mainScene = function (p) {
             currentBpmStartBeat = change.beat;
             currentBpmChangeTime = change.changeTime;
             setHitMarginTime();
-            // hitMargin = songBpm;
           }, change.changeTime);
         });
       }
@@ -589,8 +553,6 @@ var mainScene = function (p) {
             }, 10);
 
             setTimeout(function () {
-              // stopClock.stop();
-
               passOverNotesOnStop();
             }, hitMarginTime * 1000);
 
