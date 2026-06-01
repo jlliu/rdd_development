@@ -259,7 +259,7 @@ var experimentalScene = function (p) {
       drawArrows();
     }
 
-    feedbackObj.display();
+    // feedbackObj.display();
     // comboObj.display();
     // healthBar.display();
     // scoreData.displayTotalScore();
@@ -323,6 +323,7 @@ var experimentalScene = function (p) {
   // current beat should be Start beat of the current interval, plus time that has elapsed within that beat
 
   function updateNotes() {
+    // console.log("part2Started: " + part2Started);
     // Experimental logic
     // Part 1 Timing
     if (!part2Started) {
@@ -354,6 +355,7 @@ var experimentalScene = function (p) {
     } else {
       //Part 2 timing
       t = Tone.Transport.seconds;
+
       //Loop ending after 2:08, .. to 2:17
       if (t > 129) {
         part2_bg_player.loopStart = 129.5;
@@ -362,7 +364,7 @@ var experimentalScene = function (p) {
       }
       // If final RELEASE ME is missed, then transition to end automatically
       if (t > 150) {
-        console.log("transition to end after time elapsed");
+        console.log("transition to end after missing final RELEASE ME");
         transitionToEnd();
       }
     }
@@ -442,13 +444,13 @@ var experimentalScene = function (p) {
       }
     }
 
-    //Handle case for song end
-    if (thisMeasure > measureData.length) {
-      let win = scoreData.ranking != "E";
-      // Comment for install
-      handleSongEnd(win);
-      // handleSongEnd(true);
-    }
+    // //Handle case for song end
+    // if (thisMeasure > measureData.length) {
+    //   let win = scoreData.ranking != "E";
+    //   // Comment for install
+    //   handleSongEnd(win);
+    //   // handleSongEnd(true);
+    // }
   }
 
   function handleSongEnd(win) {
@@ -528,8 +530,8 @@ var experimentalScene = function (p) {
     //Setup info for the song: Part 1
     let thisSongData = JSON.parse(part1);
     measureData = thisSongData.measureData;
-    // songBpm = thisSongData.bpm;
-    songBpm = 400;
+    songBpm = thisSongData.bpm;
+    // songBpm = 400;
 
     songDelay = thisSongData.delay;
     // scoreData.songId = songId;
@@ -537,7 +539,6 @@ var experimentalScene = function (p) {
     // scoreData.calculateBaseNoteScore();
     secondsPerBeat = 1 / (songBpm / 60);
     t_holdLeftStart = secondsPerBeat * 4 * 26;
-    console.log("t_holdLeftStart is: " + t_holdLeftStart);
     t_holdRightStart = secondsPerBeat * 4 * 27;
     t_holdsFinished = secondsPerBeat * 4 * 34;
     setHitMarginTime();
@@ -623,6 +624,7 @@ var experimentalScene = function (p) {
     // hitMarginTime = secondsPerBeat / 2;
     // for testing... note that holds will be weird!
     hitMarginTime = secondsPerBeat * 0.75;
+    console.log("Hit Margin Time is: " + hitMarginTime);
   }
   function isWithinHitMargin(yPos) {
     return (
@@ -659,6 +661,7 @@ var experimentalScene = function (p) {
   }
 
   function drawArrows() {
+    let timerHasPaused = false;
     relevantNotes.forEach(function (note) {
       let direction = note.direction;
       // let passedOver = false;
@@ -681,20 +684,28 @@ var experimentalScene = function (p) {
         if (isPastHitTime(note) && !part2Started && !note.isHit) {
           // Tone.Transport.seconds = note.startTime;
           // console.log(Tone.Transport.seconds);
-          pauseTimer();
+          // if (Transport.Timer.state == "started") {
+          if (!timerHasPaused) {
+            Tone.Transport.state = note.startTime;
+            pauseTimer();
+            timerHasPaused = true;
+          }
+
+          // Transport.Timer.state = note.startTime;
+          // }
         }
 
         // console.log("Evaluating note: " + note.id);
         // console.log("current t: " + t);
         // console.log("current Transport time: " + Tone.Transport.seconds);
         if (isWithinHitMarginTime(note)) {
-          console.log("Note is a hit candidate");
+          // console.log("Note is a hit candidate");
           // console.log("note is hit candidate");
           //Note within our hit window!
           note.isHitCandidate = true;
         } else if (isPassedHitMarginTime(note)) {
           // passedOver = true;
-          console.log("Note is passed over");
+          // console.log("Note is passed over");
           // console.log(note);
           //The note is passed over for the first time! THIS IS A MISS....
           if (!note.hasPassedOver) {
@@ -718,6 +729,19 @@ var experimentalScene = function (p) {
           !note.completedHold
         ) {
           updateHit("ok", note);
+          hideHoldTexts(note.id + 1);
+
+          //Add logic for resetting for part 2
+          if (!part1HoldsDone && cueCount == 46) {
+            // Can we set a timer for the beat to start?
+            hideHoldTexts();
+            resetForPart2();
+          }
+          //Add logic for switching to end when final arrow passes
+          if (cueCount >= 221) {
+            console.log("transition to end after final arrow passes");
+            transitionToEnd();
+          }
         }
       } else if (Tone.Transport.state == "paused") {
         // case: we're at a stop and hitting a note right on the beat
@@ -730,6 +754,82 @@ var experimentalScene = function (p) {
 
       note.display(yPos);
     });
+  }
+
+  function resetForPart2() {
+    console.log("reset for part 2");
+    part1HoldsDone = true;
+    waitForHit = false;
+    part2Started = true;
+
+    part1_bg_player.stop();
+    Tone.Transport.stop();
+
+    // Lets try resetting everything here!
+    relevantNotes = [];
+    currentBatchStartMeasure = 0;
+    currentMeasure = -1;
+    currentBeat = 0;
+    pixelsElapsed = 0;
+
+    let songData = JSON.parse(part2);
+    measureData = songData.measureData;
+    songBpm = songData.bpm;
+    songDelay = songData.delay;
+    secondsPerBeat = 1 / (songBpm / 60);
+    animationIntervals = 10;
+    setHitMarginTime();
+    let measuresUntilBeat = 1;
+    let delayForBeat = measuresUntilBeat * 4 * secondsPerBeat;
+    Tone.Transport.seconds = 0;
+    Tone.Transport.start();
+
+    setTimeout(function () {
+      part2_bg_player.start();
+    }, delayForBeat * 1000);
+
+    // Schedule countdown sound_fx in Time Transport
+    for (var i = 0; i < 8; i++) {
+      let lastNoteEndTime = beatToTime(316);
+      let secondToSchedule = lastNoteEndTime - i;
+      Tone.Transport.schedule(function () {
+        if (!endingStarted) {
+          sound_fx.timer.start();
+        }
+      }, secondToSchedule);
+    }
+  }
+
+  function transitionToEnd() {
+    if (!endingStarted) {
+      endingStarted = true;
+
+      console.log("TRANSITION TO END!!!");
+      let backgroundCanvas = document.querySelector("#backgroundCanvas");
+      experimentalCanvas.style.opacity = 0;
+      backgroundCanvas.style.opacity = 0;
+
+      part2_bg_player.stop();
+      window.setTimeout(function () {
+        document
+          .querySelector("#experimentalCanvas")
+          .dispatchEvent(hideSceneEvent);
+        backgroundCanvas.dispatchEvent(hideSceneEvent);
+
+        let credits = document.querySelector("#credits");
+        credits.style.display = "flex";
+        let countdown = 20;
+        window.setInterval(function () {
+          countdown--;
+          let countdownSpan = document.querySelector("#endingCountdown");
+          countdownSpan.innerHTML = countdown;
+          if (countdown <= 0) {
+            countdown = 0;
+            location.reload();
+          }
+        }, 1000);
+      }, 3000);
+    }
   }
 
   function updateArrowRainbow() {
@@ -1070,7 +1170,6 @@ var experimentalScene = function (p) {
   }
 
   function hideHoldTexts(cue) {
-    console.log("hide hold text");
     if (cue) {
       narrativeTextObjs.map(function (textObj) {
         if (
@@ -1127,8 +1226,6 @@ var experimentalScene = function (p) {
   }
 
   function assessHitForNoteByTime(direction, hitType, note, isStopped) {
-    console.log("assessing hit for : " + note.id);
-    console.log(note);
     //Assess notes that are the START of either instant or holds
     let hitTime;
     let hitSuccessful = false;
@@ -1137,7 +1234,7 @@ var experimentalScene = function (p) {
     } else {
       hitTime = t;
     }
-    console.log(hitTime);
+
     if (
       hitType == "press" &&
       note.isHitCandidate &&
@@ -1149,7 +1246,7 @@ var experimentalScene = function (p) {
         hitTime > note.startTime - hitMarginTime &&
         hitTime < note.startTime - (hitMarginTime * 3) / 4
       ) {
-        console.log("too early");
+        // console.log("too early");
       }
       // A little early - Ok - PASS
       else if (
@@ -1158,7 +1255,7 @@ var experimentalScene = function (p) {
       ) {
         updateHit("ok", note);
         hitSuccessful = true;
-        console.log("ok");
+        // console.log("ok");
       }
       // Almost perfect - early
       else if (
@@ -1167,7 +1264,7 @@ var experimentalScene = function (p) {
       ) {
         updateHit("great", note);
         hitSuccessful = true;
-        console.log("great");
+        // console.log("great");
       }
       // Perfect - PASS
       else if (
@@ -1176,7 +1273,7 @@ var experimentalScene = function (p) {
       ) {
         updateHit("perfect", note);
         hitSuccessful = true;
-        console.log("perfect");
+        // console.log("perfect");
       }
       // Almost perfect - late - PASS
       else if (
@@ -1185,7 +1282,7 @@ var experimentalScene = function (p) {
       ) {
         updateHit("great", note);
         hitSuccessful = true;
-        console.log("great");
+        // console.log("great");
       }
       // A little late - OK - PASS
       else if (
@@ -1194,7 +1291,7 @@ var experimentalScene = function (p) {
       ) {
         updateHit("ok", note);
         hitSuccessful = true;
-        console.log("ok");
+        // console.log("ok");
       }
       // TOO LATE - Failed
       else if (
@@ -1202,7 +1299,7 @@ var experimentalScene = function (p) {
         hitTime < note.startTime + hitMarginTime
       ) {
         updateMiss("late", note);
-        console.log("late");
+        // console.log("late");
       }
     }
     //Assess notes that are currently being held. Did we lift before it's over or not?
@@ -1221,6 +1318,17 @@ var experimentalScene = function (p) {
       // Lift is at most Margin amount before the end of the end Time
       if (hitTime >= note.endTime - hitMarginTime) {
         updateHit("ok", note);
+
+        // Transition to part 2
+        if (!part1HoldsDone && cueCount == 46) {
+          hideHoldTexts();
+          resetForPart2();
+        }
+
+        // Transition to ending
+        if (cueCount >= 221) {
+          transitionToEnd();
+        }
       }
 
       // Lift is TOO EARLY - Failed
@@ -1229,12 +1337,11 @@ var experimentalScene = function (p) {
 
         //Are we lifting early before part 2 - aka the holds?
         if (!part2Started) {
-          console.log("LIFTED EARLY ON PART 2 HOLDS");
           pauseTimer();
+
           if (reverseClock.seconds == 0) {
             hideHoldTexts();
             startReverseTimer();
-            console.log("started reverse timer");
           }
           note.isHolding = true;
           note.completedHold = false;
@@ -1243,6 +1350,13 @@ var experimentalScene = function (p) {
           note.completedHold = false;
         }
       }
+
+      if (cueCount >= 221) {
+        console.log("transition to end after lift early");
+        transitionToEnd();
+      }
+      // Fade out any narrative texts for holds, for this cue
+      hideHoldTexts(note.id + 1);
     }
     // console.log("assess hit: " + hitSuccessful);
     return hitSuccessful;
@@ -1257,7 +1371,6 @@ var experimentalScene = function (p) {
     let thisDirectionHit = false;
 
     relevantNotes.forEach(function (note) {
-      console.log("Evaluating assess hit : " + note.id);
       if (Tone.Transport.state == "started") {
         if (!thisDirectionHit) {
           if (assessHitForNoteByTime(direction, hitType, note)) {
@@ -1273,8 +1386,6 @@ var experimentalScene = function (p) {
           if (assessHitForNoteByTime(direction, hitType, note, true)) {
             anyNoteHit = true;
           }
-        } else {
-          console.log("Don't evaluate: " + note.id);
         }
       }
     });
@@ -1857,6 +1968,25 @@ var experimentalScene = function (p) {
       this.pressed = false;
     }
     display() {
+      // Move hit arrows if time passes in part 2
+      if (!part2Started && t > t_holdRightStart && t < t_holdsFinished) {
+        let timeElapsed = t - t_holdRightStart;
+        let percentageElapsed =
+          timeElapsed / (t_holdsFinished - t_holdRightStart);
+
+        let backgroundTransitionEvent = new CustomEvent(
+          "backgroundTransition",
+          { detail: percentageElapsed },
+        );
+        document
+          .querySelector("#backgroundCanvas")
+          .dispatchEvent(backgroundTransitionEvent);
+        console.log("dispatching background transition");
+        // document.querySelector("#backgroundCanvas").dispatchEvent()
+        whiteBackground = false;
+        let yPos = p.map(percentageElapsed, 0, 1, hitPos.y, hitPosFinal.y);
+        this.yPos = yPos;
+      }
       //Draw arrow at scale
       let d = (this.imgToDraw.width * (1 - this.scale)) / 2;
       drawImageToScale(
