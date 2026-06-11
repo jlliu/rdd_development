@@ -14,7 +14,7 @@
   <script src="story.js" defer></script> -->
 
   <!-- Uncomment for installation mode -->
-  <!-- <script src="refreshIdle.js" defer></script> -->
+  <script src="refreshIdle.js" defer></script>
    <!-- <script src="songParser.js" defer></script> -->
 
 
@@ -65,18 +65,25 @@
 
 
 
+                <div id="intro-video-container">
+    <video class="introVideo" id="introVideo" preload="true" >
+      <source src="assets/intro_video.mp4" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    </div>
+
     <div id="enableAudio-overlay" class="overlay">
-      <h1>Tap spacebar on laptop<br>to start</h1>
+      <h1>Tap space on computer<br>to start</h1>
       <br />
     </div>
 
-    <!-- <div id="connectDevice-overlay" class="overlay">
+    <div id="connectDevice-overlay" class="overlay">
       <h1>Connect to the game pad!</h1>
       <h2>Select "L-Tek Dance Pad PRO"</h2>
       <button onclick="connectDevice()">Connect</button>
       <select id="deviceSelect" oninput="deviceSelectionChanged()"></select>
       <br />
-    </div> -->
+    </div>
 
     <div id="credits" class="overlay">
       <h1>Game art, design, writing by Jackie Liu</h2>
@@ -85,12 +92,7 @@
       <br />
     </div>
 
-            <div id="intro-video-container">
-    <video class="introVideo" id="introVideo" preload="true" >
-      <source src="assets/intro_video.mp4" type="video/mp4">
-      Your browser does not support HTML5 video.
-    </video>
-    </div>
+
 
 
 

@@ -120,7 +120,7 @@ var songSelector = function (p) {
       new menuItem(5, null, 240, selectSong),
     ];
 
-    songTimer = new timer(60, startSongFromTimer);
+    songTimer = new timer(30, startSongFromTimer);
 
     resetCdQueue(selectedMenuItemIndex);
 

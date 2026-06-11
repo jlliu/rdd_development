@@ -87,7 +87,8 @@ var mainScene = function (p) {
   let songVideo;
   let videoLoadedFirstTime = false;
 
-  let endSongIfFailed = true;
+  //Mark false for install
+  let endSongIfFailed = false;
 
   p.preload = function () {
     //Preload a background here
@@ -371,8 +372,8 @@ var mainScene = function (p) {
     if (thisMeasure > measureData.length) {
       let win = scoreData.ranking != "E";
       // Comment for install
-      handleSongEnd(win);
-      // handleSongEnd(true);
+      // handleSongEnd(win);
+      handleSongEnd(true);
     }
   }
 

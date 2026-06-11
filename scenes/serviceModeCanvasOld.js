@@ -31,7 +31,7 @@ var serviceMode = function (p) {
 
   let exitDialogueScenes = [];
 
-  let currentDialogueSceneIndex = 0;
+  let currentDialogueSceneIndex = 7;
 
   let dialogueSceneType;
 

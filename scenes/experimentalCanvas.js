@@ -524,8 +524,8 @@ var experimentalScene = function (p) {
   }
 
   function startSong(songId) {
-    thisSongPlayer = part1_bg_player;
-    thisSongPlayer.loop = false;
+    // thisSongPlayer = part1_bg_player;
+    // thisSongPlayer.loop = true;
 
     //Setup info for the song: Part 1
     let thisSongData = JSON.parse(part1);
@@ -1968,12 +1968,13 @@ var experimentalScene = function (p) {
       this.pressed = false;
     }
     display() {
+      let arrowOpacity = !part2Started ? 0 : 1;
       // Move hit arrows if time passes in part 2
       if (!part2Started && t > t_holdRightStart && t < t_holdsFinished) {
         let timeElapsed = t - t_holdRightStart;
         let percentageElapsed =
           timeElapsed / (t_holdsFinished - t_holdRightStart);
-
+        arrowOpacity = percentageElapsed;
         let backgroundTransitionEvent = new CustomEvent(
           "backgroundTransition",
           { detail: percentageElapsed },
@@ -1989,12 +1990,15 @@ var experimentalScene = function (p) {
       }
       //Draw arrow at scale
       let d = (this.imgToDraw.width * (1 - this.scale)) / 2;
+
+      p.tint(255, arrowOpacity * 255);
       drawImageToScale(
         this.imgToDraw,
         this.xPos + d,
         this.yPos + d,
         this.scale,
       );
+      p.tint(255, 255);
     }
     displayGlow() {
       if (this.glowing) {

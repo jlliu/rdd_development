@@ -1,5 +1,7 @@
 const audioCtx = new AudioContext();
 
+let enableAudioOverlay = document.querySelector("#enableAudio-overlay");
+
 // Code for title screen
 
 // const title_player = new Tone.Player(
@@ -55,8 +57,9 @@ var title = function (p) {
   let gameModeSpritesheet;
 
   let introVideo;
-  // let introVideoLimit = 35;
-  let introVideoLimit = 0.1;
+  let introVideoLimit = 35;
+  // let introVideoLimit = 0.1;
+  let introStarted = true;
   let introFinished = false;
 
   // Setup all fonts in this file
@@ -162,7 +165,9 @@ var title = function (p) {
     introVideo.loop = false;
     // console.log("show scene");
     introVideo.addEventListener("canplaythrough", function () {
-      introVideo.play();
+      if (audioCtx.state == "running") {
+        introVideo.play();
+      }
     });
 
     function endIntroSong() {
@@ -181,7 +186,34 @@ var title = function (p) {
     introVideo.addEventListener("timeupdate", endIntroSong);
   };
 
+  function isVideoPlaying(videoElement) {
+    return !!(
+      videoElement.currentTime > 0 &&
+      !videoElement.paused &&
+      !videoElement.ended &&
+      videoElement.readyState > 2
+    );
+  }
+
+  function skipIntroSong() {
+    document.getElementById("backgroundCanvas").dispatchEvent(showSceneEvent);
+    introFinished = true;
+    introVideo.style.opacity = 0;
+    introVideo.pause();
+  }
+
   p.draw = function () {
+    // If auto is not running, display the click to start
+
+    // Toggle for installation
+    if (audioCtx.state == "running") {
+      // console.log("audio context  running");
+      enableAudioOverlay.style.display = "none";
+    } else {
+      // console.log("audio context not running");
+      enableAudioOverlay.style.display = "flex";
+    }
+
     p.clear();
 
     // Start drawing things if all canvases have loaded
@@ -287,8 +319,8 @@ var title = function (p) {
     //   },
     // });
 
-    document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
-    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+    // document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
+    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
 
     // FOR TESTING SERVICE
     // document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);
@@ -314,7 +346,17 @@ var title = function (p) {
     // let songStarted = title_player.state == "started";
 
     // if (allCanvasesLoaded && songStarted) {
-    if (allCanvasesLoaded && isCurrentScene && introFinished) {
+
+    console.log(introStarted);
+
+    if (!introFinished && !isVideoPlaying(introVideo)) {
+      // console.log("play intro video");
+      // enableAudioOverlay.style.display = "none";
+      // introVideo.play();
+      // audioCtx.resume();
+    } else if (!introFinished && keyCode == "Enter") {
+      skipIntroSong();
+    } else if (allCanvasesLoaded && isCurrentScene && introFinished) {
       //Handle case for first key press (Any), which shows menu
       if (!menuVisible && keyCode == "Enter") {
         enterGame();
@@ -323,14 +365,14 @@ var title = function (p) {
         //Handle case for menu navigation
         if (keyCode == "ArrowDown" || keyCode == "KeyS") {
           if (selectedMenuItemIndex < menuItems.length - 1) {
-            selectedMenuItemIndex++;
-            sound_fx.menuChange.start();
+            // selectedMenuItemIndex++;
+            // sound_fx.menuChange.start();
           }
         }
         if (keyCode == "ArrowUp" || keyCode == "KeyW") {
           if (selectedMenuItemIndex > 0) {
-            selectedMenuItemIndex--;
-            sound_fx.menuChange.start();
+            // selectedMenuItemIndex--;
+            // sound_fx.menuChange.start();
           }
         }
         //Select menu item
@@ -370,6 +412,7 @@ var title = function (p) {
       menu_track_player.volume.value = 0;
       startStoryMode();
     } else {
+      sound_fx.select.start();
       //Display menu for the first time
       menuVisible = true;
       //Create stagggered animation for menu items
@@ -455,6 +498,11 @@ var title = function (p) {
           audioCtx.resume();
           // startSong();
           Tone.start();
+
+          console.log("play intro video");
+          enableAudioOverlay.style.display = "none";
+          introVideo.play();
+          // audioCtx.resume();
         }
       }
 

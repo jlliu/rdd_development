@@ -853,16 +853,20 @@ var serviceMode = function (p) {
       case "right":
         keyCode = "ArrowRight";
         break;
+      case "topRight":
+        keyCode = "Enter";
+        break;
     }
     return keyCode;
   }
+
   window.addEventListener("padPress", function (e) {
     let direction = e.detail.direction;
     handleInput(directionToKeycode(direction));
   });
   window.addEventListener("padRelease", function (e) {
     let direction = e.detail.direction;
-    handleInput(directionToKeycode(direction));
+    // handleInput(directionToKeycode(direction));
   });
 
   window.addEventListener("keydown", function (e) {
