@@ -669,7 +669,7 @@ var experimentalScene = function (p) {
     measureDataList[1] = thisSongData.measureData;
     songBpm = thisSongData.bpm;
     //Use for part 1 debugging
-    songBpm = 400;
+    // songBpm = 400;
 
     songDelay = thisSongData.delay;
     // scoreData.songId = songId;

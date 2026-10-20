@@ -320,8 +320,8 @@ var title = function (p) {
     // });
 
     //toggle for ending debugging
-    document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
-    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+    // document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
+    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
 
     // FOR TESTING SERVICE
     // document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);
