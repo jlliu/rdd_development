@@ -2,6 +2,8 @@ var mainScene = function (p) {
   let mainSongCanvas;
   let isCurrentScene = false;
 
+  let twoPlayer = true;
+
   let thisSongPlayer;
 
   let thisSongData;
@@ -22,12 +24,24 @@ var mainScene = function (p) {
   let songId = 0;
 
   let arrowWidth = 64;
-  let hitPos = { x: 16, y: 56 };
-  let arrow_xPos = {
-    left: hitPos.x,
-    down: hitPos.x + arrowWidth,
-    up: hitPos.x + arrowWidth * 2,
-    right: hitPos.x + arrowWidth * 3,
+  let hitPos = [
+    { x: 16, y: 56 },
+    { x: 368, y: 56 },
+  ];
+
+  let getArrow_xPos = function (direction, playerNum) {
+    if (direction == "left") {
+      return hitPos[playerNum].x;
+    }
+    if (direction == "down") {
+      return hitPos[playerNum].x + arrowWidth;
+    }
+    if (direction == "up") {
+      return hitPos[playerNum].x + arrowWidth * 2;
+    }
+    if (direction == "right") {
+      return hitPos[playerNum].x + arrowWidth * 3;
+    }
   };
 
   let hitArrowSpritesheet;
@@ -40,16 +54,20 @@ var mainScene = function (p) {
   // let arrowImgs;
   // let arrowImgsOriginal;
 
-  let scoreBackgroundImg;
+  let scoreBackgroundSpritesheetImg;
+  let scoreBackgroundImgs = [];
 
   let eggBombImg;
 
   let fawningAnimation;
 
   //relevantNotes stores an array of note objects
-  let relevantNotes = [];
+  // UPDATE: relevant notes is by p1 or p2
+  // let relevantNotes = [];
+  let relevantNotesList = [[], []];
   // let hitMargin = 100;
 
+  let measureDataList = [];
   let measureData;
   let songBpm;
   let currentBpmStartBeat = 0;
@@ -61,11 +79,16 @@ var mainScene = function (p) {
   let bpmChanges = [];
   let hasStops = false;
 
-  let hitArrowObjs = {};
-  let feedbackObj;
-  let comboObj;
-  let scoreData;
-  let healthBar;
+  let hitArrowObjsList = [];
+
+  let feedbackObjsList = [];
+
+  let comboObjsList = [];
+
+  let scoreDataList = [];
+  // let scoreData;
+
+  let healthBarList = [];
 
   // current batch num is the measure of the current batch
   let batchSize = 2;
@@ -102,7 +125,9 @@ var mainScene = function (p) {
     rainbowGradientImg = p.loadImage("assets/rainbowGradient.png");
     hitGlowImg = p.loadImage("assets/hit-glow.png");
     eggBombImg = p.loadImage("assets/egg-bomb.png");
-    scoreBackgroundImg = p.loadImage("assets/scoreBackground.png");
+    scoreBackgroundSpritesheetImg = p.loadImage(
+      "assets/scoreBackgroundSpritesheet.png",
+    );
 
     attackSpritesheet = p.loadImage("assets/attackSpritesheet.png");
   };
@@ -167,12 +192,20 @@ var mainScene = function (p) {
       hitFalse: 13,
     };
 
-    hitArrowObjs = {
-      left: new HitArrow("left", hitPos.x, hitPos.y),
-      down: new HitArrow("down", hitPos.x + arrowWidth, hitPos.y),
-      up: new HitArrow("up", hitPos.x + arrowWidth * 2, hitPos.y),
-      right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
-    };
+    hitArrowObjsList.push({
+      left: new HitArrow("left", hitPos[0].x, hitPos[0].y),
+      down: new HitArrow("down", hitPos[0].x + arrowWidth, hitPos[0].y),
+      up: new HitArrow("up", hitPos[0].x + arrowWidth * 2, hitPos[0].y),
+      right: new HitArrow("right", hitPos[0].x + arrowWidth * 3, hitPos[0].y),
+    });
+    if (twoPlayer) {
+      hitArrowObjsList.push({
+        left: new HitArrow("left", hitPos[1].x, hitPos[1].y),
+        down: new HitArrow("down", hitPos[1].x + arrowWidth, hitPos[1].y),
+        up: new HitArrow("up", hitPos[1].x + arrowWidth * 2, hitPos[1].y),
+        right: new HitArrow("right", hitPos[1].x + arrowWidth * 3, hitPos[1].y),
+      });
+    }
 
     attackImages = {
       left: {
@@ -193,11 +226,30 @@ var mainScene = function (p) {
       },
     };
 
-    feedbackObj = new FeedbackText();
-    comboObj = new ComboText();
+    //Initialize score background imgs
+    scoreBackgroundImgs[0] = scoreBackgroundSpritesheetImg.get(0, 0, 188, 44);
+    scoreBackgroundImgs[1] = scoreBackgroundSpritesheetImg.get(0, 44, 188, 44);
 
-    scoreData = new Score();
-    healthBar = new HealthBar();
+    feedbackObjsList.push(new FeedbackText(0));
+    if (twoPlayer) {
+      feedbackObjsList.push(new FeedbackText(1));
+    }
+
+    comboObjsList.push(new ComboText(0));
+    if (twoPlayer) {
+      comboObjsList.push(new ComboText(1));
+    }
+
+    scoreDataList.push(new Score(songId, 0, storyModeDifficulty));
+    if (twoPlayer) {
+      scoreDataList.push(new Score(songId, 1, "Hard"));
+    }
+
+    healthBarList.push(new HealthBar(0));
+    if (twoPlayer) {
+      healthBarList.push(new HealthBar(1));
+    }
+
     fawningAnimation = new FawningAnimation();
 
     holdMiddleImgOriginal.loadPixels();
@@ -220,21 +272,39 @@ var mainScene = function (p) {
 
     fawningAnimation.display();
 
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.displayGlow();
+    hitArrowObjsList.forEach(function (hitArrowObjs) {
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.displayGlow();
+      });
     });
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.display();
+
+    hitArrowObjsList.forEach(function (hitArrowObjs) {
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.display();
+      });
     });
 
     if (startDrawingArrows) {
-      drawArrows();
+      drawArrows(0);
+      if (twoPlayer) {
+        drawArrows(1);
+      }
     }
 
-    feedbackObj.display();
-    comboObj.display();
-    healthBar.display();
-    scoreData.displayTotalScore();
+    feedbackObjsList.forEach(function (feedbackObj) {
+      feedbackObj.display();
+    });
+    comboObjsList.forEach(function (comboObj) {
+      comboObj.display();
+    });
+
+    healthBarList.forEach(function (healthBar) {
+      healthBar.display();
+    });
+
+    scoreDataList.forEach(function (scoreData) {
+      scoreData.displayTotalScore();
+    });
   };
 
   function setupNavigation(thisCanvas) {
@@ -315,25 +385,41 @@ var mainScene = function (p) {
 
       //Initialize start of song
       if (currentMeasure == 0) {
-        let measuresInBatch = measureData.slice(
+        let measuresInBatch_p1 = measureDataList[0].slice(
           currentBatchStartMeasure,
           currentBatchStartMeasure + batchSize,
         );
-        measuresInBatch.forEach(function (measure) {
+        measuresInBatch_p1.forEach(function (measure) {
           //If measure has notes, add contents into relevantNotes
           if (measure) {
             measure.forEach(function (note) {
-              let newNote = new Note(note);
-              relevantNotes.push(newNote);
+              let newNote = new Note(note, 0);
+              relevantNotesList[0].push(newNote);
             });
           }
         });
+        //Do this for p2
+        if (twoPlayer) {
+          let measuresInBatch_p2 = measureDataList[1].slice(
+            currentBatchStartMeasure,
+            currentBatchStartMeasure + batchSize,
+          );
+          measuresInBatch_p2.forEach(function (measure) {
+            //If measure has notes, add contents into relevantNotes
+            if (measure) {
+              measure.forEach(function (note) {
+                let newNote = new Note(note, 1);
+                relevantNotesList[1].push(newNote);
+              });
+            }
+          });
+        }
       }
       //Are we ALMOST at a new batch? Update the batch data!
       else if (currentMeasure % batchSize == batchSize - 1) {
         // console.log("updating batch data");
         //Discard old ones BEFORE 1 measure ago....
-        let remainingNotes = relevantNotes.filter(function (note) {
+        let remainingNotes = relevantNotesList[0].filter(function (note) {
           //Keep only if this note is a hold and it's done...
           if (
             note.noteType == "hold" &&
@@ -349,32 +435,79 @@ var mainScene = function (p) {
             return false;
           }
         });
-        relevantNotes = remainingNotes;
+        relevantNotesList[0] = remainingNotes;
+
+        if (twoPlayer) {
+          let remainingNotes = relevantNotesList[1].filter(function (note) {
+            //Keep only if this note is a hold and it's done...
+            if (
+              note.noteType == "hold" &&
+              note.endMeasure >= currentMeasure - 1
+            ) {
+              return true;
+            } else if (
+              (note.noteType == "instant" || note.noteType == "mine") &&
+              note.measure >= currentMeasure - 1
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          relevantNotesList[1] = remainingNotes;
+        }
         //Load in next batch notes
         currentBatchStartMeasure += batchSize;
-        let measuresInBatch = measureData.slice(
+        let measuresInBatch_p1 = measureDataList[0].slice(
           currentBatchStartMeasure,
           currentBatchStartMeasure + batchSize,
         );
-        measuresInBatch.forEach(function (measure) {
+        measuresInBatch_p1.forEach(function (measure) {
           if (measure) {
             //If measure has notes, add contents into relevantNotes
             measure.forEach(function (note) {
-              let newNote = new Note(note);
-              relevantNotes.push(newNote);
+              let newNote = new Note(note, 0);
+              relevantNotesList[0].push(newNote);
             });
           }
         });
+        if (twoPlayer) {
+          let measuresInBatch_p2 = measureDataList[1].slice(
+            currentBatchStartMeasure,
+            currentBatchStartMeasure + batchSize,
+          );
+          measuresInBatch_p2.forEach(function (measure) {
+            if (measure) {
+              //If measure has notes, add contents into relevantNotes
+              measure.forEach(function (note) {
+                let newNote = new Note(note, 1);
+                relevantNotesList[1].push(newNote);
+              });
+            }
+          });
+        }
       }
     }
 
     //Handle case for song end
-    if (thisMeasure > measureData.length) {
-      let win = scoreData.ranking != "E";
+    if (thisMeasure > measureDataList[0].length) {
+      let win;
+      scoreDataList.forEach(function (scoreData) {
+        win = scoreData.ranking != "E" ? true : false;
+      });
       // Comment for install
       // handleSongEnd(win);
       handleSongEnd(true);
     }
+  }
+
+  function getScoreDataToSend() {
+    let scoreDataToSend = [];
+    scoreDataToSend.push(scoreDataList[0].getScoreInfo());
+    if (twoPlayer) {
+      scoreDataToSend.push(scoreDataList[0].getScoreInfo());
+    }
+    return scoreDataToSend;
   }
 
   function handleSongEnd(win) {
@@ -384,7 +517,8 @@ var mainScene = function (p) {
     songVideo.pause();
 
     //Update score in global data
-    songList[songId].scores.push(scoreData.getScoreInfo());
+    let scoreDataToSend = getScoreDataToSend();
+    songList[songId].scores.push(scoreDataToSend);
 
     // Show gate transition (Blank gate)
     let showGateEvent = new CustomEvent("showScene", {
@@ -408,10 +542,11 @@ var mainScene = function (p) {
       if (!songList[songId].cleared && win) {
         // If first time cleared, show revelation scene
         songList[songId].cleared = true;
+        let scoreDataToSend = getScoreDataToSend();
         let showRevelationSceneEvent = new CustomEvent("showScene", {
           detail: {
             songIndex: songId,
-            scoreData: scoreData.getScoreInfo(),
+            scoreData: scoreDataToSend,
           },
         });
         document
@@ -429,9 +564,10 @@ var mainScene = function (p) {
           .dispatchEvent(showBackgroundShaderEvent);
       } else {
         // Show Score scene directly if failed or if we've cleared before
+        let scoreDataToSend = getScoreDataToSend();
         let showScoreSceneEvent = new CustomEvent("showScene", {
           detail: {
-            scoreData: scoreData.getScoreInfo(),
+            scoreData: scoreDataToSend,
           },
         });
         document
@@ -460,7 +596,15 @@ var mainScene = function (p) {
     } else {
       thisSongData = JSON.parse(songList[songId].songData.medium);
     }
-    measureData = thisSongData.measureData;
+    // measureData = thisSongData.measureData;
+
+    // Player 1:
+    measureDataList[0] = thisSongData.measureData;
+
+    // Player 2: Hard for now
+    let thisSongData_p2 = JSON.parse(songList[songId].songData.hard);
+    measureDataList[1] = thisSongData_p2.measureData;
+
     if (songList[songId].bpmChanges != null) {
       hasBpmChanges = true;
       bpmChanges = songList[songId].bpmChanges;
@@ -471,9 +615,14 @@ var mainScene = function (p) {
     }
 
     songDelay = thisSongData.delay;
-    scoreData.songId = songId;
-    scoreData.totalNotes = thisSongData.totalNotes;
-    scoreData.calculateBaseNoteScore();
+    scoreDataList[0].songId = songId;
+    scoreDataList[0].totalNotes = thisSongData.totalNotes;
+    scoreDataList[0].calculateBaseNoteScore();
+    if (twoPlayer) {
+      scoreDataList[1].songId = songId;
+      scoreDataList[1].totalNotes = thisSongData.totalNotes;
+      scoreDataList[1].calculateBaseNoteScore();
+    }
     secondsPerBeat = 1 / (songBpm / 60);
     setHitMarginTime();
 
@@ -576,7 +725,7 @@ var mainScene = function (p) {
 
   function passOverNotesOnStop() {
     //after delay on stop, go through the ones that are note hit and make them pass over, and update it as a miss
-    relevantNotes.forEach(function (note) {
+    relevantNotesList[0].forEach(function (note) {
       if (
         isPassedHitBoundary(note.currentY) &&
         !note.isHit &&
@@ -586,6 +735,18 @@ var mainScene = function (p) {
         updateMiss("miss", note);
       }
     });
+    if (twoPlayer) {
+      relevantNotesList[1].forEach(function (note) {
+        if (
+          isPassedHitBoundary(note.currentY) &&
+          !note.isHit &&
+          !note.hasPassedOver
+        ) {
+          note.hasPassedOver = true;
+          updateMiss("miss", note);
+        }
+      });
+    }
   }
   // calculate the transport time given current beat, factoring in bpm changes
   function beatToTime(inputBeat) {
@@ -644,6 +805,7 @@ var mainScene = function (p) {
     hitMarginTime = secondsPerBeat * 0.75;
   }
   function isWithinHitMargin(yPos) {
+    let hitArrowObjs = hitArrowObjsList[0];
     return (
       yPos >= hitArrowObjs["left"].yPos - hitMargin &&
       yPos <= hitArrowObjs["left"].yPos + hitMargin
@@ -669,11 +831,13 @@ var mainScene = function (p) {
   }
 
   function isPassedHitBoundary(yPos) {
+    let hitArrowObjs = hitArrowObjsList[0];
     return yPos <= hitArrowObjs["left"].yPos;
   }
 
-  function drawArrows() {
-    relevantNotes.forEach(function (note) {
+  function drawArrows(playerNum) {
+    let hitArrowObjs = hitArrowObjsList[playerNum];
+    relevantNotesList[playerNum].forEach(function (note) {
       let direction = note.direction;
       // let passedOver = false;
 
@@ -1089,24 +1253,26 @@ var mainScene = function (p) {
     });
   }
   function updateMiss(score, note) {
-    feedbackObj.updateState(score);
-    comboObj.resetCombo();
-    scoreData.update("miss");
+    let playerNum = note.playerNum;
+    feedbackObjsList[playerNum].updateState(score);
+    comboObjsList[playerNum].resetCombo();
+    scoreDataList[playerNum].update("miss");
   }
   function updateHit(score, note) {
+    let playerNum = note.playerNum;
     //Is this the first time hitting this note?
     if (!note.isHit && note.noteType != "mine") {
-      comboObj.incrementCombo();
+      comboObjsList[playerNum].incrementCombo();
       note.isHit = true;
       let scoreScale = 1;
       if (score === "ok") {
-        feedbackObj.updateState("ok", true);
+        feedbackObjsList[playerNum].updateState("ok", true);
       } else if (score === "great") {
-        feedbackObj.updateState("great", true);
+        feedbackObjsList[playerNum].updateState("great", true);
       } else if (score === "perfect") {
-        feedbackObj.updateState("perfect", true);
+        feedbackObjsList[playerNum].updateState("perfect", true);
       }
-      scoreData.update(score);
+      scoreDataList[playerNum].update(score);
 
       // Trigger fawning animation
       if (note.isFawningHit) {
@@ -1115,8 +1281,8 @@ var mainScene = function (p) {
     } else if (!note.isHit && note.noteType == "mine") {
       //Successfully hitting mines should set off the bomb;
       note.isHit = true;
-      feedbackObj.updateState("mine", true);
-      scoreData.mineHit();
+      feedbackObjsList[playerNum].updateState("mine", true);
+      scoreDataList[playerNum].mineHit();
       sound_fx.eggCrack.start();
       note.animateEggshellCrack();
     }
@@ -1135,6 +1301,7 @@ var mainScene = function (p) {
     //Assess notes that are the START of either instant or holds
     let hitTime;
     let hitSuccessful = false;
+    let playerNum = note.playerNum;
     if (isStopped) {
       hitTime = Tone.Transport.seconds + secondsSinceStop;
     } else {
@@ -1220,9 +1387,11 @@ var mainScene = function (p) {
 
       // Lift is TOO EARLY - Failed
       else if (hitTime < note.endTime - hitMarginTime) {
-        feedbackObj.updateState("early");
+        feedbackObjsList[playerNum].updateState("early");
         note.isHolding = false;
         note.completedHold = false;
+
+        console.log("LIFT IS TOO EARLY");
       }
     }
     // console.log("assess hit: " + hitSuccessful);
@@ -1232,12 +1401,12 @@ var mainScene = function (p) {
   // Iterates through the list of relative notes....
 
   // If you have previously hit a note with the SAME direction, don't assess hit for notes of that direction later
-  function assessHit(direction, hitType) {
+  function assessHit(direction, hitType, playerNum) {
     let anyNoteHit = false;
 
     let thisDirectionHit = false;
 
-    relevantNotes.forEach(function (note) {
+    relevantNotesList[playerNum].forEach(function (note) {
       if (Tone.Transport.state == "started") {
         if (!thisDirectionHit) {
           if (assessHitForNoteByTime(direction, hitType, note)) {
@@ -1261,7 +1430,7 @@ var mainScene = function (p) {
 
   function resetForNewSong() {
     // Lets try resetting everything here!
-    relevantNotes = [];
+    relevantNotesList = [[], []];
     currentBatchStartMeasure = 0;
     currentMeasure = -1;
     currentBeat = 0;
@@ -1269,36 +1438,48 @@ var mainScene = function (p) {
     startDrawingArrows = false;
     // clearInterval(updateArrowsInterval);
     clearInterval(updateNotesInterval);
-    measureData = null;
+
+    measureDataList.forEach(function (measureData) {
+      measureData = null;
+    });
+
     songBpm = null;
     songDelay = null;
     secondsPerBeat = null;
     t = 0;
     stops = null;
-    scoreData = new Score();
-    healthBar.reset();
+
+    scoreDataList.forEach(function (scoreData) {
+      scoreData = new Score();
+    });
+
+    healthBarList.forEach(function (healthBar) {
+      healthBar.reset();
+    });
     songVideo = null;
     videoLoadedFirstTime = false;
     hasBpmChanges = false;
     bpmChanges = [];
     hasStops = false;
-    comboObj = new ComboText();
+    comboObjsList.forEach(function (comboObj) {
+      comboObj = new ComboText();
+    });
     Tone.Transport.cancel();
   }
 
-  function padOrKeypress(direction) {
+  function padOrKeypress(direction, playerNum) {
     if (isCurrentScene) {
       let hitSuccessful = false;
       // if (Tone.Transport.state == "started") {
-      hitSuccessful = assessHit(direction, "press");
+      hitSuccessful = assessHit(direction, "press", playerNum);
       // }
-      hitArrowObjs[direction].press(hitSuccessful);
+      hitArrowObjsList[playerNum][direction].press(hitSuccessful);
     }
   }
-  function padOrKeyrelease(direction) {
+  function padOrKeyrelease(direction, playerNum) {
     if (isCurrentScene) {
-      hitArrowObjs[direction].release();
-      assessHit(direction, "lift");
+      hitArrowObjsList[playerNum][direction].release();
+      assessHit(direction, "lift", playerNum);
     }
   }
 
@@ -1312,61 +1493,161 @@ var mainScene = function (p) {
 
   window.addEventListener("padPress", function (e) {
     let direction = e.detail.direction;
-    padOrKeypress(direction);
+    //Detect p1 for now
+    padOrKeypress(direction, 0);
   });
   window.addEventListener("padRelease", function (e) {
     let direction = e.detail.direction;
-    padOrKeyrelease(direction);
+    //Detect p1 for now
+    padOrKeyrelease(direction, 0);
   });
 
   window.addEventListener("keydown", function (e) {
     e.preventDefault();
+
+    console.log(e.code);
     //Ignore repeated keydown
     if (e.repeat) {
       return;
     }
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
+
+    if (twoPlayer) {
+      // 1P uses wasd
+      if (e.code == "KeyA") {
+        padOrKeypress("left", 0);
+      }
+      if (e.code == "KeyD") {
+        padOrKeypress("right", 0);
+      }
+      if (e.code == "KeyW") {
+        padOrKeypress("up", 0);
+      }
+      if (e.code == "KeyS") {
+        padOrKeypress("down", 0);
+      }
+      // 2P uses arrow keys
       if (e.code == "ArrowLeft") {
-        padOrKeypress("left");
+        padOrKeypress("left", 1);
       }
       if (e.code == "ArrowRight") {
-        padOrKeypress("right");
+        padOrKeypress("right", 1);
       }
       if (e.code == "ArrowUp") {
-        padOrKeypress("up");
+        padOrKeypress("up", 1);
       }
       if (e.code == "ArrowDown") {
-        padOrKeypress("down");
+        padOrKeypress("down", 1);
+      }
+    } else {
+      // 1P uses arrow keys
+      if (e.code == "ArrowLeft") {
+        padOrKeypress("left", 0);
+      }
+      if (e.code == "ArrowRight") {
+        padOrKeypress("right", 0);
+      }
+      if (e.code == "ArrowUp") {
+        padOrKeypress("up", 0);
+      }
+      if (e.code == "ArrowDown") {
+        padOrKeypress("down", 0);
       }
     }
   });
 
   window.addEventListener("keyup", function (e) {
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
+    if (twoPlayer) {
+      // 1P uses wasd
+      if (e.code == "KeyA") {
+        padOrKeyrelease("left", 0);
+      }
+      if (e.code == "KeyD") {
+        padOrKeyrelease("right", 0);
+      }
+      if (e.code == "KeyW") {
+        padOrKeyrelease("up", 0);
+      }
+      if (e.code == "KeyS") {
+        padOrKeyrelease("down", 0);
+      }
+      // 2P uses arrow keys
       if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left");
+        padOrKeyrelease("left", 1);
       }
       if (e.code == "ArrowRight") {
-        padOrKeyrelease("right");
+        padOrKeyrelease("right", 1);
       }
       if (e.code == "ArrowUp") {
-        padOrKeyrelease("up");
+        padOrKeyrelease("up", 1);
       }
       if (e.code == "ArrowDown") {
-        padOrKeyrelease("down");
+        padOrKeyrelease("down", 1);
+      }
+    } else {
+      // 1P uses arrow keys
+      if (e.code == "ArrowLeft") {
+        padOrKeyrelease("left", 0);
+      }
+      if (e.code == "ArrowRight") {
+        padOrKeyrelease("right", 0);
+      }
+      if (e.code == "ArrowUp") {
+        padOrKeyrelease("up", 0);
+      }
+      if (e.code == "ArrowDown") {
+        padOrKeyrelease("down", 0);
       }
     }
   });
+
+  // window.addEventListener("keydown", function (e) {
+  //   e.preventDefault();
+  //   //Ignore repeated keydown
+  //   if (e.repeat) {
+  //     return;
+  //   }
+  //   if (
+  //     e.code == "ArrowLeft" ||
+  //     e.code == "ArrowRight" ||
+  //     e.code == "ArrowUp" ||
+  //     e.code == "ArrowDown"
+  //   ) {
+  //     if (e.code == "ArrowLeft") {
+  //       padOrKeypress("left");
+  //     }
+  //     if (e.code == "ArrowRight") {
+  //       padOrKeypress("right");
+  //     }
+  //     if (e.code == "ArrowUp") {
+  //       padOrKeypress("up");
+  //     }
+  //     if (e.code == "ArrowDown") {
+  //       padOrKeypress("down");
+  //     }
+  //   }
+  // });
+
+  // window.addEventListener("keyup", function (e) {
+  //   if (
+  //     e.code == "ArrowLeft" ||
+  //     e.code == "ArrowRight" ||
+  //     e.code == "ArrowUp" ||
+  //     e.code == "ArrowDown"
+  //   ) {
+  //     if (e.code == "ArrowLeft") {
+  //       padOrKeyrelease("left");
+  //     }
+  //     if (e.code == "ArrowRight") {
+  //       padOrKeyrelease("right");
+  //     }
+  //     if (e.code == "ArrowUp") {
+  //       padOrKeyrelease("up");
+  //     }
+  //     if (e.code == "ArrowDown") {
+  //       padOrKeyrelease("down");
+  //     }
+  //   }
+  // });
 
   // track.addEventListener("timeupdate", updateNotes);
 
@@ -1377,7 +1658,7 @@ var mainScene = function (p) {
   // CLASSES
 
   class Note {
-    constructor(noteData) {
+    constructor(noteData, playerNum) {
       this.id = noteData.id;
       this.direction = noteData.direction;
       this.noteType = noteData.noteType;
@@ -1390,6 +1671,7 @@ var mainScene = function (p) {
       this.eggshellSceneOpacity = 0;
       this.hasPassedOver = false;
       this.isHit = false;
+      this.playerNum = playerNum;
 
       // Check if this is a fawning hit...
       this.isFawningHit =
@@ -1418,6 +1700,7 @@ var mainScene = function (p) {
       }, 30);
     }
     display(yPos) {
+      let hitArrowObjs = hitArrowObjsList[this.playerNum];
       // First, determine if we're currently at a stop... if so , unhit notes should not go over the original yPos
       if (
         Tone.Transport.state != "started" &&
@@ -1436,7 +1719,8 @@ var mainScene = function (p) {
         p.tint(255, opacity);
         drawArrowPiece(
           arrowImgs[this.direction],
-          arrow_xPos[this.direction],
+          getArrow_xPos(this.direction, this.playerNum),
+          // arrow_xPos[this.direction],
           yPos,
         );
         p.tint(255, 255);
@@ -1449,20 +1733,23 @@ var mainScene = function (p) {
           // Draw rectangle
           drawArrowPiece(
             holdMiddleImg.hitTrue,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
+            // arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawArrowPiece(
             holdEndImgs[this.direction].hitTrue,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
+            // arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
+            // arrow_xPos[this.direction],
             hitArrowObjs["left"].yPos,
           );
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
@@ -1479,20 +1766,23 @@ var mainScene = function (p) {
           // Draw rectangle
           drawArrowPiece(
             holdMiddleImg.hitFalse,
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased,
           );
           p.tint(255, 255);
@@ -1506,18 +1796,21 @@ var mainScene = function (p) {
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
           drawArrowPiece(
             holdMiddleImg.hitFalse,
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos + 32,
             rectangleHeight,
           );
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos,
           );
           drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
-            arrow_xPos[this.direction],
+            // arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos + rectangleHeight,
           );
           p.tint(255, 255);
@@ -1526,7 +1819,12 @@ var mainScene = function (p) {
         // Draw mines
         let opacity = this.hasPassedOver ? 127 : 255;
         p.tint(255, opacity);
-        drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
+        drawImageToScale(
+          eggBombImg,
+          //  arrow_xPos[this.direction]
+          getArrow_xPos(this.direction, this.playerNum),
+          yPos,
+        );
         p.tint(255, 255);
       }
 
@@ -1591,7 +1889,7 @@ var mainScene = function (p) {
   }
 
   class Score {
-    constructor(songId) {
+    constructor(songId, playerNum, difficulty) {
       this.miss = 0;
       this.perfect = 0;
       this.ok = 0;
@@ -1601,6 +1899,8 @@ var mainScene = function (p) {
       this.baseNoteScore = 0;
       this.ranking;
       this.songId = songId;
+      this.playerNum = playerNum;
+      this.difficulty = difficulty;
     }
     getScoreInfo() {
       return {
@@ -1611,6 +1911,7 @@ var mainScene = function (p) {
         perfect: this.perfect,
         scoreCount: this.scoreCount,
         ranking: this.ranking,
+        difficulty: this.difficulty,
       };
     }
     calculateBaseNoteScore() {
@@ -1641,30 +1942,30 @@ var mainScene = function (p) {
       }
     }
     mineHit() {
-      healthBar.decrement(0.15);
+      healthBarList[this.playerNum].decrement(0.15);
     }
     update(scoreType) {
       if (scoreType == "miss") {
         this.miss++;
-        healthBar.decrement();
+        healthBarList[this.playerNum].decrement();
       } else {
         if (scoreType == "ok") {
           this.ok++;
           // this.scoreCount += 1;
           this.scoreCount += this.baseNoteScore * 3;
-          healthBar.increment(1);
+          healthBarList[this.playerNum].increment(1);
         }
         if (scoreType == "great") {
           this.great++;
           // this.scoreCount += 3;
           this.scoreCount += this.baseNoteScore * 7;
-          healthBar.increment(3);
+          healthBarList[this.playerNum].increment(3);
         }
         if (scoreType == "perfect") {
           this.perfect++;
           // this.scoreCount += 5;
           this.scoreCount += this.baseNoteScore * 10;
-          healthBar.increment(5);
+          healthBarList[this.playerNum].increment(5);
         }
       }
 
@@ -1673,11 +1974,30 @@ var mainScene = function (p) {
 
     displayTotalScore() {
       //Draw UI
-      drawImageToScale(scoreBackgroundImg, 0, 437);
-      drawImageToScale(playerTextImgs.player1, 0, 437 - 20);
+      let scoreBackgroundImg_posX;
+      let playerTextImgToDraw;
+      let playerTextImg_posX;
+
+      //Player 1
+      if (this.playerNum == 0) {
+        scoreBackgroundImg_posX = 0;
+        playerTextImgToDraw = playerTextImgs.player1;
+        playerTextImg_posX = 0;
+        // Player 2
+      } else if (this.playerNum == 1) {
+        scoreBackgroundImg_posX = 640 - 188;
+        playerTextImgToDraw = playerTextImgs.player2;
+        playerTextImg_posX = 455;
+      }
       drawImageToScale(
-        playerTextImgs[storyModeDifficulty],
-        playerTextImgs.player1.width,
+        scoreBackgroundImgs[this.playerNum],
+        scoreBackgroundImg_posX,
+        437,
+      );
+      drawImageToScale(playerTextImgToDraw, playerTextImg_posX, 437 - 20);
+      drawImageToScale(
+        playerTextImgs[this.difficulty],
+        playerTextImgToDraw.width + scoreBackgroundImg_posX,
         437 - 20,
       );
       let scoreDigitLength = this.scoreCount.toString().length;
@@ -1690,8 +2010,16 @@ var mainScene = function (p) {
       }
 
       // Draw zeros
+
+      let offset = this.playerNum == 0 ? 0 : 8;
       p.tint(255, 100);
-      drawText(zerosString, "scoreDigits", 1, 8, 441);
+      drawText(
+        zerosString,
+        "scoreDigits",
+        1,
+        scoreBackgroundImg_posX + 8 + offset,
+        441,
+      );
       p.tint(255, 255);
 
       // Draw actual score
@@ -1699,20 +2027,27 @@ var mainScene = function (p) {
         this.scoreCount.toString(),
         "scoreDigits",
         1,
-        8 + numOfZeros * letterWidth,
+        scoreBackgroundImg_posX + 8 + numOfZeros * letterWidth + offset,
         441,
       );
     }
   }
 
   class HealthBar {
-    constructor() {
+    constructor(playerNum) {
       this.amountFilled = 0.5;
-      this.xPos = 8;
-      this.yPos = 8;
+
       this.tick = 0;
       this.animate = true;
       this.gradientColor = "green";
+      this.playerNum = playerNum;
+      if (this.playerNum == 0) {
+        this.xPos = 8;
+        this.yPos = 8;
+      } else if (this.playerNum == 1) {
+        this.xPos = 350;
+        this.yPos = 8;
+      }
     }
     display() {
       let gradientImg;
@@ -1727,7 +2062,12 @@ var mainScene = function (p) {
       // p.fill("black");
       let capacity = { width: 261, height: 18 };
 
-      drawRectToScale(16, 16, capacity.width, capacity.height);
+      drawRectToScale(
+        this.xPos + 8,
+        this.yPos + 8,
+        capacity.width,
+        capacity.height,
+      );
 
       let gradientToDraw = gradientImg.get(
         this.tick % capacity.width,
@@ -1738,8 +2078,8 @@ var mainScene = function (p) {
       let dw = this.animate ? Math.sin(this.tick * 0.05) * 3 : 0;
       drawImageToScaleWithWidth(
         gradientToDraw,
-        15,
-        15,
+        this.xPos + 7,
+        this.yPos + 7,
         Math.min(capacity.width, gradientToDraw.width + dw),
       );
 
@@ -1859,13 +2199,14 @@ var mainScene = function (p) {
   }
 
   class ComboText {
-    constructor() {
+    constructor(playerNum) {
       this.count = 0;
       this.showing = false;
       this.scale = 1;
       this.animationIndex = 0;
       this.animationInterval;
       this.hideTimeout;
+      this.playerNum = playerNum;
     }
     incrementCombo() {
       this.count++;
@@ -1909,15 +2250,19 @@ var mainScene = function (p) {
       }
       let xPos =
         (canvasSizeOriginal.width - (numberWidth + comboTextImg.width + 5)) / 2;
-      if (this.showing && this.count >= 2) {
+      if (this.showing && this.count >= 4) {
+        let offset = this.playerNum == 0 ? -270 : 270;
+        p.push();
+        p.translate(offset, 0);
         drawImageToScale(comboTextImg, xPos + numberWidth + 5, 267, this.scale);
         drawText(this.count.toString(), "pink", this.scale, xPos, 240);
+        p.pop();
       }
     }
   }
 
   class FeedbackText {
-    constructor() {
+    constructor(playerNum) {
       this.showing = false;
       this.text = "OK";
       this.state = "ok";
@@ -1925,6 +2270,7 @@ var mainScene = function (p) {
       this.animationIndex = 0;
       this.animationInterval;
       this.hideTimeout;
+      this.playerNum = playerNum;
     }
     updateState(newState, animate) {
       clearTimeout(this.hideTimeout);
@@ -1938,15 +2284,15 @@ var mainScene = function (p) {
       } else if (this.state == "great") {
         this.text = "GREAT";
       } else if (this.state == "perfect") {
-        this.text = "PERFECT!";
+        this.text = "PERFECT";
       } else if (this.state == "early") {
-        this.text = "Too early!";
+        this.text = "Early!";
       } else if (this.state == "late") {
-        this.text = "Too late!";
+        this.text = "Late!";
       } else if (this.state == "miss") {
         this.text = "Miss";
       } else if (this.state == "mine") {
-        this.text = "BAD!";
+        this.text = "Bad!";
       }
       let _this = this;
       if (animate) {
@@ -1967,7 +2313,11 @@ var mainScene = function (p) {
     }
     display() {
       if (this.showing) {
+        let offset = this.playerNum == 0 ? -270 : 270;
+        p.push();
+        p.translate(offset, 0);
         drawText(this.text, "mainYellow", this.scale, null, 150);
+        p.pop();
       }
     }
   }

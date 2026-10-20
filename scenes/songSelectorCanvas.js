@@ -120,7 +120,7 @@ var songSelector = function (p) {
       new menuItem(5, null, 240, selectSong),
     ];
 
-    songTimer = new timer(30, startSongFromTimer);
+    // songTimer = new timer(30, startSongFromTimer);
 
     resetCdQueue(selectedMenuItemIndex);
 
@@ -165,7 +165,7 @@ var songSelector = function (p) {
 
         // Draw difficulty selector
         drawImageToScale(difficultySelectorUiImgs[storyModeDifficulty], 6, 364);
-        songTimer.display();
+        // songTimer.display();
       }
 
       let instructionsToDraw = gameIsReboot
@@ -190,7 +190,7 @@ var songSelector = function (p) {
         menu_track_player.stop();
         if (!gameIsReboot) {
           changePreviewSong();
-          songTimer.start();
+          // songTimer.start();
         }
       }, sceneTransitionTime);
     });
@@ -201,7 +201,7 @@ var songSelector = function (p) {
       songPreviewPlayer.stop();
 
       setTimeout(function () {
-        songTimer.reset();
+        // songTimer.reset();
         thisCanvas.style.visibility = "hidden";
       }, sceneTransitionTime);
     });

@@ -319,8 +319,9 @@ var title = function (p) {
     //   },
     // });
 
-    // document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
-    document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
+    //toggle for ending debugging
+    document.getElementById("experimentalCanvas").dispatchEvent(showSceneEvent);
+    // document.getElementById("difficultyCanvas").dispatchEvent(showSceneEvent);
 
     // FOR TESTING SERVICE
     // document.getElementById("serviceModeCanvas").dispatchEvent(showSceneEvent);

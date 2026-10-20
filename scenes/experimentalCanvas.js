@@ -6,6 +6,8 @@ var experimentalScene = function (p) {
 
   let thisSongData;
 
+  let twoPlayer = true;
+
   // let updateArrowsInterval;
   let updateNotesInterval;
 
@@ -22,13 +24,39 @@ var experimentalScene = function (p) {
   let songId = 0;
 
   let arrowWidth = 64;
-  let hitPos = { x: 192, y: 208 };
-  let hitPosFinal = { x: 192, y: 56 };
+  let hitPos = [
+    { x: 192, y: 208 },
+    { x: 192, y: 208 },
+  ];
+
+  let hitPosOriginal = [
+    { x: 192, y: 208 },
+    { x: 192, y: 208 },
+  ];
+  let hitPosFinal = [
+    { x: 16, y: 56 },
+    { x: 368, y: 56 },
+  ];
   let arrow_xPos = {
     left: hitPos.x,
     down: hitPos.x + arrowWidth,
     up: hitPos.x + arrowWidth * 2,
     right: hitPos.x + arrowWidth * 3,
+  };
+
+  let getArrow_xPos = function (direction, playerNum) {
+    if (direction == "left") {
+      return hitPos[playerNum].x;
+    }
+    if (direction == "down") {
+      return hitPos[playerNum].x + arrowWidth;
+    }
+    if (direction == "up") {
+      return hitPos[playerNum].x + arrowWidth * 2;
+    }
+    if (direction == "right") {
+      return hitPos[playerNum].x + arrowWidth * 3;
+    }
   };
 
   let hitArrowSpritesheet;
@@ -48,10 +76,11 @@ var experimentalScene = function (p) {
   let fawningAnimation;
 
   //relevantNotes stores an array of note objects
-  let relevantNotes = [];
+  let relevantNotesList = [[], []];
   // let hitMargin = 100;
 
-  let measureData;
+  let measureDataList = [];
+  // let measureData;
   let songBpm;
   let currentBpmStartBeat = 0;
   let currentBpmChangeTime = 0;
@@ -62,11 +91,18 @@ var experimentalScene = function (p) {
   let bpmChanges = [];
   let hasStops = false;
 
-  let hitArrowObjs = {};
-  let feedbackObj;
-  let comboObj;
-  let scoreData;
-  let healthBar;
+  // let hitArrowObjs = {};
+  // let feedbackObj;
+  // let comboObj;
+
+  let hitArrowObjsList = [];
+  let feedbackObjsList = [];
+  let comboObjsList = [];
+  let scoreDataList = [];
+  let healthBarList = [];
+
+  // let scoreData;
+  // let healthBar;
 
   // current batch num is the measure of the current batch
   let batchSize = 2;
@@ -192,12 +228,31 @@ var experimentalScene = function (p) {
       hitFalse: 13,
     };
 
-    hitArrowObjs = {
-      left: new HitArrow("left", hitPos.x, hitPos.y),
-      down: new HitArrow("down", hitPos.x + arrowWidth, hitPos.y),
-      up: new HitArrow("up", hitPos.x + arrowWidth * 2, hitPos.y),
-      right: new HitArrow("right", hitPos.x + arrowWidth * 3, hitPos.y),
-    };
+    //Initialize hit objects list
+    hitArrowObjsList.push({
+      left: new HitArrow("left", hitPos[0].x, hitPos[0].y, 0),
+      down: new HitArrow("down", hitPos[0].x + arrowWidth, hitPos[0].y, 0),
+      up: new HitArrow("up", hitPos[0].x + arrowWidth * 2, hitPos[0].y, 0),
+      right: new HitArrow(
+        "right",
+        hitPos[0].x + arrowWidth * 3,
+        hitPos[0].y,
+        0,
+      ),
+    });
+    if (twoPlayer) {
+      hitArrowObjsList.push({
+        left: new HitArrow("left", hitPos[1].x, hitPos[1].y, 1),
+        down: new HitArrow("down", hitPos[1].x + arrowWidth, hitPos[1].y, 1),
+        up: new HitArrow("up", hitPos[1].x + arrowWidth * 2, hitPos[1].y, 1),
+        right: new HitArrow(
+          "right",
+          hitPos[1].x + arrowWidth * 3,
+          hitPos[1].y,
+          1,
+        ),
+      });
+    }
 
     attackImages = {
       left: {
@@ -218,11 +273,24 @@ var experimentalScene = function (p) {
       },
     };
 
-    feedbackObj = new FeedbackText();
-    comboObj = new ComboText();
+    feedbackObjsList.push(new FeedbackText(0));
+    if (twoPlayer) {
+      feedbackObjsList.push(new FeedbackText(1));
+    }
+    comboObjsList.push(new ComboText(0));
+    if (twoPlayer) {
+      comboObjsList.push(new ComboText(1));
+    }
 
-    scoreData = new Score();
-    healthBar = new HealthBar();
+    scoreDataList.push(new Score(songId, 0, "Hard"));
+    if (twoPlayer) {
+      scoreDataList.push(new Score(songId, 1, "Hard"));
+    }
+
+    healthBarList.push(new HealthBar(0));
+    if (twoPlayer) {
+      healthBarList.push(new HealthBar(1));
+    }
     fawningAnimation = new FawningAnimation();
 
     holdMiddleImgOriginal.loadPixels();
@@ -248,15 +316,23 @@ var experimentalScene = function (p) {
       p.clear();
     }
 
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.displayGlow();
+    hitArrowObjsList.forEach(function (hitArrowObjs) {
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.displayGlow();
+      });
     });
-    Object.values(hitArrowObjs).forEach(function (arrowObj) {
-      arrowObj.display();
+
+    hitArrowObjsList.forEach(function (hitArrowObjs) {
+      Object.values(hitArrowObjs).forEach(function (arrowObj) {
+        arrowObj.display();
+      });
     });
 
     if (startDrawingArrows) {
-      drawArrows();
+      drawArrows(0);
+      if (twoPlayer && part2Started) {
+        drawArrows(1);
+      }
     }
 
     // feedbackObj.display();
@@ -385,25 +461,45 @@ var experimentalScene = function (p) {
 
       //Initialize start of song
       if (currentMeasure == 0) {
-        let measuresInBatch = measureData.slice(
+        console.log("INITIALIZING player 1");
+        console.log(measureDataList);
+        let measuresInBatch_p1 = measureDataList[0].slice(
           currentBatchStartMeasure,
           currentBatchStartMeasure + batchSize,
         );
-        measuresInBatch.forEach(function (measure) {
+        measuresInBatch_p1.forEach(function (measure) {
           //If measure has notes, add contents into relevantNotes
           if (measure) {
             measure.forEach(function (note) {
-              let newNote = new Note(note);
-              relevantNotes.push(newNote);
+              let newNote = new Note(note, 0);
+              relevantNotesList[0].push(newNote);
             });
           }
         });
+        //Do this for p2
+        if (twoPlayer && part2Started) {
+          console.log("INITIALIZING player 2");
+
+          let measuresInBatch_p2 = measureDataList[1].slice(
+            currentBatchStartMeasure,
+            currentBatchStartMeasure + batchSize,
+          );
+          measuresInBatch_p2.forEach(function (measure) {
+            //If measure has notes, add contents into relevantNotes
+            if (measure) {
+              measure.forEach(function (note) {
+                let newNote = new Note(note, 1);
+                relevantNotesList[1].push(newNote);
+              });
+            }
+          });
+        }
       }
       //Are we ALMOST at a new batch? Update the batch data!
       else if (currentMeasure % batchSize == batchSize - 1) {
         // console.log("updating batch data");
         //Discard old ones BEFORE 1 measure ago....
-        let remainingNotes = relevantNotes.filter(function (note) {
+        let remainingNotes = relevantNotesList[0].filter(function (note) {
           //Keep only if this note is a hold and it's done...
           if (
             note.noteType == "hold" &&
@@ -419,19 +515,43 @@ var experimentalScene = function (p) {
             return false;
           }
         });
-        relevantNotes = remainingNotes;
+        relevantNotesList[0] = remainingNotes;
+
+        if (twoPlayer && part2Started) {
+          let remainingNotes = relevantNotesList[1].filter(function (note) {
+            //Keep only if this note is a hold and it's done...
+            if (
+              note.noteType == "hold" &&
+              note.endMeasure >= currentMeasure - 1
+            ) {
+              return true;
+            } else if (
+              (note.noteType == "instant" || note.noteType == "mine") &&
+              note.measure >= currentMeasure - 1
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          });
+          relevantNotesList[1] = remainingNotes;
+        }
+
         //Load in next batch notes
+
         currentBatchStartMeasure += batchSize;
-        let measuresInBatch = measureData.slice(
+        let measuresInBatch_p1 = measureDataList[0].slice(
           currentBatchStartMeasure,
           currentBatchStartMeasure + batchSize,
         );
-        measuresInBatch.forEach(function (measure) {
+        measuresInBatch_p1.forEach(function (measure) {
           if (measure) {
             //If measure has notes, add contents into relevantNotes
             measure.forEach(function (note) {
-              let newNote = new Note(note);
-              relevantNotes.push(newNote);
+              let newNote = new Note(note, 0);
+              relevantNotesList[0].push(newNote);
+
+              // Remember which note is the hold notes
               if (newNote.id == 44) {
                 leftHoldNote = newNote;
               }
@@ -441,6 +561,21 @@ var experimentalScene = function (p) {
             });
           }
         });
+        if (twoPlayer && part2Started) {
+          let measuresInBatch_p2 = measureDataList[1].slice(
+            currentBatchStartMeasure,
+            currentBatchStartMeasure + batchSize,
+          );
+          measuresInBatch_p2.forEach(function (measure) {
+            if (measure) {
+              //If measure has notes, add contents into relevantNotes
+              measure.forEach(function (note) {
+                let newNote = new Note(note, 1);
+                relevantNotesList[1].push(newNote);
+              });
+            }
+          });
+        }
       }
     }
 
@@ -529,9 +664,12 @@ var experimentalScene = function (p) {
 
     //Setup info for the song: Part 1
     let thisSongData = JSON.parse(part1);
-    measureData = thisSongData.measureData;
+    measureDataList[0] = thisSongData.measureData;
+    // Player 2:
+    measureDataList[1] = thisSongData.measureData;
     songBpm = thisSongData.bpm;
-    // songBpm = 400;
+    //Use for part 1 debugging
+    songBpm = 400;
 
     songDelay = thisSongData.delay;
     // scoreData.songId = songId;
@@ -627,6 +765,7 @@ var experimentalScene = function (p) {
     console.log("Hit Margin Time is: " + hitMarginTime);
   }
   function isWithinHitMargin(yPos) {
+    let hitArrowObjs = hitArrowObjsList[0];
     return (
       yPos >= hitArrowObjs["left"].yPos - hitMargin &&
       yPos <= hitArrowObjs["left"].yPos + hitMargin
@@ -660,9 +799,10 @@ var experimentalScene = function (p) {
     return yPos <= hitArrowObjs["left"].yPos;
   }
 
-  function drawArrows() {
+  function drawArrows(playerNum) {
     let timerHasPaused = false;
-    relevantNotes.forEach(function (note) {
+    let hitArrowObjs = hitArrowObjsList[playerNum];
+    relevantNotesList[playerNum].forEach(function (note) {
       let direction = note.direction;
       // let passedOver = false;
 
@@ -766,14 +906,18 @@ var experimentalScene = function (p) {
     Tone.Transport.stop();
 
     // Lets try resetting everything here!
-    relevantNotes = [];
+    let relevantNotesList = [[], []];
     currentBatchStartMeasure = 0;
     currentMeasure = -1;
     currentBeat = 0;
     pixelsElapsed = 0;
 
+    measureDataList = [];
     let songData = JSON.parse(part2);
-    measureData = songData.measureData;
+    // measureData = songData.measureData;
+    measureDataList.push(songData.measureData);
+    measureDataList.push(songData.measureData);
+    //TODO: add dedicated part 2 data later
     songBpm = songData.bpm;
     songDelay = songData.delay;
     secondsPerBeat = 1 / (songBpm / 60);
@@ -1190,9 +1334,10 @@ var experimentalScene = function (p) {
   }
 
   function updateMiss(score, note) {
-    feedbackObj.updateState(score);
-    comboObj.resetCombo();
-    scoreData.update("miss");
+    let playerNum = note.playerNum;
+    feedbackObjsList[playerNum].updateState(score);
+    comboObjsList[playerNum].resetCombo();
+    scoreDataList[playerNum].update("miss");
   }
   function updateHit(score, note) {
     //Is this the first time hitting this note?
@@ -1229,6 +1374,7 @@ var experimentalScene = function (p) {
     //Assess notes that are the START of either instant or holds
     let hitTime;
     let hitSuccessful = false;
+    let playerNum = note.playerNum;
     if (isStopped) {
       hitTime = t + secondsSinceStop;
     } else {
@@ -1333,7 +1479,7 @@ var experimentalScene = function (p) {
 
       // Lift is TOO EARLY - Failed
       else if (hitTime < note.endTime - hitMarginTime) {
-        feedbackObj.updateState("early");
+        feedbackObjsList[playerNum].updateState("early");
 
         //Are we lifting early before part 2 - aka the holds?
         if (!part2Started) {
@@ -1365,12 +1511,15 @@ var experimentalScene = function (p) {
   // Iterates through the list of relative notes....
 
   // If you have previously hit a note with the SAME direction, don't assess hit for notes of that direction later
-  function assessHit(direction, hitType) {
+  function assessHit(direction, hitType, playerNum) {
+    if (!part2Started) {
+      playerNum = 0;
+    }
     let anyNoteHit = false;
 
     let thisDirectionHit = false;
 
-    relevantNotes.forEach(function (note) {
+    relevantNotesList[playerNum].forEach(function (note) {
       if (Tone.Transport.state == "started") {
         if (!thisDirectionHit) {
           if (assessHitForNoteByTime(direction, hitType, note)) {
@@ -1419,19 +1568,19 @@ var experimentalScene = function (p) {
     Tone.Transport.cancel();
   }
 
-  function padOrKeypress(direction) {
+  function padOrKeypress(direction, playerNum) {
     if (isCurrentScene) {
       let hitSuccessful = false;
       // if (Tone.Transport.state == "started") {
-      hitSuccessful = assessHit(direction, "press");
+      hitSuccessful = assessHit(direction, "press", playerNum);
       // }
-      hitArrowObjs[direction].press(hitSuccessful);
+      hitArrowObjsList[playerNum][direction].press(hitSuccessful);
     }
   }
-  function padOrKeyrelease(direction) {
+  function padOrKeyrelease(direction, playerNum) {
     if (isCurrentScene) {
-      hitArrowObjs[direction].release();
-      assessHit(direction, "lift");
+      hitArrowObjsList[playerNum][direction].release();
+      assessHit(direction, "lift", playerNum);
     }
   }
 
@@ -1445,58 +1594,109 @@ var experimentalScene = function (p) {
 
   window.addEventListener("padPress", function (e) {
     let direction = e.detail.direction;
-    padOrKeypress(direction);
+    //detect p1 for now
+    padOrKeypress(direction, 0);
   });
   window.addEventListener("padRelease", function (e) {
     let direction = e.detail.direction;
-    padOrKeyrelease(direction);
+    //detect p1 for now
+    padOrKeyrelease(direction, 0);
   });
 
   window.addEventListener("keydown", function (e) {
     e.preventDefault();
+
+    console.log(e.code);
     //Ignore repeated keydown
     if (e.repeat) {
       return;
     }
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
+
+    if (twoPlayer) {
+      // 1P uses wasd
+      if (e.code == "KeyA") {
+        padOrKeypress("left", 0);
+      }
+      if (e.code == "KeyD") {
+        padOrKeypress("right", 0);
+      }
+      if (e.code == "KeyW") {
+        padOrKeypress("up", 0);
+      }
+      if (e.code == "KeyS") {
+        padOrKeypress("down", 0);
+      }
+      // 2P uses arrow keys
       if (e.code == "ArrowLeft") {
-        padOrKeypress("left");
+        padOrKeypress("left", 1);
       }
       if (e.code == "ArrowRight") {
-        padOrKeypress("right");
+        padOrKeypress("right", 1);
       }
       if (e.code == "ArrowUp") {
-        padOrKeypress("up");
+        padOrKeypress("up", 1);
       }
       if (e.code == "ArrowDown") {
-        padOrKeypress("down");
+        padOrKeypress("down", 1);
+      }
+    } else {
+      // 1P uses arrow keys
+      if (e.code == "ArrowLeft") {
+        padOrKeypress("left", 0);
+      }
+      if (e.code == "ArrowRight") {
+        padOrKeypress("right", 0);
+      }
+      if (e.code == "ArrowUp") {
+        padOrKeypress("up", 0);
+      }
+      if (e.code == "ArrowDown") {
+        padOrKeypress("down", 0);
       }
     }
   });
 
   window.addEventListener("keyup", function (e) {
-    if (
-      e.code == "ArrowLeft" ||
-      e.code == "ArrowRight" ||
-      e.code == "ArrowUp" ||
-      e.code == "ArrowDown"
-    ) {
+    if (twoPlayer) {
+      // 1P uses wasd
+      if (e.code == "KeyA") {
+        padOrKeyrelease("left", 0);
+      }
+      if (e.code == "KeyD") {
+        padOrKeyrelease("right", 0);
+      }
+      if (e.code == "KeyW") {
+        padOrKeyrelease("up", 0);
+      }
+      if (e.code == "KeyS") {
+        padOrKeyrelease("down", 0);
+      }
+      // 2P uses arrow keys
       if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left");
+        padOrKeyrelease("left", 1);
       }
       if (e.code == "ArrowRight") {
-        padOrKeyrelease("right");
+        padOrKeyrelease("right", 1);
       }
       if (e.code == "ArrowUp") {
-        padOrKeyrelease("up");
+        padOrKeyrelease("up", 1);
       }
       if (e.code == "ArrowDown") {
-        padOrKeyrelease("down");
+        padOrKeyrelease("down", 1);
+      }
+    } else {
+      // 1P uses arrow keys
+      if (e.code == "ArrowLeft") {
+        padOrKeyrelease("left", 0);
+      }
+      if (e.code == "ArrowRight") {
+        padOrKeyrelease("right", 0);
+      }
+      if (e.code == "ArrowUp") {
+        padOrKeyrelease("up", 0);
+      }
+      if (e.code == "ArrowDown") {
+        padOrKeyrelease("down", 0);
       }
     }
   });
@@ -1510,7 +1710,7 @@ var experimentalScene = function (p) {
   // CLASSES
 
   class Note {
-    constructor(noteData) {
+    constructor(noteData, playerNum) {
       this.id = noteData.id;
       this.direction = noteData.direction;
       this.noteType = noteData.noteType;
@@ -1523,6 +1723,7 @@ var experimentalScene = function (p) {
       this.eggshellSceneOpacity = 0;
       this.hasPassedOver = false;
       this.isHit = false;
+      this.playerNum = playerNum;
 
       // Check if this is a fawning hit...
       this.isFawningHit =
@@ -1551,6 +1752,7 @@ var experimentalScene = function (p) {
       }, 30);
     }
     display(yPos) {
+      let hitArrowObjs = hitArrowObjsList[this.playerNum];
       // First, determine if we're currently at a stop... if so , unhit notes should not go over the original yPos
       if (
         Tone.Transport.state != "started" &&
@@ -1569,7 +1771,7 @@ var experimentalScene = function (p) {
         p.tint(255, opacity);
         drawArrowPiece(
           arrowImgs[this.direction],
-          arrow_xPos[this.direction],
+          getArrow_xPos(this.direction, this.playerNum),
           yPos,
         );
         p.tint(255, 255);
@@ -1582,22 +1784,46 @@ var experimentalScene = function (p) {
           // Draw rectangle
           drawArrowPiece(
             holdMiddleImg.hitTrue,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             hitArrowObjs["left"].yPos + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawArrowPiece(
             holdEndImgs[this.direction].hitTrue,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             hitArrowObjs["left"].yPos + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             hitArrowObjs["left"].yPos,
           );
+
+          //Duplicate this for p2 during transition to part 2
+          if (!part2Started) {
+            let hitArrowObjsP2 = hitArrowObjsList[1];
+            // Draw rectangle
+            drawArrowPiece(
+              holdMiddleImg.hitTrue,
+              getArrow_xPos(this.direction, 1),
+              hitArrowObjsP2["left"].yPos + 32,
+              rectangleHeight,
+            );
+            // Draw arrow at end of rectangle
+            drawArrowPiece(
+              holdEndImgs[this.direction].hitTrue,
+              getArrow_xPos(this.direction, 1),
+              hitArrowObjsP2["left"].yPos + rectangleHeight,
+            );
+            // Draw arrow at hit pos
+            drawArrowPiece(
+              arrowImgs[this.direction],
+              getArrow_xPos(this.direction, 1),
+              hitArrowObjsP2["left"].yPos,
+            );
+          }
         } else if (this.isHit && !this.isHolding && !this.completedHold) {
           //   case 2: hit first note, lifted up before end
           //   What happens? need to grey out and keep on going
@@ -1612,20 +1838,20 @@ var experimentalScene = function (p) {
           // Draw rectangle
           drawArrowPiece(
             holdMiddleImg.hitFalse,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased + 32,
             rectangleHeight,
           );
           // Draw arrow at end of rectangle
           drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased + rectangleHeight,
           );
           // Draw arrow at hit pos
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPosReleased,
           );
           p.tint(255, 255);
@@ -1639,18 +1865,18 @@ var experimentalScene = function (p) {
           rectangleHeight = pixelsPerBeat * (this.endBeat - this.startBeat);
           drawArrowPiece(
             holdMiddleImg.hitFalse,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos + 32,
             rectangleHeight,
           );
           drawArrowPiece(
             arrowImgs[this.direction],
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos,
           );
           drawArrowPiece(
             holdEndImgs[this.direction].hitFalse,
-            arrow_xPos[this.direction],
+            getArrow_xPos(this.direction, this.playerNum),
             yPos + rectangleHeight,
           );
           p.tint(255, 255);
@@ -1659,7 +1885,11 @@ var experimentalScene = function (p) {
         // Draw mines
         let opacity = this.hasPassedOver ? 127 : 255;
         p.tint(255, opacity);
-        drawImageToScale(eggBombImg, arrow_xPos[this.direction], yPos);
+        drawImageToScale(
+          eggBombImg,
+          getArrow_xPos(this.direction, this.playerNum),
+          yPos,
+        );
         p.tint(255, 255);
       }
 
@@ -1724,7 +1954,7 @@ var experimentalScene = function (p) {
   }
 
   class Score {
-    constructor(songId) {
+    constructor(songId, playerNum) {
       this.miss = 0;
       this.perfect = 0;
       this.ok = 0;
@@ -1734,6 +1964,7 @@ var experimentalScene = function (p) {
       this.baseNoteScore = 0;
       this.ranking;
       this.songId = songId;
+      this.playerNum = playerNum;
     }
     getScoreInfo() {
       return {
@@ -1774,30 +2005,30 @@ var experimentalScene = function (p) {
       }
     }
     mineHit() {
-      healthBar.decrement(0.15);
+      healthBarList[this.playerNum].decrement(0.15);
     }
     update(scoreType) {
       if (scoreType == "miss") {
         this.miss++;
-        healthBar.decrement();
+        healthBarList[this.playerNum].decrement();
       } else {
         if (scoreType == "ok") {
           this.ok++;
           // this.scoreCount += 1;
           this.scoreCount += this.baseNoteScore * 3;
-          healthBar.increment(1);
+          healthBarList[this.playerNum].increment(1);
         }
         if (scoreType == "great") {
           this.great++;
           // this.scoreCount += 3;
           this.scoreCount += this.baseNoteScore * 7;
-          healthBar.increment(3);
+          healthBarList[this.playerNum].increment(3);
         }
         if (scoreType == "perfect") {
           this.perfect++;
           // this.scoreCount += 5;
           this.scoreCount += this.baseNoteScore * 10;
-          healthBar.increment(5);
+          healthBar[this.playerNum].increment(5);
         }
       }
 
@@ -1920,7 +2151,7 @@ var experimentalScene = function (p) {
 
   //Add functionality to animate when hit
   class HitArrow {
-    constructor(direction, xPos, yPos) {
+    constructor(direction, xPos, yPos, playerNum) {
       this.direction = direction;
       this.imgToDraw = hitArrowImgs[direction];
       this.xPos = xPos;
@@ -1932,6 +2163,7 @@ var experimentalScene = function (p) {
       this.animationIndex = 0;
       this.animationInterval;
       this.animationTimeout;
+      this.playerNum = playerNum;
     }
     press(successfulHit) {
       this.pressed = true;
@@ -1985,8 +2217,23 @@ var experimentalScene = function (p) {
         console.log("dispatching background transition");
         // document.querySelector("#backgroundCanvas").dispatchEvent()
         whiteBackground = false;
-        let yPos = p.map(percentageElapsed, 0, 1, hitPos.y, hitPosFinal.y);
+        let yPos = p.map(
+          percentageElapsed,
+          0,
+          1,
+          hitPosOriginal[this.playerNum].y,
+          hitPosFinal[this.playerNum].y,
+        );
         this.yPos = yPos;
+        let xPos = p.map(
+          percentageElapsed,
+          0,
+          1,
+          hitPosOriginal[this.playerNum].x,
+          hitPosFinal[this.playerNum].x,
+        );
+        hitPos[this.playerNum] = { x: xPos, y: yPos };
+        this.xPos = getArrow_xPos(this.direction, this.playerNum);
       }
       //Draw arrow at scale
       let d = (this.imgToDraw.width * (1 - this.scale)) / 2;

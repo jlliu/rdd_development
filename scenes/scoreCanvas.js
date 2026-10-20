@@ -47,7 +47,7 @@ var score = function (p) {
 
     setupNavigation(scoreCanvas);
 
-    scoreTimer = new timer(30, goToNextScene);
+    // scoreTimer = new timer(30, goToNextScene);
   };
 
   p.draw = function () {
@@ -122,7 +122,7 @@ var score = function (p) {
       //Draw top bar
       drawImageToScale(uiTopBarImgs.results, 0, 0);
       drawImageToScale(gameModeImgs[gameMode], 10, 8);
-      scoreTimer.display();
+      // scoreTimer.display();
     }
   };
 
@@ -186,7 +186,7 @@ var score = function (p) {
         // animateMenuIn();
         isCurrentScene = true;
         menu_track_player.start();
-        scoreTimer.start();
+        // scoreTimer.start();
       }, sceneTransitionTime);
     });
     thisCanvas.addEventListener("hideScene", (e) => {
@@ -195,7 +195,7 @@ var score = function (p) {
       thisCanvas.style.opacity = 0;
       setTimeout(function () {
         thisCanvas.style.visibility = "hidden";
-        scoreTimer.reset();
+        // scoreTimer.reset();
       }, sceneTransitionTime);
     });
   }

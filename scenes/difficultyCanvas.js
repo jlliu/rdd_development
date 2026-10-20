@@ -64,7 +64,7 @@ var difficulty = function (p) {
       new menuItem("Hard", 425, 140, selectDifficulty, 4),
     ];
 
-    difficultyTimer = new timer(30, selectCurrentOption);
+    // difficultyTimer = new timer(30, selectCurrentOption);
 
     window.dispatchEvent(canvasLoadedEvent);
 
@@ -83,7 +83,7 @@ var difficulty = function (p) {
         //Draw top bar
         drawImageToScale(uiTopBarImgs.difficulty, 0, 0);
         drawImageToScale(gameModeImgs[gameMode], 10, 8);
-        difficultyTimer.display();
+        // difficultyTimer.display();
       } else {
         drawText("I CAN BUILD THE", "neuropol", 1, null, 40);
         instructionsToDraw = "TO DO HARD THINGS";
@@ -125,7 +125,7 @@ var difficulty = function (p) {
 
         if (!gameIsReboot) {
           menu_track_player.start();
-          difficultyTimer.start();
+          // difficultyTimer.start();
         }
       }, sceneTransitionTime);
     });
@@ -134,7 +134,7 @@ var difficulty = function (p) {
       isCurrentScene = false;
       thisCanvas.style.opacity = 0;
       setTimeout(function () {
-        difficultyTimer.reset();
+        // difficultyTimer.reset();
         thisCanvas.style.visibility = "hidden";
       }, sceneTransitionTime);
     });
