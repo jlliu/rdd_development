@@ -63,55 +63,12 @@ var score = function (p) {
         drawImageToScale(
           currentSongBanner,
           320 - (currentSongBanner.width * 0.75) / 2,
-          20,
+          50,
           0.75,
         );
 
-        //Draw Ranking
-        drawText(scoreData.ranking, "pink", 1, 30, 50);
-
-        // Draw total
-        displayNumberWithLeadingZeros(
-          scoreData.scoreCount,
-          7,
-          80,
-          360,
-          "mainYellow",
-        );
-
-        // Draw PERFECT
-        displayNumberWithLeadingZeros(
-          scoreData.perfect,
-          3,
-          150,
-          150,
-          "greenHelper",
-        );
-        drawText("Perfect", "greenHelper", 1, null, 150);
-
-        // Draw GREAT
-        displayNumberWithLeadingZeros(
-          scoreData.great,
-          3,
-          150,
-          200,
-          "greenHelper",
-        );
-        drawText("Great", "greenHelper", 1, null, 200);
-
-        // Draw OK
-        displayNumberWithLeadingZeros(scoreData.ok, 3, 150, 250, "greenHelper");
-        drawText("O.K.", "greenHelper", 1, null, 250);
-
-        // Draw MISS
-        displayNumberWithLeadingZeros(
-          scoreData.miss,
-          3,
-          150,
-          300,
-          "greenHelper",
-        );
-        drawText("Miss", "greenHelper", 1, null, 300);
+        drawScore(0);
+        // draw p2 later
 
         // Draw Continue
         if (Math.floor(globalClock.seconds) % 2 == 0) {
@@ -125,6 +82,61 @@ var score = function (p) {
       // scoreTimer.display();
     }
   };
+
+  function drawScore(playerNum) {
+    //Draw Ranking
+    drawText(scoreData[playerNum].ranking, "pink", 1, 20, 100);
+
+    // Draw total
+    displayNumberWithLeadingZeros(
+      scoreData[playerNum].scoreCount,
+      7,
+      80,
+      360,
+      "mainYellow",
+    );
+
+    // Draw PERFECT
+    displayNumberWithLeadingZeros(
+      scoreData[playerNum].perfect,
+      3,
+      150,
+      150,
+      "greenHelper",
+    );
+    drawText("Perfect", "greenHelper", 1, null, 150);
+
+    // Draw GREAT
+    displayNumberWithLeadingZeros(
+      scoreData[playerNum].great,
+      3,
+      150,
+      200,
+      "greenHelper",
+    );
+    drawText("Great", "greenHelper", 1, null, 200);
+
+    // Draw OK
+    displayNumberWithLeadingZeros(
+      scoreData[playerNum].ok,
+      3,
+      150,
+      250,
+      "greenHelper",
+    );
+    drawText("O.K.", "greenHelper", 1, null, 250);
+
+    // Draw MISS
+    displayNumberWithLeadingZeros(
+      scoreData[playerNum].miss,
+      3,
+      150,
+      300,
+      "greenHelper",
+    );
+
+    drawText("Miss", "greenHelper", 1, null, 300);
+  }
 
   function setupScore(scoreData) {
     currentSongBanner = songBannersImgs[scoreData.songId];
@@ -178,7 +190,8 @@ var score = function (p) {
       scoreData = e.detail.scoreData;
       p.loop();
 
-      setupScore(scoreData);
+      setupScore(scoreData[0]);
+      // Add p2 later
 
       setTimeout(function () {
         thisCanvas.style.visibility = "visible";

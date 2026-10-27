@@ -6,7 +6,7 @@ var experimentalScene = function (p) {
 
   let thisSongData;
 
-  let twoPlayer = true;
+  let twoPlayer = false;
 
   // let updateArrowsInterval;
   let updateNotesInterval;
@@ -33,10 +33,19 @@ var experimentalScene = function (p) {
     { x: 192, y: 208 },
     { x: 192, y: 208 },
   ];
-  let hitPosFinal = [
-    { x: 16, y: 56 },
-    { x: 368, y: 56 },
-  ];
+  let hitPosFinal;
+
+  if (twoPlayer) {
+    hitPosFinal = [
+      { x: 16, y: 56 },
+      { x: 368, y: 56 },
+    ];
+  } else {
+    hitPosFinal = [
+      { x: 192, y: 56 },
+      { x: 192, y: 56 },
+    ];
+  }
   let arrow_xPos = {
     left: hitPos.x,
     down: hitPos.x + arrowWidth,
@@ -914,9 +923,18 @@ var experimentalScene = function (p) {
 
     measureDataList = [];
     let songData = JSON.parse(part2);
-    // measureData = songData.measureData;
-    measureDataList.push(songData.measureData);
-    measureDataList.push(songData.measureData);
+
+    if (twoPlayer) {
+      let songData_p1 = JSON.parse(part2_p1);
+      let songData_p2 = JSON.parse(part2_p2);
+      // measureData = songData.measureData;
+      measureDataList.push(songData_p1.measureData);
+      measureDataList.push(songData_p2.measureData);
+    } else {
+      songData_p1 = songData;
+      measureDataList.push(songData_p1.measureData);
+    }
+
     //TODO: add dedicated part 2 data later
     songBpm = songData.bpm;
     songDelay = songData.delay;
@@ -1604,99 +1622,101 @@ var experimentalScene = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
-    e.preventDefault();
+    if (isCurrentScene) {
+      e.preventDefault();
+      //Ignore repeated keydown
+      if (e.repeat) {
+        return;
+      }
 
-    console.log(e.code);
-    //Ignore repeated keydown
-    if (e.repeat) {
-      return;
-    }
-
-    if (twoPlayer) {
-      // 1P uses wasd
-      if (e.code == "KeyA") {
-        padOrKeypress("left", 0);
-      }
-      if (e.code == "KeyD") {
-        padOrKeypress("right", 0);
-      }
-      if (e.code == "KeyW") {
-        padOrKeypress("up", 0);
-      }
-      if (e.code == "KeyS") {
-        padOrKeypress("down", 0);
-      }
-      // 2P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeypress("left", 1);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeypress("right", 1);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeypress("up", 1);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeypress("down", 1);
-      }
-    } else {
-      // 1P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeypress("left", 0);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeypress("right", 0);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeypress("up", 0);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeypress("down", 0);
+      if (twoPlayer) {
+        // 1P uses wasd
+        if (e.code == "KeyA") {
+          padOrKeypress("left", 0);
+        }
+        if (e.code == "KeyD") {
+          padOrKeypress("right", 0);
+        }
+        if (e.code == "KeyW") {
+          padOrKeypress("up", 0);
+        }
+        if (e.code == "KeyS") {
+          padOrKeypress("down", 0);
+        }
+        // 2P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeypress("left", 1);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeypress("right", 1);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeypress("up", 1);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeypress("down", 1);
+        }
+      } else {
+        // 1P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeypress("left", 0);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeypress("right", 0);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeypress("up", 0);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeypress("down", 0);
+        }
       }
     }
   });
 
   window.addEventListener("keyup", function (e) {
-    if (twoPlayer) {
-      // 1P uses wasd
-      if (e.code == "KeyA") {
-        padOrKeyrelease("left", 0);
-      }
-      if (e.code == "KeyD") {
-        padOrKeyrelease("right", 0);
-      }
-      if (e.code == "KeyW") {
-        padOrKeyrelease("up", 0);
-      }
-      if (e.code == "KeyS") {
-        padOrKeyrelease("down", 0);
-      }
-      // 2P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left", 1);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeyrelease("right", 1);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeyrelease("up", 1);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeyrelease("down", 1);
-      }
-    } else {
-      // 1P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left", 0);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeyrelease("right", 0);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeyrelease("up", 0);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeyrelease("down", 0);
+    if (isCurrentScene) {
+      if (twoPlayer) {
+        // 1P uses wasd
+        if (e.code == "KeyA") {
+          padOrKeyrelease("left", 0);
+        }
+        if (e.code == "KeyD") {
+          padOrKeyrelease("right", 0);
+        }
+        if (e.code == "KeyW") {
+          padOrKeyrelease("up", 0);
+        }
+        if (e.code == "KeyS") {
+          padOrKeyrelease("down", 0);
+        }
+        // 2P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeyrelease("left", 1);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeyrelease("right", 1);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeyrelease("up", 1);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeyrelease("down", 1);
+        }
+      } else {
+        // 1P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeyrelease("left", 0);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeyrelease("right", 0);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeyrelease("up", 0);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeyrelease("down", 0);
+        }
       }
     }
   });
@@ -1802,7 +1822,7 @@ var experimentalScene = function (p) {
           );
 
           //Duplicate this for p2 during transition to part 2
-          if (!part2Started) {
+          if (!part2Started && twoPlayer) {
             let hitArrowObjsP2 = hitArrowObjsList[1];
             // Draw rectangle
             drawArrowPiece(

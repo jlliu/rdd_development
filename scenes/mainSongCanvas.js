@@ -2,7 +2,7 @@ var mainScene = function (p) {
   let mainSongCanvas;
   let isCurrentScene = false;
 
-  let twoPlayer = true;
+  let twoPlayer = false;
 
   let thisSongPlayer;
 
@@ -111,7 +111,7 @@ var mainScene = function (p) {
   let videoLoadedFirstTime = false;
 
   //Mark false for install
-  let endSongIfFailed = false;
+  let endSongIfFailed = true;
 
   p.preload = function () {
     //Preload a background here
@@ -496,8 +496,8 @@ var mainScene = function (p) {
         win = scoreData.ranking != "E" ? true : false;
       });
       // Comment for install
-      // handleSongEnd(win);
-      handleSongEnd(true);
+      handleSongEnd(win);
+      // handleSongEnd(true);
     }
   }
 
@@ -1503,99 +1503,101 @@ var mainScene = function (p) {
   });
 
   window.addEventListener("keydown", function (e) {
-    e.preventDefault();
+    if (isCurrentScene) {
+      e.preventDefault();
+      //Ignore repeated keydown
+      if (e.repeat) {
+        return;
+      }
 
-    console.log(e.code);
-    //Ignore repeated keydown
-    if (e.repeat) {
-      return;
-    }
-
-    if (twoPlayer) {
-      // 1P uses wasd
-      if (e.code == "KeyA") {
-        padOrKeypress("left", 0);
-      }
-      if (e.code == "KeyD") {
-        padOrKeypress("right", 0);
-      }
-      if (e.code == "KeyW") {
-        padOrKeypress("up", 0);
-      }
-      if (e.code == "KeyS") {
-        padOrKeypress("down", 0);
-      }
-      // 2P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeypress("left", 1);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeypress("right", 1);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeypress("up", 1);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeypress("down", 1);
-      }
-    } else {
-      // 1P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeypress("left", 0);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeypress("right", 0);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeypress("up", 0);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeypress("down", 0);
+      if (twoPlayer) {
+        // 1P uses wasd
+        if (e.code == "KeyA") {
+          padOrKeypress("left", 0);
+        }
+        if (e.code == "KeyD") {
+          padOrKeypress("right", 0);
+        }
+        if (e.code == "KeyW") {
+          padOrKeypress("up", 0);
+        }
+        if (e.code == "KeyS") {
+          padOrKeypress("down", 0);
+        }
+        // 2P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeypress("left", 1);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeypress("right", 1);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeypress("up", 1);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeypress("down", 1);
+        }
+      } else {
+        // 1P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeypress("left", 0);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeypress("right", 0);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeypress("up", 0);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeypress("down", 0);
+        }
       }
     }
   });
 
   window.addEventListener("keyup", function (e) {
-    if (twoPlayer) {
-      // 1P uses wasd
-      if (e.code == "KeyA") {
-        padOrKeyrelease("left", 0);
-      }
-      if (e.code == "KeyD") {
-        padOrKeyrelease("right", 0);
-      }
-      if (e.code == "KeyW") {
-        padOrKeyrelease("up", 0);
-      }
-      if (e.code == "KeyS") {
-        padOrKeyrelease("down", 0);
-      }
-      // 2P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left", 1);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeyrelease("right", 1);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeyrelease("up", 1);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeyrelease("down", 1);
-      }
-    } else {
-      // 1P uses arrow keys
-      if (e.code == "ArrowLeft") {
-        padOrKeyrelease("left", 0);
-      }
-      if (e.code == "ArrowRight") {
-        padOrKeyrelease("right", 0);
-      }
-      if (e.code == "ArrowUp") {
-        padOrKeyrelease("up", 0);
-      }
-      if (e.code == "ArrowDown") {
-        padOrKeyrelease("down", 0);
+    if (isCurrentScene) {
+      if (twoPlayer) {
+        // 1P uses wasd
+        if (e.code == "KeyA") {
+          padOrKeyrelease("left", 0);
+        }
+        if (e.code == "KeyD") {
+          padOrKeyrelease("right", 0);
+        }
+        if (e.code == "KeyW") {
+          padOrKeyrelease("up", 0);
+        }
+        if (e.code == "KeyS") {
+          padOrKeyrelease("down", 0);
+        }
+        // 2P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeyrelease("left", 1);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeyrelease("right", 1);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeyrelease("up", 1);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeyrelease("down", 1);
+        }
+      } else {
+        // 1P uses arrow keys
+        if (e.code == "ArrowLeft") {
+          padOrKeyrelease("left", 0);
+        }
+        if (e.code == "ArrowRight") {
+          padOrKeyrelease("right", 0);
+        }
+        if (e.code == "ArrowUp") {
+          padOrKeyrelease("up", 0);
+        }
+        if (e.code == "ArrowDown") {
+          padOrKeyrelease("down", 0);
+        }
       }
     }
   });
@@ -2251,9 +2253,11 @@ var mainScene = function (p) {
       let xPos =
         (canvasSizeOriginal.width - (numberWidth + comboTextImg.width + 5)) / 2;
       if (this.showing && this.count >= 4) {
-        let offset = this.playerNum == 0 ? -270 : 270;
+        let offset = this.playerNum == 0 ? -160 : 160;
         p.push();
-        p.translate(offset, 0);
+        if (twoPlayer) {
+          p.translate(offset * scaleRatio, 0);
+        }
         drawImageToScale(comboTextImg, xPos + numberWidth + 5, 267, this.scale);
         drawText(this.count.toString(), "pink", this.scale, xPos, 240);
         p.pop();
@@ -2313,9 +2317,11 @@ var mainScene = function (p) {
     }
     display() {
       if (this.showing) {
-        let offset = this.playerNum == 0 ? -270 : 270;
+        let offset = this.playerNum == 0 ? -160 : 160;
         p.push();
-        p.translate(offset, 0);
+        if (twoPlayer) {
+          p.translate(offset * scaleRatio, 0);
+        }
         drawText(this.text, "mainYellow", this.scale, null, 150);
         p.pop();
       }
